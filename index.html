@@ -574,7 +574,6 @@ tr.sh{display:none;}
 </head>
 <body>
 
-<!-- ══ TABS ══ -->
 <div class="tabs">
   <button class="tbtn active" id="tab-liste"  onclick="goTab('liste')"><span class="ti">🍞</span><span class="tl">Liste</span></button>
   <button class="tbtn"        id="tab-carte"  onclick="goTab('carte')"><span class="ti">🗺️</span><span class="tl">Carte</span></button>
@@ -582,7 +581,6 @@ tr.sh{display:none;}
 </div>
 <div id="toast"></div>
 
-<!-- ══════ LISTE ══════ -->
 <div class="page active" id="pg-liste">
 <div class="lp">
   <h2 class="ptitle" id="pg-title">🍞 Livraison Pro</h2>
@@ -611,7 +609,6 @@ tr.sh{display:none;}
 </div>
 </div>
 
-<!-- ══ BULLES LATÉRALES (fixes) ══ -->
 <div class="fbubble fb-clients">
   <span class="fbubble-val" id="nb-cl">0</span>
   <span class="fbubble-lbl">Clients</span>
@@ -626,11 +623,8 @@ tr.sh{display:none;}
   onclick="cfgSingleClick()"
   title="Double-clic pour les réglages">⚙️</div>
 
-<!-- ══ FOOTER — bande centrale repliable ══ -->
 <div class="footer" id="footer">
-  <!-- Trait de tap pour replier/déplier -->
   <div class="ftap" id="ftap" onclick="toggleFStrip()"></div>
-  <!-- Bande d'infos financières -->
   <div class="fstrip" id="fstrip">
     <div class="fstrip-inner">
       <div class="fchip pc" id="fc-ach">
@@ -662,7 +656,6 @@ tr.sh{display:none;}
   </div>
 </div>
 
-<!-- MODAL PARAMÈTRES RAPIDES -->
 <div class="qset-ov" id="qset-ov" onclick="closeQSetOv(event)">
   <div class="qset-pan" id="qset-pan">
     <div class="qset-hd">
@@ -721,18 +714,14 @@ tr.sh{display:none;}
     </div>
   </div>
 </div>
-<!-- hidden delay input for compat -->
 <input type="hidden" id="ahDl" value="30">
 
-<!-- ═══ FAB LISTE ═══ -->
 <button class="lfab" id="lfab" onclick="toggleLSaisie()" title="Ajouter un client">
   <span class="lfab-icon" id="lfab-icon">➕</span>
 </button>
 
-<!-- ═══ Overlay liste ═══ -->
 <div class="lsaisie-ov" id="lsaisie-ov" onclick="toggleLSaisie()"></div>
 
-<!-- ═══ Panneau saisie LISTE (slide depuis le bas) ═══ -->
 <div class="lsaisie-pan" id="lsaisie-pan">
   <div class="lsaisie-hd">
     <span>➕ Nouveau client</span>
@@ -740,7 +729,6 @@ tr.sh{display:none;}
   </div>
   <div class="lsaisie-bd">
 
-    <!-- Doublon -->
     <div id="l-dbla" style="display:none;background:#fff3e0;border:2px solid #ff9800;
       border-radius:10px;padding:10px 13px;font-size:13px;color:#e65100;
       margin-bottom:12px;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -764,11 +752,9 @@ tr.sh{display:none;}
   </div>
 </div>
 
-<!-- ══════ CARTE ══════ -->
 <div class="page" id="pg-carte">
   <div id="map" style="position:absolute;inset:0;"></div>
 
-  <!-- Boutons principaux -->
   <div class="mtop">
     <div class="minfo" id="minfo">Appuyez sur <b>📍 Placer</b> pour localiser un client.</div>
     <button class="mbtn" id="btn-place" onclick="startPlace()">📍 Placer</button>
@@ -777,7 +763,6 @@ tr.sh{display:none;}
     <button class="mbtn dl" id="btn-dl" onclick="dlZone()">📥</button>
   </div>
 
-  <!-- Sélecteur mode transport -->
   <div class="tmode-bar" id="tmode-bar">
     <button class="tmode-btn" id="tm-driving" onclick="setTransport('driving')" title="Voiture">🚗</button>
     <button class="tmode-btn" id="tm-foot"    onclick="setTransport('foot')"    title="À pied">🚶</button>
@@ -806,15 +791,12 @@ tr.sh{display:none;}
   </div>
   <div class="netbdg" id="netbdg"></div>
 
-  <!-- ═══ FAB — bouton saisie ═══ -->
   <button class="fab" id="fab" onclick="toggleSaisie()" title="Ajouter un client">
     <span class="fab-icon" id="fab-icon">✏️</span>
   </button>
 
-  <!-- ═══ Overlay ═══ -->
   <div class="saisie-overlay" id="saisie-overlay" onclick="toggleSaisie()"></div>
 
-  <!-- ═══ Panneau saisie coulissant depuis le bas ═══ -->
   <div class="saisie-pan" id="saisie-pan">
     <div class="saisie-hd">
       <span style="font-size:15px;font-weight:900;">✏️ Nouveau client</span>
@@ -822,7 +804,6 @@ tr.sh{display:none;}
     </div>
     <div class="saisie-bd">
 
-      <!-- Alerte doublon -->
       <div id="saisie-dbl" style="display:none;background:#fff3e0;border:2px solid #ff9800;
         border-radius:9px;padding:9px 12px;font-size:12px;color:#e65100;
         margin-bottom:11px;align-items:center;gap:7px;flex-wrap:wrap;">
@@ -858,7 +839,6 @@ tr.sh{display:none;}
   </div>
 </div>
 
-<!-- ══════ PARAMÈTRES ══════ -->
 <div class="page" id="pg-params">
 <div class="pp">
   <h2 class="ptitle" style="margin-bottom:16px;">⚙️ Paramètres</h2>
@@ -1752,30 +1732,64 @@ function editC(i,f){
 }
 function goMapPlace(i){goTab('carte');setTimeout(()=>{initMap();setTimeout(()=>startPlace(i),200);},200);}
 
-// Recherche
-const norm=s=>(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-const fmtP=s=>{if(!s)return'';return s.trim().charAt(0).toUpperCase()+s.trim().slice(1).toLowerCase();};
-function doSearch(){
-  const q=norm(document.getElementById('sinput').value);
-  document.getElementById('sclear').classList.toggle('on',q.length>0);
-  if(!q){
-    [...document.getElementById('tb-aliv').rows,...document.getElementById('tb-done').rows].forEach(r=>r.classList.remove('sh'));
-    [...document.getElementById('cw-aliv').children,...document.getElementById('cw-done').children].forEach(c=>c.classList.remove('sh'));
-    document.getElementById('scnt').textContent='';return;
+// ════ RECHERCHE CORRIGÉE ET OPTIMISÉE ════
+const norm = s => (s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const fmtP = s => { if(!s) return ''; return s.trim().charAt(0).toUpperCase() + s.trim().slice(1).toLowerCase(); };
+
+function doSearch() {
+  const q = norm(document.getElementById('sinput').value);
+  document.getElementById('sclear').classList.toggle('on', q.length > 0);
+
+  // Récupération des éléments du DOM (Tableaux PC + Cartes Mobile)
+  const ta_rows = document.getElementById('tb-aliv').rows;
+  const td_rows = document.getElementById('tb-done').rows;
+  const ca_cards = document.getElementById('cw-aliv').children;
+  const cd_cards = document.getElementById('cw-done').children;
+
+  // Si le champ est vide, on réaffiche tout
+  if (!q) {
+    [...ta_rows, ...td_rows].forEach(r => r.style.display = '');
+    [...ca_cards, ...cd_cards].forEach(c => c.style.display = '');
+    document.getElementById('scnt').textContent = '';
+    return;
   }
-  let found=0;
-  livs.forEach((item,i)=>{
-    const match=norm(item.nom).includes(q)||norm(item.prenom).includes(q)||norm(item.tel||'').includes(q);
-    const ti=livs.slice(0,i).filter(l=>l.livre===item.livre).length;
-    const tbl=document.getElementById(item.livre?'tb-done':'tb-aliv');
-    const cw=document.getElementById(item.livre?'cw-done':'cw-aliv');
-    if(tbl.rows[ti])tbl.rows[ti].classList.toggle('sh',!match);
-    if(cw.children[ti])cw.children[ti].classList.toggle('sh',!match);
-    if(match)found++;
+
+  let found = 0;
+  let idx_aliv = 0; // Compteur linéaire optimisé pour "À livrer"
+  let idx_done = 0; // Compteur linéaire optimisé pour "Livrés"
+  
+  // Sépare la recherche par mots (permet de chercher "Dupont Jean" ou "Jean 0612...")
+  const terms = q.split(/\s+/);
+
+  livs.forEach((item) => {
+    // On concatène toutes les infos pour une recherche globale plus naturelle
+    const textToSearch = norm(`${item.nom} ${item.prenom} ${item.tel || ''}`);
+    
+    // Vérifie que CHAQUE mot tapé se trouve dans la chaîne du client
+    const match = terms.every(term => textToSearch.includes(term));
+
+    // Application du masquage directement via le style (corrige le bug mobile sans toucher au CSS)
+    if (item.livre) {
+      if (td_rows[idx_done]) td_rows[idx_done].style.display = match ? '' : 'none';
+      if (cd_cards[idx_done]) cd_cards[idx_done].style.display = match ? '' : 'none';
+      idx_done++;
+    } else {
+      if (ta_rows[idx_aliv]) ta_rows[idx_aliv].style.display = match ? '' : 'none';
+      if (ca_cards[idx_aliv]) ca_cards[idx_aliv].style.display = match ? '' : 'none';
+      idx_aliv++;
+    }
+
+    if (match) found++;
   });
-  document.getElementById('scnt').textContent=found+' résultat'+(found>1?'s':'');
+
+  document.getElementById('scnt').textContent = found + ' résultat' + (found > 1 ? 's' : '');
 }
-function clearSearch(){document.getElementById('sinput').value='';doSearch();renderTable();}
+
+function clearSearch() {
+  document.getElementById('sinput').value = '';
+  doSearch();
+}
+// ════ FIN DE LA RECHERCHE ════
 
 // Ajout client (délégue au panneau liste)
 function findDups(n,p){const nn=norm(n),pn=norm(p);return livs.filter(l=>norm(l.nom)===nn&&norm(l.prenom)===pn);}
