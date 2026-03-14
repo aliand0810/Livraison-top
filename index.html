@@ -282,6 +282,46 @@ body.hide-prices .col-money *{color:transparent!important}
 .loc-current .loc-icon{font-size:32px;flex-shrink:0}
 .loc-current .loc-info{flex:1}
 .loc-current .loc-coords{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);margin-top:4px}
+
+/* DELIVERY SECTIONS */
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;transition:background .15s;user-select:none}
+.section-header:hover{background:var(--bg3)}
+.section-header h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.section-header .sec-count{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px;background:var(--bg3);color:var(--text2)}
+.sec-stats{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto;padding-left:10px}
+.sec-stat{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:12px;background:var(--bg);border:1px solid var(--border);white-space:nowrap}
+.sec-stat .ss-val{font-family:'Space Mono',monospace;font-weight:700;font-size:11px}
+.sec-stat.clients .ss-val{color:var(--blue)}
+.sec-stat.value .ss-val{color:var(--accent)}
+.sec-stat.articles .ss-val{color:var(--purple)}
+.section-header .sec-arrow{transition:transform .2s;color:var(--text3);font-size:10px}
+.section-header.open .sec-arrow{transform:rotate(90deg)}
+.section-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin:0 16px 12px;overflow:hidden}
+.section-body{display:none;overflow-x:auto}
+.section-body.open{display:block}
+.section-wrap.pending .section-header{border-left:4px solid var(--warn)}
+.section-wrap.delivered .section-header{border-left:4px solid var(--accent)}
+
+.badge-delivered{background:rgba(74,227,181,.12);color:var(--accent);border:1px solid rgba(74,227,181,.3);padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.badge-not-delivered{background:rgba(240,178,74,.1);color:var(--warn);border:1px solid rgba(240,178,74,.3);padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+
+.btn-deliver{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0c10;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.btn-deliver:hover{transform:scale(1.05);box-shadow:0 0 12px var(--accent-glow)}
+.btn-deliver:active{transform:scale(.95)}
+.btn-undeliver{background:var(--bg3);color:var(--text3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.btn-undeliver:hover{background:var(--bg4);color:var(--text)}
+
+/* DELIVERY CONFIRM MODAL */
+.deliver-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:3600;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.deliver-overlay.active{opacity:1;pointer-events:all}
+.deliver-box{background:var(--bg2);border:1px solid var(--accent);border-radius:16px;padding:28px;max-width:400px;width:100%;text-align:center;box-shadow:0 0 40px var(--accent-glow);transform:scale(.9);transition:transform .2s}
+.deliver-overlay.active .deliver-box{transform:scale(1)}
+.deliver-box .dv-icon{font-size:48px;margin-bottom:10px}
+.deliver-box h3{font-size:17px;margin-bottom:8px}
+.deliver-box .dv-client{font-weight:700;color:var(--accent);font-size:16px;margin:6px 0}
+.deliver-box .dv-detail{font-size:12px;color:var(--text2);margin-bottom:4px}
+.deliver-box .dv-time{font-family:'Space Mono',monospace;font-size:11px;color:var(--text3);background:var(--bg);padding:6px 12px;border-radius:6px;margin:12px 0 16px;border:1px solid var(--border)}
+.deliver-box .dv-btns{display:flex;gap:8px;justify-content:center}
 .dtype-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px}
 .dtype-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .dtype-name{font-weight:700;font-size:14px;color:var(--text)}
@@ -316,9 +356,35 @@ body.hide-prices .col-money *{color:transparent!important}
     <select class="fsel" id="filterStatus" onchange="renderTable()"><option value="all">Tous</option><option value="payé">✅ Payé</option><option value="en attente">⏳ Attente</option><option value="impayé">❌ Impayé</option></select>
     <select class="fsel" id="sortBy" onchange="renderTable()"><option value="date-desc">Récent</option><option value="date-asc">Ancien</option><option value="name-asc">A→Z</option><option value="price-desc">Prix ↓</option></select>
   </div>
-  <div class="table-wrap">
-    <table><thead><tr><th><input type="checkbox" class="cb" id="selectAll" onchange="toggleSelectAll()"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body"></tbody></table>
-    <div class="empty-state" id="empty-state" style="display:none"><div class="eico">📦</div><h3>Aucune livraison</h3></div>
+
+  <!-- SECTION: EN COURS -->
+  <div class="section-wrap pending">
+    <div class="section-header open" onclick="toggleListSection(this)">
+      <h3>📦 En cours <span class="sec-count" id="pending-count">0</span></h3>
+      <div class="sec-stats" id="pending-stats"></div>
+      <span class="sec-arrow">▶</span>
+    </div>
+    <div class="section-body open" id="pending-section">
+      <div class="table-wrap" style="padding:0">
+        <table><thead><tr><th><input type="checkbox" class="cb" id="selectAllPending" onchange="toggleSelectAll('pending')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body-pending"></tbody></table>
+      </div>
+      <div class="empty-state" id="empty-pending" style="display:none;padding:20px"><div class="eico">🎉</div><h3>Tout est livré !</h3></div>
+    </div>
+  </div>
+
+  <!-- SECTION: LIVRÉ -->
+  <div class="section-wrap delivered">
+    <div class="section-header open" onclick="toggleListSection(this)">
+      <h3>✅ Livré <span class="sec-count" id="delivered-count">0</span></h3>
+      <div class="sec-stats" id="delivered-stats"></div>
+      <span class="sec-arrow">▶</span>
+    </div>
+    <div class="section-body open" id="delivered-section">
+      <div class="table-wrap" style="padding:0">
+        <table><thead><tr><th><input type="checkbox" class="cb" id="selectAllDelivered" onchange="toggleSelectAll('delivered')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body-delivered"></tbody></table>
+      </div>
+      <div class="empty-state" id="empty-delivered" style="display:none;padding:20px"><div class="eico">📦</div><h3>Aucune livraison terminée</h3></div>
+    </div>
   </div>
 </div>
 <!-- FLOATING ACTION BAR -->
@@ -444,6 +510,21 @@ body.hide-prices .col-money *{color:transparent!important}
 
 <!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div style="font-size:36px;margin-bottom:10px">📍</div><h3>Confirmer la position ?</h3><p style="font-size:12px;color:var(--text2)">Enregistrer cette position ?</p><div class="addr-preview" id="confirm-addr">—</div><p style="font-size:10px;color:var(--text3);margin-bottom:12px" id="confirm-coords-text"></p><div class="confirm-buttons"><button class="btn btn-secondary" onclick="confirmPosition(false)">❌ Sans</button><button class="btn btn-primary" onclick="confirmPosition(true)">✅ OK</button></div></div></div>
+<!-- DELIVERY CONFIRM -->
+<div class="deliver-overlay" id="deliver-overlay">
+  <div class="deliver-box">
+    <div class="dv-icon">📦✅</div>
+    <h3>Confirmer la livraison</h3>
+    <div class="dv-client" id="dv-client">—</div>
+    <div class="dv-detail" id="dv-detail">—</div>
+    <div class="dv-time" id="dv-time">—</div>
+    <div class="dv-btns">
+      <button class="btn btn-secondary" onclick="cancelDeliver()">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmDeliver()">✅ Confirmer livraison</button>
+    </div>
+  </div>
+</div>
+
 <!-- DELETE CONFIRM -->
 <div class="delete-overlay" id="delete-overlay">
   <div class="delete-box">
@@ -498,7 +579,7 @@ let secPinEnabled=localStorage.getItem('livrapro_pin_on')==='true';
 let lockEdit=localStorage.getItem('livrapro_lock_edit')==='true';
 let lockDelete=localStorage.getItem('livrapro_lock_delete')==='true';
 let lockPrices=localStorage.getItem('livrapro_lock_prices')==='true';
-let pendingAuthAction=null,deleteTargetId=null;
+let pendingAuthAction=null,deleteTargetId=null,deliverTargetId=null;
 // Location
 let highGPS=localStorage.getItem('livrapro_highgps')!=='false';
 let autoGeo=localStorage.getItem('livrapro_autogeo')==='true';
@@ -556,26 +637,93 @@ function switchTab(tab){
 }
 
 // ═══════════════ STATS ═══════════════
-function renderStats(){const t=data.length,rev=data.reduce((s,d)=>s+(parseFloat(d.price)||0),0),prof=data.reduce((s,d)=>s+(parseFloat(d.profit)||0),0),pa=data.filter(d=>d.status==='payé').length,pe=data.filter(d=>d.status==='en attente').length,un=data.filter(d=>d.status==='impayé').length;document.getElementById('stats-bar').innerHTML=`<div class="stat-card blue"><span class="label">Livraisons</span><span class="value">${t}</span></div><div class="stat-card green col-money"><span class="label">CA</span><span class="value">${fmt(rev)}</span></div><div class="stat-card green col-money"><span class="label">Bénéfice</span><span class="value">${fmt(prof)}</span></div><div class="stat-card yellow"><span class="label">Paiements</span><span class="value" style="font-size:14px;display:flex;gap:6px;flex-wrap:wrap"><span style="color:var(--accent)">${pa}✅</span><span style="color:var(--warn)">${pe}⏳</span><span style="color:var(--danger)">${un}❌</span></span></div>`}
+function renderStats(){const t=data.length,rev=data.reduce((s,d)=>s+(parseFloat(d.price)||0),0),prof=data.reduce((s,d)=>s+(parseFloat(d.profit)||0),0),pa=data.filter(d=>d.status==='payé').length,pe=data.filter(d=>d.status==='en attente').length,un=data.filter(d=>d.status==='impayé').length,dlv=data.filter(d=>d.delivered).length,enc=data.filter(d=>!d.delivered).length;document.getElementById('stats-bar').innerHTML=`<div class="stat-card blue"><span class="label">Livraisons</span><span class="value">${t}</span></div><div class="stat-card green col-money"><span class="label">CA</span><span class="value">${fmt(rev)}</span></div><div class="stat-card green col-money"><span class="label">Bénéfice</span><span class="value">${fmt(prof)}</span></div><div class="stat-card yellow"><span class="label">Paiements</span><span class="value" style="font-size:14px;display:flex;gap:6px;flex-wrap:wrap"><span style="color:var(--accent)">${pa}✅</span><span style="color:var(--warn)">${pe}⏳</span><span style="color:var(--danger)">${un}❌</span></span></div><div class="stat-card" style="border-color:var(--accent)"><span class="label">Livraison</span><span class="value" style="font-size:14px;display:flex;gap:6px;flex-wrap:wrap"><span style="color:var(--warn)">📦${enc}</span><span style="color:var(--accent)">✅${dlv}</span></span></div>`}
 
 // ═══════════════ TABLE + MULTI SELECT ═══════════════
+function toggleListSection(h){h.classList.toggle('open');h.nextElementSibling.classList.toggle('open')}
+
+function buildRow(d,i,sel){
+  const sc=d.status==='payé'?'paid':d.status==='impayé'?'unpaid':'pending',sl=d.status==='payé'?'✅Payé':d.status==='impayé'?'❌Impayé':'⏳Att.',pc=parseFloat(d.profit)>=0?'pos':'neg',dt=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}),hg=d.lat&&d.lng;
+  const isDelivered=d.delivered;
+  const delivCol=isDelivered
+    ?`<span class="badge-delivered">✅ Livré</span><br><button class="btn-undeliver" onclick="undeliverEntry(${d.id})">↩ Annuler</button>`
+    :`<button class="btn-deliver" onclick="askDeliver(${d.id})">📦 Confirmer</button>`;
+  const delivTime=isDelivered&&d.deliveredAt?`<div style="font-size:9px;color:var(--text3);margin-top:2px">${new Date(d.deliveredAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`:'';
+  return`<tr class="${sel?'selected':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name">${esc(d.name)}</span></td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
+}
+
 function renderTable(){
   const q=document.getElementById('search').value.toLowerCase(),fs=document.getElementById('filterStatus').value,so=document.getElementById('sortBy').value;
   let list=data.filter(d=>{const ms=!q||d.name.toLowerCase().includes(q)||d.article.toLowerCase().includes(q)||d.phone.toLowerCase().includes(q)||(d.position||'').toLowerCase().includes(q);return ms&&(fs==='all'||d.status===fs)});
   list.sort((a,b)=>{switch(so){case'date-desc':return b.id-a.id;case'date-asc':return a.id-b.id;case'name-asc':return a.name.localeCompare(b.name);case'price-desc':return(parseFloat(b.price)||0)-(parseFloat(a.price)||0)}return 0});
-  const tb=document.getElementById('table-body'),em=document.getElementById('empty-state');
-  if(!list.length){tb.innerHTML='';em.style.display='block';renderStats();return}
-  em.style.display='none';
-  tb.innerHTML=list.map((d,i)=>{
-    const sc=d.status==='payé'?'paid':d.status==='impayé'?'unpaid':'pending',sl=d.status==='payé'?'✅Payé':d.status==='impayé'?'❌Impayé':'⏳Att.',pc=parseFloat(d.profit)>=0?'pos':'neg',dt=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}),hg=d.lat&&d.lng,sel=selectedIds.has(d.id);
-    return`<tr class="${sel?'selected':''}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name">${esc(d.name)}</span></td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
-  }).join('');
+
+  const pending=list.filter(d=>!d.delivered);
+  const delivered=list.filter(d=>d.delivered);
+
+  // Pending table
+  const tbP=document.getElementById('table-body-pending'),emP=document.getElementById('empty-pending');
+  if(!pending.length){tbP.innerHTML='';emP.style.display='block'}
+  else{emP.style.display='none';tbP.innerHTML=pending.map((d,i)=>buildRow(d,i,selectedIds.has(d.id))).join('')}
+  document.getElementById('pending-count').textContent=pending.length;
+  renderSectionStats('pending-stats',pending);
+
+  // Delivered table
+  const tbD=document.getElementById('table-body-delivered'),emD=document.getElementById('empty-delivered');
+  if(!delivered.length){tbD.innerHTML='';emD.style.display='block'}
+  else{emD.style.display='none';tbD.innerHTML=delivered.map((d,i)=>buildRow(d,i,selectedIds.has(d.id))).join('')}
+  document.getElementById('delivered-count').textContent=delivered.length;
+  renderSectionStats('delivered-stats',delivered);
+
   renderStats();updateFab();
 }
-function toggleSelect(id,checked){if(checked)selectedIds.add(id);else selectedIds.delete(id);updateFab();document.querySelectorAll('#table-body tr').forEach(tr=>{const cb=tr.querySelector('.cb');if(cb)tr.classList.toggle('selected',cb.checked)})}
-function toggleSelectAll(){const checked=document.getElementById('selectAll').checked;document.querySelectorAll('#table-body .cb').forEach(cb=>{cb.checked=checked;const id=parseInt(cb.closest('tr').querySelector('.actions-cell button:last-child').getAttribute('onclick').match(/\d+/)[0]);if(checked)selectedIds.add(id);else selectedIds.delete(id);cb.closest('tr').classList.toggle('selected',checked)});updateFab()}
-function clearSelection(){selectedIds.clear();document.getElementById('selectAll').checked=false;document.querySelectorAll('#table-body .cb').forEach(cb=>{cb.checked=false;cb.closest('tr').classList.remove('selected')});updateFab()}
+
+function toggleSelect(id,checked){if(checked)selectedIds.add(id);else selectedIds.delete(id);updateFab();document.querySelectorAll('[data-id="'+id+'"]').forEach(tr=>tr.classList.toggle('selected',checked))}
+
+function toggleSelectAll(section){
+  const prefix=section==='delivered'?'Delivered':'Pending';
+  const checked=document.getElementById('selectAll'+prefix).checked;
+  const tbody=document.getElementById('table-body-'+(section==='delivered'?'delivered':'pending'));
+  tbody.querySelectorAll('.cb').forEach(cb=>{
+    cb.checked=checked;
+    const tr=cb.closest('tr');const id=parseInt(tr.dataset.id);
+    if(checked)selectedIds.add(id);else selectedIds.delete(id);
+    tr.classList.toggle('selected',checked);
+  });updateFab();
+}
+
+function clearSelection(){selectedIds.clear();document.querySelectorAll('.cb').forEach(cb=>{if(cb.id!=='selectAllPending'&&cb.id!=='selectAllDelivered'){cb.checked=false}});document.querySelectorAll('#table-body-pending tr,#table-body-delivered tr').forEach(tr=>tr.classList.remove('selected'));document.getElementById('selectAllPending').checked=false;document.getElementById('selectAllDelivered').checked=false;updateFab()}
 function updateFab(){const n=selectedIds.size;const fab=document.getElementById('fab');fab.classList.toggle('show',n>0);document.getElementById('fab-count').textContent=`${n} sélectionné${n>1?'s':''}`}
+
+function renderSectionStats(containerId,items){
+  const el=document.getElementById(containerId);if(!el)return;
+  const clients=items.length;
+  const totalVal=items.reduce((s,d)=>s+(parseFloat(d.price)||0),0);
+  const totalQty=items.reduce((s,d)=>s+(parseInt(d.qty)||0),0);
+  el.innerHTML=`<div class="sec-stat clients">👤 <span class="ss-val">${clients}</span> client${clients>1?'s':''}</div><div class="sec-stat value col-money">💰 <span class="ss-val">${fmt(totalVal)}</span></div><div class="sec-stat articles">📦 <span class="ss-val">${totalQty}</span> article${totalQty>1?'s':''}</div>`;
+}
+
+// ═══════════════ DELIVERY CONFIRMATION ═══════════════
+function askDeliver(id){
+  const d=data.find(x=>x.id===id);if(!d)return;
+  deliverTargetId=id;
+  document.getElementById('dv-client').textContent=d.name;
+  document.getElementById('dv-detail').textContent=`${d.article} × ${d.qty} — ${fmt(d.price)}`;
+  document.getElementById('dv-time').textContent=`📅 ${new Date().toLocaleString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}`;
+  document.getElementById('deliver-overlay').classList.add('active');
+}
+function cancelDeliver(){document.getElementById('deliver-overlay').classList.remove('active');deliverTargetId=null}
+function confirmDeliver(){
+  document.getElementById('deliver-overlay').classList.remove('active');
+  if(!deliverTargetId)return;
+  const d=data.find(x=>x.id===deliverTargetId);
+  if(d){d.delivered=true;d.deliveredAt=Date.now();save();renderTable();showToast(`✅ ${d.name} — Livré !`)}
+  deliverTargetId=null;
+}
+function undeliverEntry(id){
+  const d=data.find(x=>x.id===id);if(!d)return;
+  d.delivered=false;d.deliveredAt=null;save();renderTable();showToast(`↩ ${d.name} — Remis en cours`);
+}
+
 function cycleStatus(id){const e=data.find(d=>d.id===id);if(!e)return;const c=['en attente','payé','impayé'];e.status=c[(c.indexOf(e.status)+1)%3];save();renderTable();showToast(`Statut → ${e.status}`)}
 
 // ═══════════════ BULK MESSAGE ═══════════════
@@ -626,7 +774,16 @@ function showDeleteModal(id){
 function cancelDelete(){document.getElementById('delete-overlay').classList.remove('active');deleteTargetId=null}
 function confirmDelete(){
   document.getElementById('delete-overlay').classList.remove('active');
-  if(deleteTargetId){data=data.filter(d=>d.id!==deleteTargetId);save();renderTable();showToast('Supprimé 🗑️')}
+  if(!deleteTargetId){deleteTargetId=null;return}
+  if(typeof deleteTargetId==='string'&&deleteTargetId.startsWith('dtype_')){
+    const idx=parseInt(deleteTargetId.replace('dtype_',''));
+    if(idx>=0&&idx<dtypes.length){dtypes.splice(idx,1);saveDtypes();renderDtypesList();showToast('Type supprimé 🗑️')}
+  }else if(typeof deleteTargetId==='string'&&deleteTargetId.startsWith('tpl_')){
+    const idx=parseInt(deleteTargetId.replace('tpl_',''));
+    if(idx>=0&&idx<templates.length){templates.splice(idx,1);saveTpl();renderTemplatesList();showToast('Modèle supprimé 🗑️')}
+  }else{
+    data=data.filter(d=>d.id!==deleteTargetId);save();renderTable();showToast('Supprimé 🗑️');
+  }
   deleteTargetId=null;
 }
 
@@ -881,12 +1038,36 @@ function toggleSection(h){h.classList.toggle('open');h.nextElementSibling.classL
 function renderSettings(){renderTemplatesList();renderDtypesList();renderDataStats();updateTileStats();updatePWAStatus();renderSecurityToggles();renderLocationToggles()}
 function renderTemplatesList(){const c=document.getElementById('msg-templates-list');if(!templates.length){c.innerHTML='<p style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Aucun modèle.</p>';return}c.innerHTML=templates.map((t,i)=>`<div class="s-msg-tpl"><div class="tpl-name">${esc(t.name)}<div class="s-actions" style="display:flex;gap:4px"><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="editTemplate(${i})">✏️</button><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="deleteTemplate(${i})">🗑️</button></div></div><div class="tpl-body">${esc(t.body)}</div></div>`).join('')}
 function addTemplate(){const name=document.getElementById('tpl-name').value.trim(),body=document.getElementById('tpl-body').value.trim();if(!name||!body){showToast('Remplir les champs',true);return}templates.push({name,body});saveTpl();renderTemplatesList();document.getElementById('tpl-name').value='';document.getElementById('tpl-body').value='';showToast('Modèle ajouté ✅')}
-function editTemplate(i){const t=templates[i],name=prompt('Nom:',t.name);if(!name)return;const body=prompt('Contenu:',t.body);if(!body)return;templates[i]={name,body};saveTpl();renderTemplatesList()}
-function deleteTemplate(i){if(confirm(`Supprimer "${templates[i].name}" ?`)){templates.splice(i,1);saveTpl();renderTemplatesList()}}
+function editTemplate(i){
+  if(lockEdit&&secPinEnabled&&secPin){pendingAuthAction=()=>doEditTemplate(i);showPinModal('Modifier le modèle');return}
+  doEditTemplate(i);
+}
+function doEditTemplate(i){const t=templates[i],name=prompt('Nom:',t.name);if(!name)return;const body=prompt('Contenu:',t.body);if(!body)return;templates[i]={name,body};saveTpl();renderTemplatesList()}
+function deleteTemplate(i){
+  if(lockDelete&&secPinEnabled&&secPin){pendingAuthAction=()=>doDeleteTemplate(i);showPinModal('Supprimer le modèle');return}
+  doDeleteTemplate(i);
+}
+function doDeleteTemplate(i){
+  deleteTargetId='tpl_'+i;
+  document.getElementById('del-name').textContent=`Modèle: ${templates[i].name}`;
+  document.getElementById('delete-overlay').classList.add('active');
+}
 function renderDtypesList(){const c=document.getElementById('dtypes-list');if(!dtypes.length){c.innerHTML='<p style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Aucun type.</p>';return}c.innerHTML=dtypes.map((d,i)=>{const profit=((d.sellPrice||0)-(d.buyPrice||0));const profitClass=profit>=0?'':'negative';return`<div class="dtype-card"><div class="dtype-header"><span class="dtype-name">${esc(d.name)}</span><div style="display:flex;gap:4px"><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="editDtype(${i})">✏️</button><button style="background:var(--bg3);border:1px solid var(--border);color:var(--danger);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="deleteDtype(${i})">🗑️</button></div></div><div class="dtype-prices"><div class="dtype-price-box sell"><div class="dp-label">Prix vente</div><div class="dp-val">${fmt(d.sellPrice||0)}</div></div><div class="dtype-price-box buy"><div class="dp-label">Prix achat</div><div class="dp-val">${fmt(d.buyPrice||0)}</div></div><div class="dtype-price-box profit ${profitClass}"><div class="dp-label">Bénéfice</div><div class="dp-val">${profit>=0?'+':''}${fmt(profit)}</div></div></div></div>`}).join('')}
 function addDtype(){const v=document.getElementById('dtype-input').value.trim(),sp=parseFloat(document.getElementById('dtype-sell').value)||0,bp=parseFloat(document.getElementById('dtype-buy').value)||0;if(!v){showToast('Nom requis',true);return}if(dtypes.find(d=>d.name===v)){showToast('Existe déjà',true);return}dtypes.push({name:v,sellPrice:sp,buyPrice:bp});saveDtypes();renderDtypesList();document.getElementById('dtype-input').value='';document.getElementById('dtype-sell').value='';document.getElementById('dtype-buy').value='';showToast('Type ajouté ✅')}
-function editDtype(i){const d=dtypes[i];const name=prompt('Nom:',d.name);if(!name)return;const sp=parseFloat(prompt('Prix de vente (€):',d.sellPrice||0));const bp=parseFloat(prompt('Prix d\'achat (€):',d.buyPrice||0));dtypes[i]={name:name.trim(),sellPrice:isNaN(sp)?0:sp,buyPrice:isNaN(bp)?0:bp};saveDtypes();renderDtypesList();showToast('Modifié ✅')}
-function deleteDtype(i){if(confirm(`Supprimer "${dtypes[i].name}" ?`)){dtypes.splice(i,1);saveDtypes();renderDtypesList();showToast('Supprimé')}}
+function editDtype(i){
+  if(lockEdit&&secPinEnabled&&secPin){pendingAuthAction=()=>doEditDtype(i);showPinModal('Modifier le type');return}
+  doEditDtype(i);
+}
+function doEditDtype(i){const d=dtypes[i];const name=prompt('Nom:',d.name);if(!name)return;const sp=parseFloat(prompt('Prix de vente (€):',d.sellPrice||0));const bp=parseFloat(prompt('Prix d\'achat (€):',d.buyPrice||0));dtypes[i]={name:name.trim(),sellPrice:isNaN(sp)?0:sp,buyPrice:isNaN(bp)?0:bp};saveDtypes();renderDtypesList();showToast('Modifié ✅')}
+function deleteDtype(i){
+  if(lockDelete&&secPinEnabled&&secPin){pendingAuthAction=()=>doDeleteDtype(i);showPinModal('Supprimer le type');return}
+  doDeleteDtype(i);
+}
+function doDeleteDtype(i){
+  deleteTargetId='dtype_'+i;
+  document.getElementById('del-name').textContent=`Type: ${dtypes[i].name} — Vente: ${fmt(dtypes[i].sellPrice||0)} / Achat: ${fmt(dtypes[i].buyPrice||0)}`;
+  document.getElementById('delete-overlay').classList.add('active');
+}
 function updateDtypesDatalist(){document.getElementById('dtypes-datalist').innerHTML=dtypes.map(d=>`<option value="${esc(d.name)}">`).join('')}
 function autoFillFromDtype(){const article=document.getElementById('f-article').value;const dt=dtypes.find(d=>d.name===article);if(dt){const qty=parseInt(document.getElementById('f-qty').value)||1;document.getElementById('f-price').value=(dt.sellPrice*qty).toFixed(2);document.getElementById('f-profit').value=((dt.sellPrice-dt.buyPrice)*qty).toFixed(2)}}
 
@@ -897,9 +1078,9 @@ function llToTile(ll,z){const n=Math.pow(2,z);return{x:Math.floor((ll.lng+180)/3
 async function clearTileCache(){if(!confirm('Vider le cache ?'))return;try{await new Promise((ok,no)=>{const r=indexedDB.deleteDatabase(TILEDB);r.onsuccess=ok;r.onerror=no});showToast('Cache vidé ✅');updateTileStats()}catch(e){}}
 
 // Data
-function renderDataStats(){const g=data.filter(d=>d.lat&&d.lng).length;document.getElementById('data-stats-section').innerHTML=`<div class="data-stat"><div class="ds-val">${data.length}</div><div class="ds-label">Livraisons</div></div><div class="data-stat"><div class="ds-val">${g}</div><div class="ds-label">GPS</div></div><div class="data-stat"><div class="ds-val">${templates.length}</div><div class="ds-label">Modèles</div></div><div class="data-stat"><div class="ds-val">${dtypes.length}</div><div class="ds-label">Types</div></div>`}
+function renderDataStats(){const g=data.filter(d=>d.lat&&d.lng).length,dlv=data.filter(d=>d.delivered).length;document.getElementById('data-stats-section').innerHTML=`<div class="data-stat"><div class="ds-val">${data.length}</div><div class="ds-label">Livraisons</div></div><div class="data-stat"><div class="ds-val">${dlv}</div><div class="ds-label">Livrées</div></div><div class="data-stat"><div class="ds-val">${g}</div><div class="ds-label">GPS</div></div><div class="data-stat"><div class="ds-val">${templates.length}</div><div class="ds-label">Modèles</div></div>`}
 function exportJSON(){const all={data,templates,dtypes,version:'LivraPro v5',exportDate:new Date().toISOString()};const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('JSON exporté 📤')}
-function exportCSV(){if(!data.length){showToast('Vide',true);return}const h=['Client','Tél','Article','Qté','Prix','Bénéfice','Statut','Position','Lat','Lng','Date'],rows=data.map(d=>[d.name,d.phone,d.article,d.qty,d.price,d.profit,d.status,d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊')}
+function exportCSV(){if(!data.length){showToast('Vide',true);return}const h=['Client','Tél','Article','Qté','Prix','Bénéfice','Statut','Livré','Date livraison','Position','Lat','Lng','Date'],rows=data.map(d=>[d.name,d.phone,d.article,d.qty,d.price,d.profit,d.status,d.delivered?'Oui':'Non',d.deliveredAt?new Date(d.deliveredAt).toLocaleString('fr-FR'):'',d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊')}
 function importJSON(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader;reader.onload=ev=>{try{const obj=JSON.parse(ev.target.result);if(obj.data&&Array.isArray(obj.data)){if(!confirm(`Importer ${obj.data.length} livraisons ?`))return;const ids=new Set(data.map(d=>d.id));let n=0;obj.data.forEach(d=>{if(!ids.has(d.id)){data.push(d);n++}});if(obj.templates)templates=[...templates,...obj.templates.filter(t=>!templates.find(x=>x.name===t.name))];if(obj.dtypes){const incoming=obj.dtypes.map(d=>typeof d==='string'?{name:d,sellPrice:0,buyPrice:0}:d);dtypes=[...dtypes,...incoming.filter(d=>!dtypes.find(x=>x.name===d.name))]};save();saveTpl();saveDtypes();renderTable();renderSettings();showToast(`${n} importés ✅`)}else showToast('Format invalide',true)}catch(x){showToast('Fichier invalide',true)}};reader.readAsText(file);e.target.value=''}
 function clearAllData(){if(!confirm('⚠️ TOUT SUPPRIMER ?'))return;if(!confirm('Dernière chance !'))return;data=[];templates=[];dtypes=[{name:'Brioche',sellPrice:2,buyPrice:1},{name:'Carte mémoire',sellPrice:15,buyPrice:8},{name:'Ciment',sellPrice:12,buyPrice:7},{name:'Fer',sellPrice:25,buyPrice:15}];save();saveTpl();saveDtypes();renderTable();renderSettings();showToast('Données supprimées')}
 
@@ -913,7 +1094,7 @@ async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();await def
 async function registerSW(){if(!('serviceWorker' in navigator)){document.getElementById('sw-status').textContent='Non supporté';return}try{document.getElementById('sw-status').textContent='Cache IndexedDB actif ✅'}catch(e){document.getElementById('sw-status').textContent='Cache local ✅'}}
 
 function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' error':'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('deliver-overlay').classList.contains('active'))cancelDeliver();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
 
 // Load voices
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
