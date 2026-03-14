@@ -14,19 +14,24 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--bg:#0a0c10;--bg2:#12151c;--bg3:#1a1e28;--bg4:#232836;--border:#2a3040;--border2:#3a4060;--text:#e8ecf4;--text2:#9aa2b8;--text3:#6a7290;--accent:#4ae3b5;--accent2:#2bc49a;--accent-glow:rgba(74,227,181,.15);--danger:#f06272;--danger-glow:rgba(240,98,114,.15);--warn:#f0b24a;--warn-glow:rgba(240,178,74,.15);--blue:#5a8af2;--blue-glow:rgba(90,138,242,.15);--purple:#a07cf2;--orange:#f09052;--radius:12px;--radius-sm:8px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+:root,body.dark{--bg:#0a0c10;--bg2:#12151c;--bg3:#1a1e28;--bg4:#232836;--border:#2a3040;--border2:#3a4060;--text:#e8ecf4;--text2:#9aa2b8;--text3:#6a7290;--accent:#4ae3b5;--accent2:#2bc49a;--accent-glow:rgba(74,227,181,.15);--danger:#f06272;--danger-glow:rgba(240,98,114,.15);--warn:#f0b24a;--warn-glow:rgba(240,178,74,.15);--blue:#5a8af2;--blue-glow:rgba(90,138,242,.15);--purple:#a07cf2;--orange:#f09052;--radius:12px;--radius-sm:8px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+body.light{--bg:#f0f2f5;--bg2:#ffffff;--bg3:#e8ecf0;--bg4:#dce0e6;--border:#d0d5dd;--border2:#bbc2cc;--text:#1a1e28;--text2:#4a5068;--text3:#7a8298;--accent:#0d9b6e;--accent2:#0a7d58;--accent-glow:rgba(13,155,110,.12);--danger:#d94452;--danger-glow:rgba(217,68,82,.1);--warn:#c8930a;--warn-glow:rgba(200,147,10,.1);--blue:#3a6fd8;--blue-glow:rgba(58,111,216,.1);--purple:#7c5cc8;--orange:#d07030;--shadow:0 4px 20px rgba(0,0,0,.08)}
+body.light .leaflet-control-zoom a{background:#fff!important;color:#333!important;border-color:#ccc!important}
+body.light .leaflet-popup-content-wrapper{background:#fff!important;color:#1a1e28!important}
+body.light .leaflet-popup-tip{background:#fff!important}
+body.light .lp-marker-pin{border-color:#1a1e28}
+.theme-toggle{width:40px;height:22px;border-radius:11px;border:2px solid var(--border);background:var(--bg3);position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
+.theme-toggle .knob{width:16px;height:16px;border-radius:50%;background:var(--accent);position:absolute;top:1px;left:1px;transition:transform .3s}
+body.light .theme-toggle .knob{transform:translateX(18px);background:var(--warn)}
+.theme-toggle-wrap{display:flex;align-items:center;gap:6px;font-size:14px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-
-/* HEADER */
 .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
 .logo{display:flex;align-items:center;gap:10px}
 .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 0 20px var(--accent-glow)}
 .logo h1{font-family:'Space Mono',monospace;font-size:17px;font-weight:700}
 .logo h1 span{color:var(--accent)}
 .header-actions{display:flex;gap:6px}
-
-/* BUTTONS */
 .btn{font-family:'DM Sans',sans-serif;border:none;border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0c10;box-shadow:0 0 16px var(--accent-glow)}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 28px var(--accent-glow)}
@@ -34,47 +39,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
 .btn-secondary:hover{background:var(--bg4);border-color:var(--border2)}
 .btn-danger{background:var(--danger);color:#fff}
-.btn-danger:hover{opacity:.9}
 .btn-route{background:linear-gradient(135deg,var(--blue),#4a6fd8);color:#fff;box-shadow:0 0 16px var(--blue-glow)}
-.btn-route:hover{transform:translateY(-1px)}
 .btn-warn{background:var(--warn);color:#0a0c10}
 .btn-purple{background:var(--purple);color:#fff}
-
-/* TABS */
 .tab-bar{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 12px;gap:2px;overflow-x:auto}
 .tab-btn{background:none;border:none;padding:11px 14px;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .tab-btn:hover{color:var(--text2)}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab-content{display:none}
-.tab-content.active{display:block}
-
-/* STATS */
+.tab-content{display:none}.tab-content.active{display:block}
 .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;padding:14px 16px}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
 .stat-card .label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
 .stat-card .value{font-family:'Space Mono',monospace;font-size:20px;font-weight:700}
-.stat-card.green .value{color:var(--accent)}
-.stat-card.yellow .value{color:var(--warn)}
-.stat-card.blue .value{color:var(--blue)}
-
-/* SEARCH */
+.stat-card.green .value{color:var(--accent)}.stat-card.yellow .value{color:var(--warn)}.stat-card.blue .value{color:var(--blue)}
 .toolbar{padding:0 16px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .search-box{flex:1;min-width:160px;position:relative}
-.search-box input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px 9px 36px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.search-box input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px 9px 36px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
 .search-box input:focus{border-color:var(--accent)}
 .search-box input::placeholder{color:var(--text3)}
 .search-box .ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
 select.fsel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer}
-select.fsel:focus{border-color:var(--accent)}
-
-/* TABLE */
 .table-wrap{padding:0 16px 16px;overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:920px}
+table{width:100%;border-collapse:collapse;min-width:950px}
 thead th{background:var(--bg3);padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:700;border-bottom:2px solid var(--border);white-space:nowrap}
 thead th:first-child{border-radius:var(--radius-sm) 0 0 0}
 thead th:last-child{border-radius:0 var(--radius-sm) 0 0}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s;animation:fadeUp .25s ease both}
 tbody tr:hover{background:rgba(74,227,181,.03)}
+tbody tr.selected{background:rgba(90,138,242,.08)!important}
 tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:middle}
 .client-name{color:var(--text);font-weight:600}
 .phone-link{color:var(--blue);text-decoration:none;font-family:'Space Mono',monospace;font-size:11px}
@@ -86,32 +78,38 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .money.pos{color:var(--accent)}.money.neg{color:var(--danger)}
 .qty-badge{display:inline-flex;align-items:center;justify-content:center;background:rgba(160,124,242,.12);border:1px solid rgba(160,124,242,.3);color:var(--purple);font-family:'Space Mono',monospace;font-weight:700;font-size:11px;padding:2px 9px;border-radius:20px}
 .pos-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;background:var(--blue-glow);border:1px solid rgba(90,138,242,.3);border-radius:20px;color:var(--blue);font-size:10px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
-.pos-badge:hover{background:rgba(90,138,242,.25)}
 .actions-cell{display:flex;gap:3px}
 .actions-cell button{background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s}
-.actions-cell button:hover{color:var(--text);border-color:var(--border2);background:var(--bg4)}
-.actions-cell button.del:hover{color:var(--danger);border-color:var(--danger);background:var(--danger-glow)}
-.actions-cell button.loc:hover{color:var(--blue);border-color:var(--blue);background:var(--blue-glow)}
+.actions-cell button:hover{color:var(--text);background:var(--bg4)}
+.actions-cell button.del:hover{color:var(--danger);background:var(--danger-glow)}
 .empty-state{text-align:center;padding:40px 16px;color:var(--text3)}
 .empty-state .eico{font-size:40px;margin-bottom:12px}
 .empty-state h3{font-size:15px;color:var(--text2);margin-bottom:4px}
 .payment-toggle{cursor:pointer;transition:transform .15s}
 .payment-toggle:hover{transform:scale(1.08)}
 
+/* CHECKBOX */
+.cb{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+
+/* FLOATING ACTION BAR */
+.fab{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--bg2);border:1px solid var(--accent);border-radius:16px;padding:10px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 30px var(--accent-glow);z-index:200;transition:transform .35s cubic-bezier(.4,0,.2,1);white-space:nowrap}
+.fab.show{transform:translateX(-50%) translateY(0)}
+.fab .fab-count{font-family:'Space Mono',monospace;font-weight:700;color:var(--accent);font-size:14px}
+.fab .fab-sep{width:1px;height:24px;background:var(--border)}
+
 /* MAPS */
 #map-container,#route-container{position:relative;height:calc(100vh - 130px);min-height:460px}
 #main-map,#route-map{width:100%;height:100%;z-index:1;background:var(--bg2)}
-.map-sidebar{position:absolute;top:10px;left:10px;z-index:1000;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);width:330px;max-height:calc(100% - 20px);overflow-y:auto;box-shadow:var(--shadow)}
+.map-sidebar{position:absolute;top:10px;left:10px;z-index:1000;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);width:330px;max-height:calc(100% - 20px);overflow-y:auto;box-shadow:var(--shadow);transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .3s}
+.map-sidebar.hidden{transform:translateX(-110%);opacity:0;pointer-events:none}
 .map-sidebar-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:2;border-radius:var(--radius) var(--radius) 0 0}
 .map-sidebar-header h3{font-size:13px;font-weight:700}
 .route-controls{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px}
 .route-controls label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
 .route-controls input,.route-controls select{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;width:100%}
-.route-controls input:focus,.route-controls select:focus{border-color:var(--accent)}
 .transport-modes{display:flex;gap:3px}
 .transport-mode{flex:1;padding:7px 4px;border-radius:7px;border:2px solid var(--border);background:var(--bg);color:var(--text3);text-align:center;cursor:pointer;transition:all .2s;font-size:10px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px}
 .transport-mode .tm-icon{font-size:18px}
-.transport-mode:hover{border-color:var(--border2);color:var(--text2)}
 .transport-mode.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
 .transport-mode.active[data-mode="bike"]{border-color:var(--blue);color:var(--blue);background:var(--blue-glow)}
 .transport-mode.active[data-mode="scooter"]{border-color:var(--orange);color:var(--orange);background:rgba(240,144,82,.15)}
@@ -120,9 +118,32 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .rs-item{display:flex;flex-direction:column;gap:1px}
 .rs-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
 .rs-value{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent)}
-.route-item{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;transition:background .15s;cursor:pointer}
+.route-item{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:background .15s}
 .route-item:hover{background:var(--bg3)}
+.route-item.active-stop{background:rgba(74,227,181,.08);border-left:3px solid var(--accent)}
 .route-number{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;font-family:'Space Mono',monospace;color:#0a0c10}
+
+/* NAV HUD */
+.nav-hud{position:absolute;bottom:0;left:0;right:0;z-index:1001;background:linear-gradient(to top,var(--bg2) 85%,transparent);padding:16px;display:none;flex-direction:column;gap:10px}
+.nav-hud.show{display:flex}
+.nav-hud-top{position:absolute;top:10px;right:10px;z-index:1002;display:none;gap:6px}
+.nav-hud-top.show{display:flex}
+.nav-next{background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 0 24px var(--accent-glow)}
+.nav-next .nav-arrow{font-size:32px;flex-shrink:0}
+.nav-next .nav-info{flex:1}
+.nav-next .nav-dest{font-weight:700;font-size:15px;color:var(--text)}
+.nav-next .nav-dist{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);margin-top:2px}
+.nav-next .nav-addr{font-size:11px;color:var(--text3);margin-top:1px}
+.nav-bar{display:flex;gap:8px;align-items:center}
+.nav-bar .nav-progress{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.nav-bar .nav-progress .fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s}
+.nav-bar .nav-eta{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);white-space:nowrap}
+.nav-controls{display:flex;gap:6px}
+.nav-btn{flex:1;padding:10px;border-radius:var(--radius-sm);border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+.nav-btn-voice{background:var(--blue);color:#fff}
+.nav-btn-voice.muted{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+.nav-btn-stop{background:var(--danger);color:#fff}
+.nav-btn-recenter{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:14px;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -131,38 +152,37 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .modal-overlay.active .modal{transform:translateY(0)}
 .modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .modal-header h2{font-size:16px;font-weight:700}
-.modal-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:all .2s}
+.modal-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px}
 .modal-close:hover{background:var(--bg3);color:var(--text)}
 .modal-body{padding:18px 20px;display:flex;flex-direction:column;gap:12px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-group{display:flex;flex-direction:column;gap:4px}
 .form-group.full{grid-column:1/-1}
 .form-group label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-.form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.form-group input,.form-group select,.form-group textarea{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
 .form-group input::placeholder,.form-group textarea::placeholder{color:var(--text3)}
 .form-group textarea{resize:vertical;min-height:60px}
 .modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
-
-/* MAP PICKER */
 .map-picker-section{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
 .map-picker-header{background:var(--bg3);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600}
 .map-picker-header .coords{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent)}
 #modal-map{width:100%;height:220px;background:var(--bg3)}
 .map-picker-actions{padding:8px 12px;background:var(--bg3);display:flex;gap:6px;align-items:center;border-top:1px solid var(--border)}
-.map-picker-actions input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none}
+.map-picker-actions input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;outline:none}
 .geo-hint{font-size:11px;color:var(--accent);text-align:center;padding:4px;background:var(--accent-glow);border-radius:6px;display:none}
-
-/* CONFIRM */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
 .confirm-overlay.active{opacity:1;pointer-events:all}
 .confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:400px;width:100%;text-align:center;box-shadow:var(--shadow);transform:scale(.95);transition:transform .2s}
 .confirm-overlay.active .confirm-box{transform:scale(1)}
-.confirm-box .cico{font-size:36px;margin-bottom:10px}
-.confirm-box h3{font-size:16px;margin-bottom:6px}
-.confirm-box p{font-size:12px;color:var(--text2);margin-bottom:4px}
 .addr-preview{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);background:var(--bg);padding:8px 12px;border-radius:8px;margin:8px 0 14px;border:1px solid var(--border);word-break:break-all}
 .confirm-buttons{display:flex;gap:8px;justify-content:center}
+
+/* BULK MSG */
+.bulk-recipient{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;font-size:12px}
+.bulk-recipient .br-name{font-weight:600;color:var(--text);flex:1}
+.bulk-recipient .br-phone{font-family:'Space Mono',monospace;font-size:10px;color:var(--blue)}
+.bulk-send-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
 
 /* SETTINGS */
 .settings-wrap{padding:16px;max-width:800px;margin:0 auto}
@@ -174,42 +194,29 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .settings-section-header.open .arrow{transform:rotate(90deg)}
 .settings-section-body{padding:14px 16px;border-top:1px solid var(--border);display:none}
 .settings-section-body.open{display:block}
-
 .s-list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;gap:10px}
-.s-list-item .s-label{flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.s-list-item .s-actions{display:flex;gap:4px;flex-shrink:0}
-.s-list-item .s-actions button{background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s}
-.s-list-item .s-actions button:hover{color:var(--text);background:var(--bg4)}
-.s-list-item .s-actions button.del:hover{color:var(--danger);background:var(--danger-glow)}
-
+.s-list-item .s-label{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s-list-item .s-actions{display:flex;gap:4px}
+.s-list-item .s-actions button{background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px}
 .s-add-row{display:flex;gap:6px;margin-top:8px}
-.s-add-row input,.s-add-row textarea{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none}
-.s-add-row input:focus,.s-add-row textarea:focus{border-color:var(--accent)}
-
+.s-add-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:12px;outline:none}
 .s-msg-tpl{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px}
 .s-msg-tpl .tpl-name{font-weight:700;font-size:13px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
-.s-msg-tpl .tpl-body{font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.5;background:var(--bg2);padding:8px 10px;border-radius:6px;margin-top:6px;font-family:'Space Mono',monospace;font-size:11px}
-.s-msg-tpl .tpl-actions{display:flex;gap:4px;margin-top:8px}
-
+.s-msg-tpl .tpl-body{font-size:11px;color:var(--text2);white-space:pre-wrap;background:var(--bg2);padding:8px 10px;border-radius:6px;margin-top:6px;font-family:'Space Mono',monospace}
 .pwa-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
 .pwa-card .pwa-icon{font-size:48px;margin-bottom:8px}
-.pwa-card h4{font-size:14px;margin-bottom:6px}
-.pwa-card p{font-size:12px;color:var(--text2);margin-bottom:12px}
-
 .offline-info{display:flex;gap:12px;align-items:center;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px}
 .offline-info .oi-icon{font-size:28px;flex-shrink:0}
 .offline-info .oi-text{font-size:12px;color:var(--text2)}
 .offline-info .oi-text strong{color:var(--text);display:block;margin-bottom:2px}
-
 .progress-bar{width:100%;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:8px}
-.progress-bar .fill{height:100%;background:var(--accent);border-radius:4px;transition:width .3s;width:0%}
-
+.progress-bar .fill{height:100%;background:var(--accent);border-radius:4px;transition:width .3s}
 .data-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .data-stat{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center}
 .data-stat .ds-val{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--accent)}
 .data-stat .ds-label{font-size:10px;color:var(--text3);text-transform:uppercase;margin-top:2px}
 
-/* LEAFLET MARKERS */
+/* LEAFLET */
 .lp-marker{width:34px;height:34px}
 .lp-marker-pin{width:34px;height:34px;border-radius:50% 50% 50% 4px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;font-family:'Space Mono',monospace;box-shadow:0 3px 12px rgba(0,0,0,.5);border:2.5px solid #fff;transform:rotate(-45deg);color:#0a0c10}
 .lp-marker-pin span{transform:rotate(45deg);display:block;line-height:1}
@@ -218,59 +225,114 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .lp-marker-red .lp-marker-pin{background:#f06272}
 .lp-marker-blue .lp-marker-pin{background:#5a8af2}
 .lp-marker-pick .lp-marker-pin{background:#a07cf2}
+/* GPS user marker */
+.gps-dot{width:20px;height:20px;background:var(--blue);border:3px solid #fff;border-radius:50%;box-shadow:0 0 16px rgba(90,138,242,.6),0 0 40px rgba(90,138,242,.3);animation:gpsPulse 2s infinite}
+@keyframes gpsPulse{0%,100%{box-shadow:0 0 16px rgba(90,138,242,.6)}50%{box-shadow:0 0 28px rgba(90,138,242,.8),0 0 60px rgba(90,138,242,.3)}}
 .leaflet-control-zoom a{background:var(--bg2)!important;color:var(--text)!important;border-color:var(--border)!important}
 .leaflet-popup-content-wrapper{background:var(--bg2)!important;color:var(--text)!important;border-radius:var(--radius-sm)!important;box-shadow:var(--shadow)!important}
 .leaflet-popup-tip{background:var(--bg2)!important}
 .leaflet-popup-content{font-family:'DM Sans',sans-serif!important;font-size:12px!important;margin:8px 12px!important}
 .popup-name{font-weight:700;font-size:13px;margin-bottom:3px}
 .popup-detail{color:var(--text2);font-size:11px}
-
-/* TOAST */
-.toast{position:fixed;bottom:16px;right:16px;background:var(--bg3);border:1px solid var(--accent);border-radius:var(--radius);padding:10px 16px;color:var(--accent);font-size:12px;font-weight:600;box-shadow:0 0 30px var(--accent-glow);z-index:5000;transform:translateY(100px);opacity:0;transition:all .3s;max-width:88vw}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.error{border-color:var(--danger);color:var(--danger);box-shadow:0 0 30px var(--danger-glow)}
-
-/* RESPONSIVE */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--accent);border-radius:var(--radius);padding:10px 16px;color:var(--accent);font-size:12px;font-weight:600;box-shadow:0 0 30px var(--accent-glow);z-index:5000;transform:translateY(100px);opacity:0;transition:all .3s;max-width:88vw}
+.toast.show{transform:translateY(0);opacity:1}.toast.error{border-color:var(--danger);color:var(--danger);box-shadow:0 0 30px var(--danger-glow)}
 @media(max-width:768px){.header{padding:10px 12px}.logo h1{font-size:14px}.stats-bar{padding:8px 12px;grid-template-columns:repeat(2,1fr)}.stat-card .value{font-size:16px}.toolbar{padding:0 12px 8px}.table-wrap{padding:0 12px 12px}.form-row{grid-template-columns:1fr}.hide-mobile{display:none!important}.map-sidebar{width:290px}.tab-btn{padding:9px 10px;font-size:11px}}
 @media(max-width:480px){.stats-bar{grid-template-columns:1fr 1fr;gap:6px}.map-sidebar{width:calc(100% - 20px);max-height:50%;bottom:10px;top:auto}}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.col-money{transition:opacity .3s}
+body.hide-prices .col-money{opacity:0!important;user-select:none;pointer-events:none}
+body.hide-prices .col-money *{color:transparent!important}
+
+/* DELETE CONFIRM MODAL */
+.delete-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:3500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.delete-overlay.active{opacity:1;pointer-events:all}
+.delete-box{background:var(--bg2);border:1px solid var(--danger);border-radius:16px;padding:28px;max-width:380px;width:100%;text-align:center;box-shadow:0 0 40px var(--danger-glow);transform:scale(.9);transition:transform .2s}
+.delete-overlay.active .delete-box{transform:scale(1)}
+.delete-box .del-icon{font-size:44px;margin-bottom:10px}
+.delete-box h3{font-size:16px;margin-bottom:6px;color:var(--danger)}
+.delete-box .del-name{font-weight:700;color:var(--text);font-size:15px;margin:8px 0 14px;padding:8px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px}
+.delete-box .del-btns{display:flex;gap:8px;justify-content:center}
+
+/* AUTH PIN MODAL */
+.pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:4000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.pin-overlay.active{opacity:1;pointer-events:all}
+.pin-box{background:var(--bg2);border:1px solid var(--accent);border-radius:16px;padding:28px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 30px var(--accent-glow);transform:scale(.9);transition:transform .2s}
+.pin-overlay.active .pin-box{transform:scale(1)}
+.pin-box h3{font-size:16px;margin-bottom:14px}
+.pin-input{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.pin-input input{width:44px;height:52px;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--accent);font-family:'Space Mono',monospace;font-size:22px;font-weight:700;text-align:center;outline:none;-webkit-text-security:disc}
+.pin-input input:focus{border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
+.pin-error{color:var(--danger);font-size:12px;margin-bottom:10px;min-height:18px}
+
+/* SETTINGS TOGGLES */
+.setting-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px}
+.setting-toggle .st-info{flex:1}
+.setting-toggle .st-title{font-size:13px;font-weight:600;color:var(--text)}
+.setting-toggle .st-desc{font-size:10px;color:var(--text3);margin-top:2px}
+.toggle-switch{width:44px;height:24px;border-radius:12px;border:2px solid var(--border);background:var(--bg3);position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
+.toggle-switch .tknob{width:18px;height:18px;border-radius:50%;background:var(--text3);position:absolute;top:1px;left:1px;transition:all .3s}
+.toggle-switch.on{border-color:var(--accent);background:var(--accent-glow)}
+.toggle-switch.on .tknob{transform:translateX(20px);background:var(--accent)}
+.toggle-switch.danger.on{border-color:var(--danger);background:var(--danger-glow)}
+.toggle-switch.danger.on .tknob{background:var(--danger)}
+
+/* LOCATION SETTINGS */
+.loc-current{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.loc-current .loc-icon{font-size:32px;flex-shrink:0}
+.loc-current .loc-info{flex:1}
+.loc-current .loc-coords{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);margin-top:4px}
+.dtype-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px}
+.dtype-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dtype-name{font-weight:700;font-size:14px;color:var(--text)}
+.dtype-prices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dtype-price-box{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center}
+.dtype-price-box .dp-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.dtype-price-box .dp-val{font-family:'Space Mono',monospace;font-size:14px;font-weight:700}
+.dtype-price-box.sell .dp-val{color:var(--blue)}
+.dtype-price-box.buy .dp-val{color:var(--warn)}
+.dtype-price-box.profit .dp-val{color:var(--accent)}
+.dtype-price-box.profit.negative .dp-val{color:var(--danger)}
+.dtype-add-form{display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px;margin-top:10px;align-items:end}
+.dtype-add-form .form-group{margin:0}
+.dtype-add-form input{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;width:100%}
+.dtype-add-form input:focus{border-color:var(--accent)}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="logo"><div class="logo-icon">🚚</div><h1>Livra<span>Pro</span></h1></div>
-  <div class="header-actions">
-    <button class="btn btn-secondary" onclick="openModal()">＋ <span class="hide-mobile">Nouveau</span></button>
-  </div>
-</div>
-
+<div class="header"><div class="logo"><div class="logo-icon">🚚</div><h1>Livra<span>Pro</span></h1></div><div class="header-actions"><div class="theme-toggle-wrap"><span id="theme-icon">🌙</span><div class="theme-toggle" onclick="toggleTheme()"><div class="knob"></div></div></div><button class="btn btn-secondary" onclick="openModal()">＋ <span class="hide-mobile">Nouveau</span></button></div></div>
 <div class="tab-bar">
   <button class="tab-btn active" data-tab="list" onclick="switchTab('list')">📋 Liste</button>
   <button class="tab-btn" data-tab="map" onclick="switchTab('map')">🗺️ Carte</button>
   <button class="tab-btn" data-tab="route" onclick="switchTab('route')">🧭 Route</button>
-  <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">⚙️ Paramètres</button>
+  <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">⚙️ Réglages</button>
 </div>
 
-<!-- ══════ TAB LIST ══════ -->
+<!-- TAB LIST -->
 <div class="tab-content active" id="tab-list">
   <div class="stats-bar" id="stats-bar"></div>
   <div class="toolbar">
     <div class="search-box"><span class="ico">🔍</span><input type="text" id="search" placeholder="Rechercher..." oninput="renderTable()"></div>
     <select class="fsel" id="filterStatus" onchange="renderTable()"><option value="all">Tous</option><option value="payé">✅ Payé</option><option value="en attente">⏳ Attente</option><option value="impayé">❌ Impayé</option></select>
-    <select class="fsel" id="sortBy" onchange="renderTable()"><option value="date-desc">Récent</option><option value="date-asc">Ancien</option><option value="name-asc">Nom A→Z</option><option value="price-desc">Prix ↓</option></select>
+    <select class="fsel" id="sortBy" onchange="renderTable()"><option value="date-desc">Récent</option><option value="date-asc">Ancien</option><option value="name-asc">A→Z</option><option value="price-desc">Prix ↓</option></select>
   </div>
   <div class="table-wrap">
-    <table><thead><tr><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th>Prix</th><th>Bénéf.</th><th>Statut</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body"></tbody></table>
-    <div class="empty-state" id="empty-state" style="display:none"><div class="eico">📦</div><h3>Aucune livraison</h3><p>Cliquez « Nouveau » pour commencer</p></div>
+    <table><thead><tr><th><input type="checkbox" class="cb" id="selectAll" onchange="toggleSelectAll()"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body"></tbody></table>
+    <div class="empty-state" id="empty-state" style="display:none"><div class="eico">📦</div><h3>Aucune livraison</h3></div>
   </div>
 </div>
+<!-- FLOATING ACTION BAR -->
+<div class="fab" id="fab">
+  <span class="fab-count" id="fab-count">0 sélectionnés</span>
+  <div class="fab-sep"></div>
+  <button class="btn btn-primary" onclick="openBulkMsg()">💬 Message groupé</button>
+  <button class="btn btn-secondary" onclick="clearSelection()">✕</button>
+</div>
 
-<!-- ══════ TAB MAP ══════ -->
+<!-- TAB MAP -->
 <div class="tab-content" id="tab-map"><div id="map-container"><div id="main-map"></div></div></div>
 
-<!-- ══════ TAB ROUTE ══════ -->
+<!-- TAB ROUTE -->
 <div class="tab-content" id="tab-route">
   <div id="route-container">
     <div id="route-map"></div>
@@ -291,242 +353,212 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
       <div class="route-summary" id="route-summary" style="display:none"><div class="rs-item"><span class="rs-label">Arrêts</span><span class="rs-value" id="rs-stops">0</span></div><div class="rs-item"><span class="rs-label">Distance</span><span class="rs-value" id="rs-dist">—</span></div><div class="rs-item"><span class="rs-label">Durée</span><span class="rs-value" id="rs-time">—</span></div><div class="rs-item"><span class="rs-label">Mode</span><span class="rs-value" id="rs-mode">🚗</span></div></div>
       <div id="route-list"></div>
       <div id="route-empty" class="empty-state" style="padding:20px"><div class="eico">📍</div><p>Aucun client géolocalisé</p></div>
+      <!-- NAV START BUTTON -->
+      <div id="nav-start-wrap" style="padding:10px 14px;display:none"><button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px" onclick="startNavigation()">▶️ Démarrer la navigation</button></div>
+    </div>
+    <!-- NAV HUD -->
+    <div class="nav-hud-top" id="nav-hud-top">
+      <button class="btn btn-secondary" style="padding:6px 10px" onclick="toggleSidebar()">📋</button>
+    </div>
+    <div class="nav-hud" id="nav-hud">
+      <div class="nav-next" id="nav-next-card">
+        <div class="nav-arrow" id="nav-arrow">➡️</div>
+        <div class="nav-info"><div class="nav-dest" id="nav-dest">—</div><div class="nav-dist" id="nav-dist">—</div><div class="nav-addr" id="nav-addr">—</div></div>
+      </div>
+      <div class="nav-bar"><div class="nav-progress"><div class="fill" id="nav-progress-fill"></div></div><div class="nav-eta" id="nav-eta">—</div></div>
+      <div class="nav-controls">
+        <button class="nav-btn nav-btn-voice" id="nav-voice-btn" onclick="toggleVoice()">🔊 Voix ON</button>
+        <button class="nav-btn nav-btn-recenter" onclick="recenterNav()">🎯 Recentrer</button>
+        <button class="nav-btn nav-btn-stop" onclick="stopNavigation()">⏹ Arrêter</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ══════ TAB SETTINGS ══════ -->
+<!-- TAB SETTINGS -->
 <div class="tab-content" id="tab-settings">
   <div class="settings-wrap">
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>💬 Modèles de messages</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-messages"><p style="font-size:11px;color:var(--text3);margin-bottom:10px">Variables: <code style="color:var(--accent)">{client} {article} {qty} {prix} {phone} {position}</code></p><div id="msg-templates-list"></div><div style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><div class="form-group"><label>Nom</label><input type="text" id="tpl-name" placeholder="Confirmation livraison"></div><div class="form-group" style="margin-top:6px"><label>Contenu</label><textarea id="tpl-body" placeholder="Bonjour {client}, votre commande de {qty}x {article} ({prix}) est en route !" rows="3"></textarea></div><button class="btn btn-primary" style="margin-top:8px;width:100%" onclick="addTemplate()">＋ Ajouter</button></div></div></div>
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>📦 Types de livraison & Prix</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-dtypes"><p style="font-size:11px;color:var(--text3);margin-bottom:10px">Définissez les articles avec prix de vente et d'achat. Le bénéfice est calculé automatiquement.</p><div id="dtypes-list"></div><div class="dtype-add-form"><div class="form-group"><label style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:600">Nom article</label><input type="text" id="dtype-input" placeholder="Brioche..." onkeydown="if(event.key==='Enter')addDtype()"></div><div class="form-group"><label style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:600">Prix vente €</label><input type="number" id="dtype-sell" placeholder="0" step="0.01" min="0"></div><div class="form-group"><label style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:600">Prix achat €</label><input type="number" id="dtype-buy" placeholder="0" step="0.01" min="0"></div></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addDtype()">＋ Ajouter le type</button></div></div>
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>🗺️ Carte hors ligne</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-offline"><div class="offline-info"><span class="oi-icon">📡</span><div class="oi-text"><strong>Cache tuiles</strong>Les tuiles sont mises en cache automatiquement.</div></div><div class="data-stats"><div class="data-stat"><div class="ds-val" id="tile-count">0</div><div class="ds-label">Tuiles</div></div><div class="data-stat"><div class="ds-val" id="tile-size">0</div><div class="ds-label">Taille</div></div></div><button class="btn btn-route" style="width:100%;margin-bottom:6px" onclick="downloadAreaTiles()">📥 Télécharger zone visible</button><div class="progress-bar" id="tile-progress" style="display:none"><div class="fill" id="tile-progress-fill"></div></div><p id="tile-progress-text" style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px;display:none"></p><button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="clearTileCache()">🗑️ Vider le cache</button></div></div>
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>💾 Données</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-data"><div class="data-stats" id="data-stats-section"></div><button class="btn btn-primary" style="width:100%;margin-bottom:6px" onclick="exportJSON()">📤 Export JSON</button><button class="btn btn-secondary" style="width:100%;margin-bottom:6px" onclick="exportCSV()">📊 Export CSV</button><label class="btn btn-purple" style="width:100%;margin-bottom:6px;justify-content:center;cursor:pointer">📥 Importer JSON<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label><div style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><button class="btn btn-danger" style="width:100%" onclick="clearAllData()">⚠️ Tout vider</button></div></div></div>
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>🔒 Sécurité & Confidentialité</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-security">
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">🔐 PIN de sécurité</div><div class="st-desc">Protéger la modification et suppression par un code PIN</div></div><div class="toggle-switch" id="tog-pin" onclick="togglePinEnabled()"><div class="tknob"></div></div></div>
+      <div id="pin-config" style="display:none;margin-bottom:12px"><div style="display:flex;gap:6px"><input type="password" id="pin-set-input" placeholder="Définir le PIN (4 chiffres)" maxlength="4" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:14px;text-align:center;outline:none;letter-spacing:8px"><button class="btn btn-primary" onclick="savePin()">💾</button></div></div>
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">✏️ Verrouiller la modification</div><div class="st-desc">Demander le PIN avant de modifier une livraison</div></div><div class="toggle-switch" id="tog-lock-edit" onclick="toggleLock('edit')"><div class="tknob"></div></div></div>
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">🗑️ Verrouiller la suppression</div><div class="st-desc">Demander le PIN avant de supprimer une livraison</div></div><div class="toggle-switch danger" id="tog-lock-delete" onclick="toggleLock('delete')"><div class="tknob"></div></div></div>
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">👁️ Masquer les prix</div><div class="st-desc">Cacher les colonnes Prix et Bénéfice dans le tableau</div></div><div class="toggle-switch" id="tog-hide-prices" onclick="toggleHidePrices()"><div class="tknob"></div></div></div>
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">🔒 Verrouiller l'affichage des prix</div><div class="st-desc">Demander le PIN pour réafficher les prix</div></div><div class="toggle-switch" id="tog-lock-prices" onclick="toggleLock('prices')"><div class="tknob"></div></div></div>
+    </div></div>
 
-    <!-- MESSAGES -->
-    <div class="settings-section">
-      <div class="settings-section-header" onclick="toggleSection(this)"><h3>💬 Modèles de messages</h3><span class="arrow">▶</span></div>
-      <div class="settings-section-body" id="sec-messages">
-        <p style="font-size:11px;color:var(--text3);margin-bottom:10px">Variables disponibles: <code style="color:var(--accent)">{client}</code> <code style="color:var(--accent)">{article}</code> <code style="color:var(--accent)">{qty}</code> <code style="color:var(--accent)">{prix}</code> <code style="color:var(--accent)">{phone}</code> <code style="color:var(--accent)">{position}</code></p>
-        <div id="msg-templates-list"></div>
-        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px">
-          <div class="form-group"><label>Nom du modèle</label><input type="text" id="tpl-name" placeholder="Ex: Confirmation livraison"></div>
-          <div class="form-group" style="margin-top:6px"><label>Contenu du message</label><textarea id="tpl-body" placeholder="Bonjour {client}, votre commande de {qty}x {article} ({prix}) est en route ! 📦" rows="3"></textarea></div>
-          <button class="btn btn-primary" style="margin-top:8px;width:100%" onclick="addTemplate()">＋ Ajouter le modèle</button>
-        </div>
-      </div>
-    </div>
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>📍 Localisation</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-location">
+      <div class="loc-current" id="loc-current"><span class="loc-icon">📍</span><div class="loc-info"><strong style="font-size:13px;color:var(--text)">Position actuelle</strong><div class="loc-coords" id="loc-coords">Non détectée</div></div><button class="btn btn-secondary" style="flex-shrink:0" onclick="detectMyLocation()">🔄 Détecter</button></div>
+      <div class="form-group" style="margin-bottom:10px"><label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase">Adresse par défaut (point de départ)</label><input type="text" id="default-start-addr" placeholder="Votre adresse ou magasin..." style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;width:100%" onchange="saveDefaultStart()"></div>
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">🎯 Haute précision GPS</div><div class="st-desc">Utiliser le GPS haute précision (consomme plus de batterie)</div></div><div class="toggle-switch" id="tog-highgps" onclick="toggleHighGPS()"><div class="tknob"></div></div></div>
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">📍 Auto-géolocalisation</div><div class="st-desc">Détecter ma position automatiquement au démarrage</div></div><div class="toggle-switch" id="tog-autogeo" onclick="toggleAutoGeo()"><div class="tknob"></div></div></div>
+      <div class="setting-toggle"><div class="st-info"><div class="st-title">🗺️ Centrer carte sur moi</div><div class="st-desc">La carte s'ouvre centrée sur votre position</div></div><div class="toggle-switch" id="tog-centerme" onclick="toggleCenterMe()"><div class="tknob"></div></div></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="setAsDefaultStart()">📍 Utiliser ma position comme point de départ</button>
+    </div></div>
 
-    <!-- DELIVERY TYPES -->
-    <div class="settings-section">
-      <div class="settings-section-header" onclick="toggleSection(this)"><h3>📦 Types de livraison</h3><span class="arrow">▶</span></div>
-      <div class="settings-section-body" id="sec-dtypes">
-        <div id="dtypes-list"></div>
-        <div class="s-add-row"><input type="text" id="dtype-input" placeholder="Ex: Brioche, Carte mémoire, Électronique..." onkeydown="if(event.key==='Enter')addDtype()"><button class="btn btn-primary" onclick="addDtype()">＋</button></div>
-      </div>
-    </div>
-
-    <!-- OFFLINE MAP -->
-    <div class="settings-section">
-      <div class="settings-section-header" onclick="toggleSection(this)"><h3>🗺️ Carte hors ligne</h3><span class="arrow">▶</span></div>
-      <div class="settings-section-body" id="sec-offline">
-        <div class="offline-info"><span class="oi-icon">📡</span><div class="oi-text"><strong>Cache de tuiles cartographiques</strong>Les tuiles de carte sont automatiquement mises en cache pour un usage hors ligne quand vous les consultez.</div></div>
-        <div class="data-stats">
-          <div class="data-stat"><div class="ds-val" id="tile-count">0</div><div class="ds-label">Tuiles en cache</div></div>
-          <div class="data-stat"><div class="ds-val" id="tile-size">0 Mo</div><div class="ds-label">Taille du cache</div></div>
-        </div>
-        <button class="btn btn-route" style="width:100%;margin-bottom:6px" onclick="downloadAreaTiles()">📥 Télécharger la zone visible</button>
-        <div class="progress-bar" id="tile-progress" style="display:none"><div class="fill" id="tile-progress-fill"></div></div>
-        <p id="tile-progress-text" style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px;display:none"></p>
-        <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="clearTileCache()">🗑️ Vider le cache de tuiles</button>
-      </div>
-    </div>
-
-    <!-- DATA -->
-    <div class="settings-section">
-      <div class="settings-section-header" onclick="toggleSection(this)"><h3>💾 Données</h3><span class="arrow">▶</span></div>
-      <div class="settings-section-body" id="sec-data">
-        <div class="data-stats" id="data-stats-section"></div>
-        <button class="btn btn-primary" style="width:100%;margin-bottom:6px" onclick="exportJSON()">📤 Exporter les données (JSON)</button>
-        <button class="btn btn-secondary" style="width:100%;margin-bottom:6px" onclick="exportCSV()">📊 Exporter en CSV</button>
-        <label class="btn btn-purple" style="width:100%;margin-bottom:6px;justify-content:center;cursor:pointer">📥 Importer des données (JSON)<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
-        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px">
-          <button class="btn btn-danger" style="width:100%" onclick="clearAllData()">⚠️ Tout vider — Supprimer toutes les données</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PWA -->
-    <div class="settings-section">
-      <div class="settings-section-header" onclick="toggleSection(this)"><h3>📱 Application (PWA)</h3><span class="arrow">▶</span></div>
-      <div class="settings-section-body" id="sec-pwa">
-        <div class="pwa-card">
-          <div class="pwa-icon">🚚</div>
-          <h4>Installer LivraPro</h4>
-          <p>Ajoutez LivraPro à votre écran d'accueil pour y accéder comme une application native, même hors ligne.</p>
-          <button class="btn btn-primary" id="pwa-install-btn" style="width:100%" onclick="installPWA()">📲 Installer sur l'appareil</button>
-          <p style="font-size:10px;color:var(--text3);margin-top:8px" id="pwa-status">Vérification de la disponibilité...</p>
-        </div>
-        <div class="offline-info" style="margin-top:10px"><span class="oi-icon">⚡</span><div class="oi-text"><strong>Service Worker</strong><span id="sw-status">Vérification...</span></div></div>
-      </div>
-    </div>
-
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>📱 PWA</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-pwa"><div class="pwa-card"><div class="pwa-icon">🚚</div><h4>Installer LivraPro</h4><p style="font-size:12px;color:var(--text2);margin-bottom:12px">Ajoutez à l'écran d'accueil pour un accès hors ligne.</p><button class="btn btn-primary" id="pwa-install-btn" style="width:100%" onclick="installPWA()">📲 Installer</button><p style="font-size:10px;color:var(--text3);margin-top:8px" id="pwa-status"></p></div><div class="offline-info" style="margin-top:10px"><span class="oi-icon">⚡</span><div class="oi-text"><strong>Service Worker</strong><span id="sw-status">Vérification...</span></div></div></div></div>
   </div>
 </div>
 
-<!-- ══════ MODAL ADD/EDIT ══════ -->
+<!-- MODAL ADD/EDIT -->
 <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-header"><h2 id="modal-title">Nouvelle Livraison</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
     <div class="modal-body">
       <div class="form-group full"><label>Client</label><input type="text" id="f-name" placeholder="Nom du client"></div>
-      <div class="form-row">
-        <div class="form-group"><label>Téléphone</label><input type="tel" id="f-phone" placeholder="+33 6 12 34 56 78"></div>
-        <div class="form-group"><label>Type d'article</label><input type="text" id="f-article" list="dtypes-datalist" placeholder="Sélectionner ou saisir..."></div>
-        <datalist id="dtypes-datalist"></datalist>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Quantité</label><input type="number" id="f-qty" value="1" min="1"></div>
-        <div class="form-group"><label>Prix total (€)</label><input type="number" id="f-price" placeholder="0.00" step="0.01" min="0"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Bénéfice (€)</label><input type="number" id="f-profit" placeholder="0.00" step="0.01"></div>
-        <div class="form-group"><label>Statut paiement</label><select id="f-status"><option value="en attente">⏳ En attente</option><option value="payé">✅ Payé</option><option value="impayé">❌ Impayé</option></select></div>
-      </div>
-      <div class="form-group full"><label>Adresse / Position</label><input type="text" id="f-position" placeholder="12 rue de la Paix, Lyon"></div>
+      <div class="form-row"><div class="form-group"><label>Téléphone</label><input type="tel" id="f-phone" placeholder="+33 6 12 34 56 78"></div><div class="form-group"><label>Article</label><input type="text" id="f-article" list="dtypes-datalist" placeholder="Sélectionner..." onchange="autoFillFromDtype()" oninput="autoFillFromDtype()"></div><datalist id="dtypes-datalist"></datalist></div>
+      <div class="form-row"><div class="form-group"><label>Quantité</label><input type="number" id="f-qty" value="1" min="1" onchange="autoFillFromDtype()" oninput="autoFillFromDtype()"></div><div class="form-group"><label>Prix (€)</label><input type="number" id="f-price" placeholder="0" step="0.01" min="0"></div></div>
+      <div class="form-row"><div class="form-group"><label>Bénéfice (€)</label><input type="number" id="f-profit" placeholder="0" step="0.01"></div><div class="form-group"><label>Statut</label><select id="f-status"><option value="en attente">⏳ En attente</option><option value="payé">✅ Payé</option><option value="impayé">❌ Impayé</option></select></div></div>
+      <div class="form-group full"><label>Position</label><input type="text" id="f-position" placeholder="12 rue de la Paix, Lyon"></div>
       <div class="form-group full"><button class="btn btn-secondary" style="width:100%" id="btn-toggle-map" onclick="toggleMapPicker()">🗺️ Choisir sur la carte</button></div>
-      <div class="map-picker-section" id="map-picker-section" data-open="false" style="display:none">
-        <div class="map-picker-header"><span>📍 Cliquez pour placer</span><span class="coords" id="picker-coords">—</span></div>
-        <div id="modal-map"></div>
-        <div class="map-picker-actions"><input type="text" id="geocode-input" placeholder="Rechercher adresse..." onkeydown="if(event.key==='Enter'){event.preventDefault();geocodeAddress()}"><button class="btn btn-primary" style="padding:7px 12px;font-size:11px" onclick="geocodeAddress()">🔍</button><button class="btn btn-secondary" style="padding:7px 12px;font-size:11px" onclick="geolocateMe()">📍</button></div>
-      </div>
+      <div class="map-picker-section" id="map-picker-section" data-open="false" style="display:none"><div class="map-picker-header"><span>📍 Cliquez</span><span class="coords" id="picker-coords">—</span></div><div id="modal-map"></div><div class="map-picker-actions"><input type="text" id="geocode-input" placeholder="Rechercher..." onkeydown="if(event.key==='Enter'){event.preventDefault();geocodeAddress()}"><button class="btn btn-primary" style="padding:7px 12px;font-size:11px" onclick="geocodeAddress()">🔍</button><button class="btn btn-secondary" style="padding:7px 12px;font-size:11px" onclick="geolocateMe()">📍</button></div></div>
       <div class="geo-hint" id="geo-hint">✅ Position sélectionnée</div>
-
-      <!-- MESSAGE SENDER -->
-      <div id="msg-sender-section" style="display:none;border-top:1px solid var(--border);padding-top:12px">
-        <label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">📨 Envoyer un message</label>
-        <select class="fsel" id="msg-tpl-select" style="width:100%;margin-top:4px" onchange="previewMessage()"><option value="">— Choisir un modèle —</option></select>
-        <div id="msg-preview" style="display:none;margin-top:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);white-space:pre-wrap;font-family:'Space Mono',monospace;font-size:11px"></div>
-        <div style="display:flex;gap:6px;margin-top:6px" id="msg-actions" style="display:none">
-          <button class="btn btn-secondary" style="flex:1" onclick="copyMessage()">📋 Copier</button>
-          <button class="btn btn-primary" style="flex:1" onclick="sendWhatsApp()">💬 WhatsApp</button>
-          <button class="btn btn-route" style="flex:1" onclick="sendSMS()">📱 SMS</button>
-        </div>
-      </div>
-
+      <div id="msg-sender-section" style="display:none;border-top:1px solid var(--border);padding-top:12px"><label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase">📨 Message</label><select class="fsel" id="msg-tpl-select" style="width:100%;margin-top:4px" onchange="previewMessage()"><option value="">— Modèle —</option></select><div id="msg-preview" style="display:none;margin-top:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:11px;color:var(--text2);white-space:pre-wrap;font-family:'Space Mono',monospace"></div><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-secondary" style="flex:1" onclick="copyMessage()">📋 Copier</button><button class="btn btn-primary" style="flex:1" onclick="sendWhatsApp()">💬 WhatsApp</button><button class="btn btn-route" style="flex:1" onclick="sendSMS()">📱 SMS</button></div></div>
       <input type="hidden" id="f-lat"><input type="hidden" id="f-lng">
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-      <button class="btn btn-primary" onclick="preSave()">💾 Enregistrer</button>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="preSave()">💾 Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- BULK MESSAGE MODAL -->
+<div class="modal-overlay" id="bulk-modal" onclick="if(event.target===this)closeBulkModal()">
+  <div class="modal">
+    <div class="modal-header"><h2>💬 Message groupé</h2><button class="modal-close" onclick="closeBulkModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Destinataires (<span id="bulk-count">0</span>)</label><div id="bulk-recipients" style="max-height:150px;overflow-y:auto"></div></div>
+      <div class="form-group"><label>Modèle de message</label><select class="fsel" id="bulk-tpl-select" style="width:100%" onchange="previewBulkMsg()"><option value="">— Choisir —</option></select></div>
+      <div id="bulk-preview" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:11px;color:var(--text2);white-space:pre-wrap;font-family:'Space Mono',monospace"></div>
+      <p style="font-size:10px;color:var(--text3)">Le message sera personnalisé pour chaque client avec ses infos.</p>
+      <div class="bulk-send-btns">
+        <button class="btn btn-primary" onclick="bulkWhatsApp()">💬 WhatsApp un par un</button>
+        <button class="btn btn-route" onclick="bulkSMS()">📱 SMS un par un</button>
+        <button class="btn btn-secondary" onclick="bulkCopy()" style="grid-column:1/-1">📋 Copier tous les messages</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- CONFIRM -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <div class="cico">📍</div><h3>Confirmer la position ?</h3><p>Enregistrer cette position pour le client ?</p>
-    <div class="addr-preview" id="confirm-addr">—</div>
-    <p style="font-size:10px;color:var(--text3);margin-bottom:12px" id="confirm-coords-text"></p>
-    <div class="confirm-buttons"><button class="btn btn-secondary" onclick="confirmPosition(false)">❌ Sans position</button><button class="btn btn-primary" onclick="confirmPosition(true)">✅ Confirmer</button></div>
+<div class="confirm-overlay" id="confirm-overlay"><div class="confirm-box"><div style="font-size:36px;margin-bottom:10px">📍</div><h3>Confirmer la position ?</h3><p style="font-size:12px;color:var(--text2)">Enregistrer cette position ?</p><div class="addr-preview" id="confirm-addr">—</div><p style="font-size:10px;color:var(--text3);margin-bottom:12px" id="confirm-coords-text"></p><div class="confirm-buttons"><button class="btn btn-secondary" onclick="confirmPosition(false)">❌ Sans</button><button class="btn btn-primary" onclick="confirmPosition(true)">✅ OK</button></div></div></div>
+<!-- DELETE CONFIRM -->
+<div class="delete-overlay" id="delete-overlay">
+  <div class="delete-box">
+    <div class="del-icon">🗑️</div>
+    <h3>Confirmer la suppression</h3>
+    <p style="font-size:12px;color:var(--text2)">Cette action est irréversible</p>
+    <div class="del-name" id="del-name">—</div>
+    <div class="del-btns">
+      <button class="btn btn-secondary" onclick="cancelDelete()">Annuler</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">🗑️ Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIN AUTH -->
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-box">
+    <div style="font-size:36px;margin-bottom:8px">🔐</div>
+    <h3 id="pin-title">Entrez votre PIN</h3>
+    <div class="pin-input">
+      <input type="tel" maxlength="1" class="pin-digit" oninput="pinNext(this,0)" onkeydown="pinBack(event,this,0)">
+      <input type="tel" maxlength="1" class="pin-digit" oninput="pinNext(this,1)" onkeydown="pinBack(event,this,1)">
+      <input type="tel" maxlength="1" class="pin-digit" oninput="pinNext(this,2)" onkeydown="pinBack(event,this,2)">
+      <input type="tel" maxlength="1" class="pin-digit" oninput="pinNext(this,3)" onkeydown="pinBack(event,this,3)">
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <button class="btn btn-secondary" onclick="cancelPin()">Annuler</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════
-// DATA STORES
-// ═══════════════════════════════════
+// ═══════════════ DATA ═══════════════
 const SK='livrapro_data',SK_TPL='livrapro_tpl',SK_DTYPE='livrapro_dtypes';
 let data=JSON.parse(localStorage.getItem(SK)||'[]');
 let templates=JSON.parse(localStorage.getItem(SK_TPL)||'[]');
-let dtypes=JSON.parse(localStorage.getItem(SK_DTYPE)||'["Brioche","Carte mémoire","Ciment","Fer","Bois","Électronique","Textile","Alimentaire"]');
+let dtypes=JSON.parse(localStorage.getItem(SK_DTYPE)||'[]');
+// Migrate old string dtypes to objects
+if(dtypes.length&&typeof dtypes[0]==='string'){dtypes=dtypes.map(d=>({name:d,sellPrice:0,buyPrice:0}));saveDtypes()}
+if(!dtypes.length){dtypes=[{name:'Brioche',sellPrice:2,buyPrice:1},{name:'Carte mémoire',sellPrice:15,buyPrice:8},{name:'Ciment',sellPrice:12,buyPrice:7},{name:'Fer',sellPrice:25,buyPrice:15},{name:'Bois',sellPrice:18,buyPrice:10},{name:'Électronique',sellPrice:50,buyPrice:30},{name:'Textile',sellPrice:20,buyPrice:12},{name:'Alimentaire',sellPrice:10,buyPrice:6}];saveDtypes()}
 let editingId=null,pendingEntry=null,currentTransport='car';
 let mainMap=null,routeMap=null,modalMap=null;
 let mainMarkers=[],routeMarkers=[],routeLine=null,modalMarker=null;
 let pickedLat=null,pickedLng=null,deferredPrompt=null;
-
+let selectedIds=new Set();
+let hidePrices=localStorage.getItem('livrapro_hideprices')==='true';
+let currentTheme=localStorage.getItem('livrapro_theme')||'dark';
+// Security
+let secPin=localStorage.getItem('livrapro_pin')||'';
+let secPinEnabled=localStorage.getItem('livrapro_pin_on')==='true';
+let lockEdit=localStorage.getItem('livrapro_lock_edit')==='true';
+let lockDelete=localStorage.getItem('livrapro_lock_delete')==='true';
+let lockPrices=localStorage.getItem('livrapro_lock_prices')==='true';
+let pendingAuthAction=null,deleteTargetId=null;
+// Location
+let highGPS=localStorage.getItem('livrapro_highgps')!=='false';
+let autoGeo=localStorage.getItem('livrapro_autogeo')==='true';
+let centerMe=localStorage.getItem('livrapro_centerme')==='true';
+let defaultStart=localStorage.getItem('livrapro_default_start')||'';
+let myLat=null,myLng=null;
+// Navigation state
+let navActive=false,navWatchId=null,navGpsMarker=null,navVoice=true;
+let navStops=[],navCurrentStop=0,navTotalDist=0,navRouteCoords=[];
 function save(){localStorage.setItem(SK,JSON.stringify(data))}
 function saveTpl(){localStorage.setItem(SK_TPL,JSON.stringify(templates))}
 function saveDtypes(){localStorage.setItem(SK_DTYPE,JSON.stringify(dtypes))}
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
 function fmt(v){return parseFloat(v).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}
 
-// ═══════════════════════════════════
-// TRANSPORT
-// ═══════════════════════════════════
 const TR={car:{osrm:'driving',icon:'🚗',label:'Voiture',factor:1},bike:{osrm:'cycling',icon:'🚲',label:'Vélo',factor:1},scooter:{osrm:'cycling',icon:'🛴',label:'Trottinette',factor:1.6},foot:{osrm:'foot',icon:'🚶',label:'À pied',factor:1}};
 function setTransport(m){currentTransport=m;document.querySelectorAll('.transport-mode').forEach(e=>e.classList.toggle('active',e.dataset.mode===m))}
-
-// LEAFLET
-const TILE='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',TATTR='©OSM ©CARTO',DCENTER=[45.75,4.85];
+const TILE_DARK='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_LIGHT='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+function getTileUrl(){return currentTheme==='light'?TILE_LIGHT:TILE_DARK}
+const TATTR='©OSM ©CARTO',DCENTER=[45.75,4.85];
 function mkIcon(n,c){return L.divIcon({className:'',html:`<div class="lp-marker ${c}"><div class="lp-marker-pin"><span>${n}</span></div></div>`,iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-36]})}
 function stCol(s){return s==='payé'?'lp-marker-green':s==='impayé'?'lp-marker-red':'lp-marker-yellow'}
 
-// ═══════════════════════════════════
-// TILE CACHE (IndexedDB)
-// ═══════════════════════════════════
+// ═══════════════ TILE CACHE ═══════════════
 const TILEDB='livrapro_tiles',TILESTORE='tiles';
 function openTileDB(){return new Promise((ok,no)=>{const r=indexedDB.open(TILEDB,1);r.onupgradeneeded=()=>r.result.createObjectStore(TILESTORE);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+L.TileLayer.Cached=L.TileLayer.extend({createTile(coords,done){const tile=document.createElement('img'),url=this.getTileUrl(coords),key=`${coords.z}/${coords.x}/${coords.y}`;tile.crossOrigin='anonymous';openTileDB().then(db=>{const tx=db.transaction(TILESTORE,'readonly'),req=tx.objectStore(TILESTORE).get(key);req.onsuccess=()=>{if(req.result){tile.src=req.result;done(null,tile)}else this._fc(url,key,tile,done)};req.onerror=()=>this._fc(url,key,tile,done)}).catch(()=>{tile.src=url;tile.onload=()=>done(null,tile);tile.onerror=()=>done(null,tile)});return tile},_fc(url,key,tile,done){fetch(url).then(r=>r.blob()).then(b=>{const rd=new FileReader;rd.onload=()=>{tile.src=rd.result;openTileDB().then(db=>{db.transaction(TILESTORE,'readwrite').objectStore(TILESTORE).put(rd.result,key)}).catch(()=>{});done(null,tile)};rd.readAsDataURL(b)}).catch(()=>{tile.src=url;tile.onload=()=>done(null,tile);tile.onerror=()=>done(null,tile)})}});
+function createTileLayer(){return new L.TileLayer.Cached(getTileUrl(),{attribution:TATTR,maxZoom:19})}
 
-L.TileLayer.Cached=L.TileLayer.extend({
-  createTile(coords,done){
-    const tile=document.createElement('img');
-    const url=this.getTileUrl(coords);
-    const key=`${coords.z}/${coords.x}/${coords.y}`;
-    tile.crossOrigin='anonymous';
-    openTileDB().then(db=>{
-      const tx=db.transaction(TILESTORE,'readonly');
-      const req=tx.objectStore(TILESTORE).get(key);
-      req.onsuccess=()=>{
-        if(req.result){tile.src=req.result;done(null,tile)}
-        else{this._fetchAndCache(url,key,tile,done)}
-      };
-      req.onerror=()=>this._fetchAndCache(url,key,tile,done);
-    }).catch(()=>{tile.src=url;tile.onload=()=>done(null,tile);tile.onerror=()=>done(null,tile)});
-    return tile;
-  },
-  _fetchAndCache(url,key,tile,done){
-    fetch(url).then(r=>r.blob()).then(blob=>{
-      const rd=new FileReader();
-      rd.onload=()=>{
-        tile.src=rd.result;
-        openTileDB().then(db=>{const tx=db.transaction(TILESTORE,'readwrite');tx.objectStore(TILESTORE).put(rd.result,key)}).catch(()=>{});
-        done(null,tile);
-      };
-      rd.readAsDataURL(blob);
-    }).catch(()=>{tile.src=url;tile.onload=()=>done(null,tile);tile.onerror=()=>done(null,tile)});
-  }
-});
+// ═══════════════ THEME ═══════════════
+function applyTheme(){
+  document.body.className=currentTheme+(hidePrices?' hide-prices':'');
+  document.getElementById('theme-icon').textContent=currentTheme==='dark'?'🌙':'☀️';
+  const mc=document.querySelector('meta[name="theme-color"]');
+  if(mc)mc.content=currentTheme==='light'?'#f0f2f5':'#0a0c10';
+}
+function toggleTheme(){
+  currentTheme=currentTheme==='dark'?'light':'dark';
+  localStorage.setItem('livrapro_theme',currentTheme);
+  applyTheme();
+  // Rebuild map tiles
+  if(mainMap){mainMap.eachLayer(l=>{if(l instanceof L.TileLayer)mainMap.removeLayer(l)});createTileLayer().addTo(mainMap)}
+  if(routeMap){routeMap.eachLayer(l=>{if(l instanceof L.TileLayer)routeMap.removeLayer(l)});createTileLayer().addTo(routeMap)}
+}
 
-function createTileLayer(){return new L.TileLayer.Cached(TILE,{attribution:TATTR,maxZoom:19})}
-
-// ═══════════════════════════════════
-// TABS
-// ═══════════════════════════════════
+// ═══════════════ TABS ═══════════════
 function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
-  if(tab==='map'){requestAnimationFrame(()=>setTimeout(()=>{if(!mainMap){mainMap=L.map('main-map').setView(DCENTER,11);createTileLayer().addTo(mainMap)}mainMap.invalidateSize();renderMainMarkers()},60))}
-  if(tab==='route'){requestAnimationFrame(()=>setTimeout(()=>{if(!routeMap){routeMap=L.map('route-map').setView(DCENTER,11);createTileLayer().addTo(routeMap)}routeMap.invalidateSize();renderRouteList()},60))}
-  if(tab==='settings'){renderSettings()}
+  if(tab==='map'){requestAnimationFrame(()=>setTimeout(()=>{const center=(centerMe&&myLat)?[myLat,myLng]:DCENTER;if(!mainMap){mainMap=L.map('main-map').setView(center,centerMe&&myLat?14:11);createTileLayer().addTo(mainMap)}mainMap.invalidateSize();renderMainMarkers()},60))}
+  if(tab==='route'){requestAnimationFrame(()=>setTimeout(()=>{if(!routeMap){routeMap=L.map('route-map').setView(DCENTER,11);createTileLayer().addTo(routeMap)}routeMap.invalidateSize();if(!navActive)renderRouteList()},60))}
+  if(tab==='settings')renderSettings();
 }
 
-// ═══════════════════════════════════
-// STATS
-// ═══════════════════════════════════
-function renderStats(){
-  const t=data.length,rev=data.reduce((s,d)=>s+(parseFloat(d.price)||0),0),prof=data.reduce((s,d)=>s+(parseFloat(d.profit)||0),0);
-  const pa=data.filter(d=>d.status==='payé').length,pe=data.filter(d=>d.status==='en attente').length,un=data.filter(d=>d.status==='impayé').length;
-  document.getElementById('stats-bar').innerHTML=`
-    <div class="stat-card blue"><span class="label">Livraisons</span><span class="value">${t}</span></div>
-    <div class="stat-card green"><span class="label">CA</span><span class="value">${fmt(rev)}</span></div>
-    <div class="stat-card green"><span class="label">Bénéfice</span><span class="value">${fmt(prof)}</span></div>
-    <div class="stat-card yellow"><span class="label">Paiements</span><span class="value" style="font-size:14px;display:flex;gap:6px;flex-wrap:wrap"><span style="color:var(--accent)">${pa}✅</span><span style="color:var(--warn)">${pe}⏳</span><span style="color:var(--danger)">${un}❌</span></span></div>`;
-}
+// ═══════════════ STATS ═══════════════
+function renderStats(){const t=data.length,rev=data.reduce((s,d)=>s+(parseFloat(d.price)||0),0),prof=data.reduce((s,d)=>s+(parseFloat(d.profit)||0),0),pa=data.filter(d=>d.status==='payé').length,pe=data.filter(d=>d.status==='en attente').length,un=data.filter(d=>d.status==='impayé').length;document.getElementById('stats-bar').innerHTML=`<div class="stat-card blue"><span class="label">Livraisons</span><span class="value">${t}</span></div><div class="stat-card green col-money"><span class="label">CA</span><span class="value">${fmt(rev)}</span></div><div class="stat-card green col-money"><span class="label">Bénéfice</span><span class="value">${fmt(prof)}</span></div><div class="stat-card yellow"><span class="label">Paiements</span><span class="value" style="font-size:14px;display:flex;gap:6px;flex-wrap:wrap"><span style="color:var(--accent)">${pa}✅</span><span style="color:var(--warn)">${pe}⏳</span><span style="color:var(--danger)">${un}❌</span></span></div>`}
 
-// ═══════════════════════════════════
-// TABLE
-// ═══════════════════════════════════
+// ═══════════════ TABLE + MULTI SELECT ═══════════════
 function renderTable(){
   const q=document.getElementById('search').value.toLowerCase(),fs=document.getElementById('filterStatus').value,so=document.getElementById('sortBy').value;
   let list=data.filter(d=>{const ms=!q||d.name.toLowerCase().includes(q)||d.article.toLowerCase().includes(q)||d.phone.toLowerCase().includes(q)||(d.position||'').toLowerCase().includes(q);return ms&&(fs==='all'||d.status===fs)});
@@ -535,311 +567,362 @@ function renderTable(){
   if(!list.length){tb.innerHTML='';em.style.display='block';renderStats();return}
   em.style.display='none';
   tb.innerHTML=list.map((d,i)=>{
-    const sc=d.status==='payé'?'paid':d.status==='impayé'?'unpaid':'pending';
-    const sl=d.status==='payé'?'✅Payé':d.status==='impayé'?'❌Impayé':'⏳Attente';
-    const pc=parseFloat(d.profit)>=0?'pos':'neg';
-    const dt=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
-    const hg=d.lat&&d.lng;
-    return`<tr><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name">${esc(d.name)}</span></td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td>${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td><span class="money">${fmt(d.price)}</span></td><td><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'<span style="color:var(--text3)">—</span>'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
+    const sc=d.status==='payé'?'paid':d.status==='impayé'?'unpaid':'pending',sl=d.status==='payé'?'✅Payé':d.status==='impayé'?'❌Impayé':'⏳Att.',pc=parseFloat(d.profit)>=0?'pos':'neg',dt=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}),hg=d.lat&&d.lng,sel=selectedIds.has(d.id);
+    return`<tr class="${sel?'selected':''}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name">${esc(d.name)}</span></td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
   }).join('');
-  renderStats();
+  renderStats();updateFab();
 }
+function toggleSelect(id,checked){if(checked)selectedIds.add(id);else selectedIds.delete(id);updateFab();document.querySelectorAll('#table-body tr').forEach(tr=>{const cb=tr.querySelector('.cb');if(cb)tr.classList.toggle('selected',cb.checked)})}
+function toggleSelectAll(){const checked=document.getElementById('selectAll').checked;document.querySelectorAll('#table-body .cb').forEach(cb=>{cb.checked=checked;const id=parseInt(cb.closest('tr').querySelector('.actions-cell button:last-child').getAttribute('onclick').match(/\d+/)[0]);if(checked)selectedIds.add(id);else selectedIds.delete(id);cb.closest('tr').classList.toggle('selected',checked)});updateFab()}
+function clearSelection(){selectedIds.clear();document.getElementById('selectAll').checked=false;document.querySelectorAll('#table-body .cb').forEach(cb=>{cb.checked=false;cb.closest('tr').classList.remove('selected')});updateFab()}
+function updateFab(){const n=selectedIds.size;const fab=document.getElementById('fab');fab.classList.toggle('show',n>0);document.getElementById('fab-count').textContent=`${n} sélectionné${n>1?'s':''}`}
 function cycleStatus(id){const e=data.find(d=>d.id===id);if(!e)return;const c=['en attente','payé','impayé'];e.status=c[(c.indexOf(e.status)+1)%3];save();renderTable();showToast(`Statut → ${e.status}`)}
 
-// ═══════════════════════════════════
-// MODAL
-// ═══════════════════════════════════
-function openModal(entry){
-  editingId=entry?entry.id:null;
-  document.getElementById('modal-title').textContent=entry?'Modifier':'Nouvelle Livraison';
-  document.getElementById('f-name').value=entry?entry.name:'';
-  document.getElementById('f-phone').value=entry?entry.phone:'';
-  document.getElementById('f-article').value=entry?entry.article:'';
-  document.getElementById('f-qty').value=entry?entry.qty:1;
-  document.getElementById('f-price').value=entry?entry.price:'';
-  document.getElementById('f-profit').value=entry?entry.profit:'';
-  document.getElementById('f-status').value=entry?entry.status:'en attente';
-  document.getElementById('f-position').value=entry?entry.position||'':'';
-  pickedLat=entry?.lat||null;pickedLng=entry?.lng||null;updateCoordsDisplay();
-  const sec=document.getElementById('map-picker-section');sec.style.display='none';sec.dataset.open='false';
-  document.getElementById('btn-toggle-map').textContent='🗺️ Choisir sur la carte';
-  // Datalist
-  updateDtypesDatalist();
-  // Message templates
-  const ms=document.getElementById('msg-sender-section');
-  if(templates.length&&(entry||document.getElementById('f-name').value)){ms.style.display='block';updateTplSelect()}else{ms.style.display='none'}
-  document.getElementById('msg-preview').style.display='none';
-  document.getElementById('modal-overlay').classList.add('active');
-  setTimeout(()=>document.getElementById('f-name').focus(),200);
+// ═══════════════ BULK MESSAGE ═══════════════
+function openBulkMsg(){
+  if(!selectedIds.size){showToast('Sélectionnez des clients',true);return}
+  if(!templates.length){showToast('Créez d\'abord un modèle dans Réglages → Messages',true);return}
+  const recs=data.filter(d=>selectedIds.has(d.id));
+  document.getElementById('bulk-count').textContent=recs.length;
+  document.getElementById('bulk-recipients').innerHTML=recs.map(d=>`<div class="bulk-recipient"><span class="br-name">${esc(d.name)}</span><span class="br-phone">${esc(d.phone)}</span></div>`).join('');
+  const sel=document.getElementById('bulk-tpl-select');sel.innerHTML='<option value="">— Choisir —</option>'+templates.map((t,i)=>`<option value="${i}">${esc(t.name)}</option>`).join('');
+  document.getElementById('bulk-preview').style.display='none';
+  document.getElementById('bulk-modal').classList.add('active');
 }
-function closeModal(){document.getElementById('modal-overlay').classList.remove('active');editingId=null;pickedLat=null;pickedLng=null;if(modalMap){modalMap.remove();modalMap=null;modalMarker=null}}
+function closeBulkModal(){document.getElementById('bulk-modal').classList.remove('active')}
+function previewBulkMsg(){const sel=document.getElementById('bulk-tpl-select').value,prev=document.getElementById('bulk-preview');if(sel===''){prev.style.display='none';return}const tpl=templates[parseInt(sel)];prev.textContent='Exemple: '+applyTpl(tpl.body,data.find(d=>selectedIds.has(d.id)));prev.style.display='block'}
+function applyTpl(body,d){return body.replace(/\{client\}/g,d.name||'').replace(/\{article\}/g,d.article||'').replace(/\{qty\}/g,d.qty||'').replace(/\{prix\}/g,fmt(d.price||0)).replace(/\{phone\}/g,d.phone||'').replace(/\{position\}/g,d.position||'')}
+function bulkWhatsApp(){const tplIdx=document.getElementById('bulk-tpl-select').value;if(tplIdx===''){showToast('Choisissez un modèle',true);return}const tpl=templates[parseInt(tplIdx)];const recs=data.filter(d=>selectedIds.has(d.id)&&d.phone);if(!recs.length){showToast('Aucun client avec téléphone',true);return}let i=0;function next(){if(i>=recs.length){showToast(`${i} messages ouverts ✅`);closeBulkModal();return}const d=recs[i],msg=encodeURIComponent(applyTpl(tpl.body,d)),ph=d.phone.replace(/\s/g,'');window.open(`https://wa.me/${ph}?text=${msg}`,'_blank');i++;setTimeout(next,800)}next()}
+function bulkSMS(){const tplIdx=document.getElementById('bulk-tpl-select').value;if(tplIdx===''){showToast('Choisissez un modèle',true);return}const tpl=templates[parseInt(tplIdx)];const recs=data.filter(d=>selectedIds.has(d.id)&&d.phone);if(!recs.length){showToast('Aucun numéro',true);return}let i=0;function next(){if(i>=recs.length){showToast(`${i} SMS ouverts ✅`);closeBulkModal();return}const d=recs[i],msg=encodeURIComponent(applyTpl(tpl.body,d));window.open(`sms:${d.phone}?body=${msg}`);i++;setTimeout(next,800)}next()}
+function bulkCopy(){const tplIdx=document.getElementById('bulk-tpl-select').value;if(tplIdx===''){showToast('Choisissez un modèle',true);return}const tpl=templates[parseInt(tplIdx)];const recs=data.filter(d=>selectedIds.has(d.id));const all=recs.map(d=>`[${d.name}] ${applyTpl(tpl.body,d)}`).join('\n\n');navigator.clipboard.writeText(all).then(()=>showToast(`${recs.length} messages copiés 📋`)).catch(()=>showToast('Erreur',true))}
 
-// MAP PICKER
-function toggleMapPicker(){
-  const sec=document.getElementById('map-picker-section');
-  if(sec.dataset.open==='true'){sec.style.display='none';sec.dataset.open='false';document.getElementById('btn-toggle-map').textContent='🗺️ Choisir sur la carte';return}
-  sec.style.display='block';sec.dataset.open='true';document.getElementById('btn-toggle-map').textContent='🗺️ Masquer la carte';
-  requestAnimationFrame(()=>setTimeout(()=>{
-    if(!modalMap){modalMap=L.map('modal-map',{zoomControl:true,attributionControl:false}).setView(pickedLat?[pickedLat,pickedLng]:DCENTER,pickedLat?15:12);createTileLayer().addTo(modalMap);modalMap.on('click',e=>{pickedLat=e.latlng.lat;pickedLng=e.latlng.lng;placeModalMarker(pickedLat,pickedLng);updateCoordsDisplay();reverseGeocode(pickedLat,pickedLng)})}else{modalMap.invalidateSize();if(pickedLat)modalMap.setView([pickedLat,pickedLng],15)}
-    if(pickedLat&&pickedLng)placeModalMarker(pickedLat,pickedLng);
-  },80));
-}
-function placeModalMarker(lat,lng){if(!modalMap)return;if(modalMarker)modalMap.removeLayer(modalMarker);modalMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-pick"><div class="lp-marker-pin"><span>📍</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(modalMap)}
+// ═══════════════ MODAL ═══════════════
+function openModal(entry){editingId=entry?entry.id:null;document.getElementById('modal-title').textContent=entry?'Modifier':'Nouvelle Livraison';document.getElementById('f-name').value=entry?entry.name:'';document.getElementById('f-phone').value=entry?entry.phone:'';document.getElementById('f-article').value=entry?entry.article:'';document.getElementById('f-qty').value=entry?entry.qty:1;document.getElementById('f-price').value=entry?entry.price:'';document.getElementById('f-profit').value=entry?entry.profit:'';document.getElementById('f-status').value=entry?entry.status:'en attente';document.getElementById('f-position').value=entry?entry.position||'':'';pickedLat=entry?.lat||null;pickedLng=entry?.lng||null;updateCoordsDisplay();const sec=document.getElementById('map-picker-section');sec.style.display='none';sec.dataset.open='false';document.getElementById('btn-toggle-map').textContent='🗺️ Choisir sur la carte';updateDtypesDatalist();const ms=document.getElementById('msg-sender-section');if(templates.length){ms.style.display='block';updateTplSelect()}else ms.style.display='none';document.getElementById('msg-preview').style.display='none';document.getElementById('modal-overlay').classList.add('active');setTimeout(()=>document.getElementById('f-name').focus(),200)}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('active');editingId=null;pickedLat=null;pickedLng=null;if(modalMap){modalMap.remove();modalMap=null;modalMarker=null}}
+function toggleMapPicker(){const sec=document.getElementById('map-picker-section');if(sec.dataset.open==='true'){sec.style.display='none';sec.dataset.open='false';document.getElementById('btn-toggle-map').textContent='🗺️ Choisir sur la carte';return}sec.style.display='block';sec.dataset.open='true';document.getElementById('btn-toggle-map').textContent='🗺️ Masquer';requestAnimationFrame(()=>setTimeout(()=>{if(!modalMap){modalMap=L.map('modal-map',{zoomControl:true,attributionControl:false}).setView(pickedLat?[pickedLat,pickedLng]:DCENTER,pickedLat?15:12);createTileLayer().addTo(modalMap);modalMap.on('click',e=>{pickedLat=e.latlng.lat;pickedLng=e.latlng.lng;placeModalMarker(pickedLat,pickedLng);updateCoordsDisplay();reverseGeocode(pickedLat,pickedLng)})}else{modalMap.invalidateSize();if(pickedLat)modalMap.setView([pickedLat,pickedLng],15)}if(pickedLat&&pickedLng)placeModalMarker(pickedLat,pickedLng)},80))}
+function placeModalMarker(a,b){if(!modalMap)return;if(modalMarker)modalMap.removeLayer(modalMarker);modalMarker=L.marker([a,b],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-pick"><div class="lp-marker-pin"><span>📍</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(modalMap)}
 function updateCoordsDisplay(){const el=document.getElementById('picker-coords'),h=document.getElementById('geo-hint');if(pickedLat&&pickedLng){el.textContent=`${pickedLat.toFixed(5)}, ${pickedLng.toFixed(5)}`;h.style.display='block'}else{el.textContent='—';h.style.display='none'}}
 function geolocateMe(){if(!navigator.geolocation){showToast('GPS non supporté',true);return}showToast('GPS...');navigator.geolocation.getCurrentPosition(p=>{pickedLat=p.coords.latitude;pickedLng=p.coords.longitude;if(modalMap){modalMap.setView([pickedLat,pickedLng],16);placeModalMarker(pickedLat,pickedLng);modalMap.invalidateSize()}updateCoordsDisplay();reverseGeocode(pickedLat,pickedLng);showToast('GPS ✅')},()=>showToast('Erreur GPS',true),{enableHighAccuracy:true,timeout:10000})}
-async function geocodeAddress(){const q=document.getElementById('geocode-input').value.trim();if(!q)return;try{showToast('Recherche...');const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&accept-language=fr`);const d=await r.json();if(d.length){pickedLat=parseFloat(d[0].lat);pickedLng=parseFloat(d[0].lon);if(modalMap){modalMap.setView([pickedLat,pickedLng],16);placeModalMarker(pickedLat,pickedLng)}document.getElementById('f-position').value=d[0].display_name.split(',').slice(0,3).join(',').trim();updateCoordsDisplay();showToast('Trouvé ✅')}else showToast('Introuvable',true)}catch(e){showToast('Erreur',true)}}
-async function reverseGeocode(lat,lng){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=fr`);const d=await r.json();if(d.display_name)document.getElementById('f-position').value=d.display_name.split(',').slice(0,3).join(',').trim()}catch(e){}}
-
-// PRE-SAVE
-function preSave(){
-  const name=document.getElementById('f-name').value.trim(),article=document.getElementById('f-article').value.trim();
-  if(!name){showToast('Nom requis',true);return}if(!article){showToast('Article requis',true);return}
-  const entry={name,phone:document.getElementById('f-phone').value.trim(),article,qty:parseInt(document.getElementById('f-qty').value)||1,price:parseFloat(document.getElementById('f-price').value)||0,profit:parseFloat(document.getElementById('f-profit').value)||0,status:document.getElementById('f-status').value,position:document.getElementById('f-position').value.trim(),lat:pickedLat||null,lng:pickedLng||null};
-  if(entry.lat&&entry.lng)showConfirm(entry);else if(entry.position)geocodeAndConfirm(entry);else doSave(entry);
-}
-function showConfirm(e){pendingEntry=e;document.getElementById('confirm-addr').textContent=e.position||'Position carte';document.getElementById('confirm-coords-text').textContent=`GPS: ${e.lat.toFixed(5)}, ${e.lng.toFixed(5)}`;document.getElementById('confirm-overlay').classList.add('active')}
-async function geocodeAndConfirm(e){try{showToast('Géocodage...');const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(e.position)}&limit=1&accept-language=fr`);const d=await r.json();if(d.length){e.lat=parseFloat(d[0].lat);e.lng=parseFloat(d[0].lon);showConfirm(e)}else doSave(e)}catch(x){doSave(e)}}
+async function geocodeAddress(){const q=document.getElementById('geocode-input').value.trim();if(!q)return;try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&accept-language=fr`),d=await r.json();if(d.length){pickedLat=parseFloat(d[0].lat);pickedLng=parseFloat(d[0].lon);if(modalMap){modalMap.setView([pickedLat,pickedLng],16);placeModalMarker(pickedLat,pickedLng)}document.getElementById('f-position').value=d[0].display_name.split(',').slice(0,3).join(',').trim();updateCoordsDisplay();showToast('✅')}else showToast('Introuvable',true)}catch(e){showToast('Erreur',true)}}
+async function reverseGeocode(a,b){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${a}&lon=${b}&accept-language=fr`),d=await r.json();if(d.display_name)document.getElementById('f-position').value=d.display_name.split(',').slice(0,3).join(',').trim()}catch(e){}}
+function preSave(){const name=document.getElementById('f-name').value.trim(),article=document.getElementById('f-article').value.trim();if(!name){showToast('Nom requis',true);return}if(!article){showToast('Article requis',true);return}const entry={name,phone:document.getElementById('f-phone').value.trim(),article,qty:parseInt(document.getElementById('f-qty').value)||1,price:parseFloat(document.getElementById('f-price').value)||0,profit:parseFloat(document.getElementById('f-profit').value)||0,status:document.getElementById('f-status').value,position:document.getElementById('f-position').value.trim(),lat:pickedLat||null,lng:pickedLng||null};if(entry.lat&&entry.lng)showConfirm(entry);else if(entry.position)geocodeAndConfirm(entry);else doSave(entry)}
+function showConfirm(e){pendingEntry=e;document.getElementById('confirm-addr').textContent=e.position||'Carte';document.getElementById('confirm-coords-text').textContent=`GPS: ${e.lat.toFixed(5)}, ${e.lng.toFixed(5)}`;document.getElementById('confirm-overlay').classList.add('active')}
+async function geocodeAndConfirm(e){try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(e.position)}&limit=1&accept-language=fr`),d=await r.json();if(d.length){e.lat=parseFloat(d[0].lat);e.lng=parseFloat(d[0].lon);showConfirm(e)}else doSave(e)}catch(x){doSave(e)}}
 function confirmPosition(w){document.getElementById('confirm-overlay').classList.remove('active');if(!pendingEntry)return;if(!w){pendingEntry.lat=null;pendingEntry.lng=null}doSave(pendingEntry);pendingEntry=null}
 function doSave(e){if(editingId){const x=data.find(d=>d.id===editingId);if(x)Object.assign(x,e);showToast('Modifié ✏️')}else{e.id=Date.now();data.push(e);showToast('Ajouté ✅')}save();renderTable();closeModal()}
-function editEntry(id){const e=data.find(d=>d.id===id);if(e)openModal(e)}
-function deleteEntry(id){const e=data.find(d=>d.id===id);if(!e)return;if(confirm(`Supprimer "${e.name}" ?`)){data=data.filter(d=>d.id!==id);save();renderTable();showToast('Supprimé 🗑️')}}
+function editEntry(id){
+  if(lockEdit&&secPinEnabled&&secPin){pendingAuthAction=()=>{const e=data.find(d=>d.id===id);if(e)openModal(e)};showPinModal('Modifier la livraison');return}
+  const e=data.find(d=>d.id===id);if(e)openModal(e);
+}
+function deleteEntry(id){
+  if(lockDelete&&secPinEnabled&&secPin){pendingAuthAction=()=>showDeleteModal(id);showPinModal('Supprimer la livraison');return}
+  showDeleteModal(id);
+}
+function showDeleteModal(id){
+  deleteTargetId=id;const e=data.find(d=>d.id===id);if(!e)return;
+  document.getElementById('del-name').textContent=`${e.name} — ${e.article} ×${e.qty}`;
+  document.getElementById('delete-overlay').classList.add('active');
+}
+function cancelDelete(){document.getElementById('delete-overlay').classList.remove('active');deleteTargetId=null}
+function confirmDelete(){
+  document.getElementById('delete-overlay').classList.remove('active');
+  if(deleteTargetId){data=data.filter(d=>d.id!==deleteTargetId);save();renderTable();showToast('Supprimé 🗑️')}
+  deleteTargetId=null;
+}
 
-// ═══════════════════════════════════
-// MAIN MAP
-// ═══════════════════════════════════
-function renderMainMarkers(){if(!mainMap)return;mainMarkers.forEach(m=>mainMap.removeLayer(m));mainMarkers=[];const geo=data.filter(d=>d.lat&&d.lng);if(!geo.length)return;const bounds=[];geo.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(mainMap);m.bindPopup(`<div class="popup-name">${esc(d.name)}</div><div class="popup-detail">${esc(d.article)} ×${d.qty} — ${fmt(d.price)}</div><div class="popup-detail">${esc(d.position||'')}</div>`);mainMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)mainMap.fitBounds(bounds,{padding:[50,50]});else mainMap.setView(bounds[0],15)}
+// ═══════════════ PIN AUTH ═══════════════
+function showPinModal(title){
+  document.getElementById('pin-title').textContent=title||'Entrez votre PIN';
+  document.getElementById('pin-error').textContent='';
+  document.querySelectorAll('.pin-digit').forEach(i=>{i.value=''});
+  document.getElementById('pin-overlay').classList.add('active');
+  setTimeout(()=>document.querySelector('.pin-digit').focus(),200);
+}
+function cancelPin(){document.getElementById('pin-overlay').classList.remove('active');pendingAuthAction=null}
+function pinNext(el,idx){
+  if(el.value.length>=1){el.value=el.value.slice(-1);const next=document.querySelectorAll('.pin-digit')[idx+1];if(next)next.focus();else checkPin()}
+}
+function pinBack(e,el,idx){if(e.key==='Backspace'&&!el.value&&idx>0)document.querySelectorAll('.pin-digit')[idx-1].focus()}
+function checkPin(){
+  const entered=[...document.querySelectorAll('.pin-digit')].map(i=>i.value).join('');
+  if(entered.length<4)return;
+  if(entered===secPin){
+    document.getElementById('pin-overlay').classList.remove('active');
+    if(pendingAuthAction){pendingAuthAction();pendingAuthAction=null}
+  }else{
+    document.getElementById('pin-error').textContent='❌ PIN incorrect';
+    document.querySelectorAll('.pin-digit').forEach(i=>{i.value='';i.style.borderColor='var(--danger)'});
+    setTimeout(()=>{document.querySelectorAll('.pin-digit').forEach(i=>i.style.borderColor='');document.querySelector('.pin-digit').focus()},600);
+  }
+}
+
+// ═══════════════ SECURITY SETTINGS ═══════════════
+function togglePinEnabled(){
+  if(!secPinEnabled){document.getElementById('pin-config').style.display='block';document.getElementById('pin-set-input').focus()}
+  else{secPinEnabled=false;secPin='';localStorage.setItem('livrapro_pin_on','false');localStorage.removeItem('livrapro_pin');showToast('PIN désactivé');renderSecurityToggles()}
+}
+function savePin(){
+  const v=document.getElementById('pin-set-input').value.trim();
+  if(v.length!==4||isNaN(v)){showToast('Le PIN doit faire 4 chiffres',true);return}
+  secPin=v;secPinEnabled=true;
+  localStorage.setItem('livrapro_pin',v);localStorage.setItem('livrapro_pin_on','true');
+  document.getElementById('pin-config').style.display='none';document.getElementById('pin-set-input').value='';
+  showToast('PIN activé 🔐');renderSecurityToggles();
+}
+function toggleLock(type){
+  if(!secPinEnabled||!secPin){showToast('Activez d\'abord le PIN',true);return}
+  if(type==='edit'){lockEdit=!lockEdit;localStorage.setItem('livrapro_lock_edit',lockEdit)}
+  else if(type==='delete'){lockDelete=!lockDelete;localStorage.setItem('livrapro_lock_delete',lockDelete)}
+  else if(type==='prices'){lockPrices=!lockPrices;localStorage.setItem('livrapro_lock_prices',lockPrices)}
+  renderSecurityToggles();
+}
+function toggleHidePrices(){
+  if(hidePrices&&lockPrices&&secPinEnabled&&secPin){
+    pendingAuthAction=()=>{hidePrices=false;localStorage.setItem('livrapro_hideprices','false');document.body.classList.remove('hide-prices');renderSecurityToggles();showToast('Prix affichés')};
+    showPinModal('Afficher les prix');return;
+  }
+  hidePrices=!hidePrices;localStorage.setItem('livrapro_hideprices',hidePrices);
+  document.body.classList.toggle('hide-prices',hidePrices);renderSecurityToggles();
+}
+function renderSecurityToggles(){
+  setToggle('tog-pin',secPinEnabled);
+  document.getElementById('pin-config').style.display=(!secPinEnabled&&document.getElementById('pin-config').style.display==='block')?'block':'none';
+  setToggle('tog-lock-edit',lockEdit);setToggle('tog-lock-delete',lockDelete);
+  setToggle('tog-hide-prices',hidePrices);setToggle('tog-lock-prices',lockPrices);
+}
+function setToggle(id,on){const el=document.getElementById(id);if(el)el.classList.toggle('on',on)}
+
+// ═══════════════ LOCATION SETTINGS ═══════════════
+function detectMyLocation(){
+  if(!navigator.geolocation){showToast('GPS indisponible',true);return}
+  showToast('Recherche GPS...');
+  navigator.geolocation.getCurrentPosition(p=>{
+    myLat=p.coords.latitude;myLng=p.coords.longitude;
+    document.getElementById('loc-coords').textContent=`${myLat.toFixed(6)}, ${myLng.toFixed(6)} (±${Math.round(p.coords.accuracy)}m)`;
+    showToast('Position détectée ✅');
+    if(centerMe&&mainMap)mainMap.setView([myLat,myLng],14);
+  },()=>showToast('Erreur GPS',true),{enableHighAccuracy:highGPS,timeout:15000});
+}
+function toggleHighGPS(){highGPS=!highGPS;localStorage.setItem('livrapro_highgps',highGPS);setToggle('tog-highgps',highGPS);showToast(highGPS?'Haute précision ON':'Précision standard')}
+function toggleAutoGeo(){autoGeo=!autoGeo;localStorage.setItem('livrapro_autogeo',autoGeo);setToggle('tog-autogeo',autoGeo)}
+function toggleCenterMe(){centerMe=!centerMe;localStorage.setItem('livrapro_centerme',centerMe);setToggle('tog-centerme',centerMe)}
+function saveDefaultStart(){defaultStart=document.getElementById('default-start-addr').value.trim();localStorage.setItem('livrapro_default_start',defaultStart);showToast('Adresse par défaut sauvée ✅')}
+function setAsDefaultStart(){
+  if(!myLat){showToast('Détectez votre position d\'abord',true);return}
+  document.getElementById('default-start-addr').value=`${myLat.toFixed(6)}, ${myLng.toFixed(6)}`;
+  saveDefaultStart();document.getElementById('route-start').value=defaultStart;
+  showToast('Position définie comme départ 📍');
+}
+function renderLocationToggles(){
+  setToggle('tog-highgps',highGPS);setToggle('tog-autogeo',autoGeo);setToggle('tog-centerme',centerMe);
+  document.getElementById('default-start-addr').value=defaultStart;
+  if(myLat)document.getElementById('loc-coords').textContent=`${myLat.toFixed(6)}, ${myLng.toFixed(6)}`;
+}
+
+// MSG sender
+function updateTplSelect(){const s=document.getElementById('msg-tpl-select');s.innerHTML='<option value="">— Modèle —</option>'+templates.map((t,i)=>`<option value="${i}">${esc(t.name)}</option>`).join('')}
+function previewMessage(){const sel=document.getElementById('msg-tpl-select').value,prev=document.getElementById('msg-preview');if(sel===''){prev.style.display='none';return}const tpl=templates[parseInt(sel)],msg=tpl.body.replace(/\{client\}/g,document.getElementById('f-name').value||'').replace(/\{article\}/g,document.getElementById('f-article').value||'').replace(/\{qty\}/g,document.getElementById('f-qty').value||'1').replace(/\{prix\}/g,fmt(parseFloat(document.getElementById('f-price').value)||0)).replace(/\{phone\}/g,document.getElementById('f-phone').value||'').replace(/\{position\}/g,document.getElementById('f-position').value||'');prev.textContent=msg;prev.style.display='block'}
+function getGeneratedMsg(){return document.getElementById('msg-preview').textContent}
+function copyMessage(){navigator.clipboard.writeText(getGeneratedMsg()).then(()=>showToast('Copié 📋'))}
+function sendWhatsApp(){const ph=(document.getElementById('f-phone').value||'').replace(/\s/g,'');window.open(`https://wa.me/${ph}?text=${encodeURIComponent(getGeneratedMsg())}`,'_blank')}
+function sendSMS(){window.open(`sms:${document.getElementById('f-phone').value||''}?body=${encodeURIComponent(getGeneratedMsg())}`)}
+
+// ═══════════════ MAIN MAP ═══════════════
+function renderMainMarkers(){if(!mainMap)return;mainMarkers.forEach(m=>mainMap.removeLayer(m));mainMarkers=[];const geo=data.filter(d=>d.lat&&d.lng);if(!geo.length)return;const bounds=[];geo.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(mainMap);m.bindPopup(`<div class="popup-name">${esc(d.name)}</div><div class="popup-detail">${esc(d.article)} ×${d.qty} — ${fmt(d.price)}</div>`);mainMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)mainMap.fitBounds(bounds,{padding:[50,50]});else mainMap.setView(bounds[0],15)}
 function focusClient(id){const d=data.find(x=>x.id===id);if(!d||!d.lat||!d.lng){showToast('Pas de GPS',true);return}switchTab('map');setTimeout(()=>{if(mainMap){mainMap.setView([d.lat,d.lng],16);mainMarkers.forEach(m=>{const l=m.getLatLng();if(Math.abs(l.lat-d.lat)<.0001&&Math.abs(l.lng-d.lng)<.0001)m.openPopup()})}},200)}
 
-// ═══════════════════════════════════
-// ROUTE
-// ═══════════════════════════════════
+// ═══════════════ ROUTE ═══════════════
 function getRouteClients(){const f=document.getElementById('route-filter').value;return data.filter(d=>d.lat&&d.lng&&(f==='all'||d.status===f))}
-function renderRouteList(){const cl=getRouteClients(),list=document.getElementById('route-list'),em=document.getElementById('route-empty');routeMarkers.forEach(m=>routeMap&&routeMap.removeLayer(m));routeMarkers=[];if(routeLine){routeMap.removeLayer(routeLine);routeLine=null}document.getElementById('route-summary').style.display='none';if(!cl.length){list.innerHTML='';em.style.display='block';return}em.style.display='none';list.innerHTML=cl.map((d,i)=>{const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name">${esc(d.name)}</div><div style="font-size:11px;color:var(--text3)">${esc(d.article)} ×${d.qty} — ${fmt(d.price)}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+', '+d.lng.toFixed(4))}</div></div></div>`}).join('');const bounds=[];cl.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)routeMap.fitBounds(bounds,{padding:[80,80]});else if(bounds.length)routeMap.setView(bounds[0],15)}
-function useMyLocation(){if(!navigator.geolocation){showToast('GPS indisponible',true);return}showToast('GPS...');navigator.geolocation.getCurrentPosition(p=>{document.getElementById('route-start').value=`${p.coords.latitude.toFixed(6)}, ${p.coords.longitude.toFixed(6)}`;showToast('GPS ✅')},()=>showToast('Erreur GPS',true),{enableHighAccuracy:true,timeout:10000})}
-async function parseStart(){const v=document.getElementById('route-start').value.trim();if(!v)return null;const p=v.split(',').map(s=>parseFloat(s.trim()));if(p.length===2&&!isNaN(p[0])&&!isNaN(p[1])&&Math.abs(p[0])<=90)return{lat:p[0],lng:p[1]};try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(v)}&limit=1&accept-language=fr`);const d=await r.json();if(d.length)return{lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)}}catch(e){}return null}
+function renderRouteList(){const cl=getRouteClients(),list=document.getElementById('route-list'),em=document.getElementById('route-empty');routeMarkers.forEach(m=>routeMap&&routeMap.removeLayer(m));routeMarkers=[];if(routeLine){routeMap.removeLayer(routeLine);routeLine=null}document.getElementById('route-summary').style.display='none';document.getElementById('nav-start-wrap').style.display='none';if(!cl.length){list.innerHTML='';em.style.display='block';return}em.style.display='none';list.innerHTML=cl.map((d,i)=>{const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(d.name)}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div></div>`}).join('');const bounds=[];cl.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)routeMap.fitBounds(bounds,{padding:[80,80]});else if(bounds.length)routeMap.setView(bounds[0],15)}
+function useMyLocation(){if(!navigator.geolocation){showToast('GPS indisponible',true);return}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('route-start').value=`${p.coords.latitude.toFixed(6)}, ${p.coords.longitude.toFixed(6)}`;showToast('GPS ✅')},()=>showToast('Erreur GPS',true),{enableHighAccuracy:true,timeout:10000})}
+async function parseStart(){const v=document.getElementById('route-start').value.trim();if(!v)return null;const p=v.split(',').map(s=>parseFloat(s.trim()));if(p.length===2&&!isNaN(p[0])&&!isNaN(p[1])&&Math.abs(p[0])<=90)return{lat:p[0],lng:p[1]};try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(v)}&limit=1&accept-language=fr`),d=await r.json();if(d.length)return{lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)}}catch(e){}return null}
 
 async function buildRoute(){
   const cl=getRouteClients();if(cl.length<1){showToast('Aucun client',true);return}
-  const start=await parseStart(),tr=TR[currentTransport];
-  let wp=[];if(start)wp.push([start.lng,start.lat]);cl.forEach(c=>wp.push([c.lng,c.lat]));
-  if(wp.length<2){showToast('2 points min',true);return}
+  const start=await parseStart(),tr=TR[currentTransport];let wp=[];if(start)wp.push([start.lng,start.lat]);cl.forEach(c=>wp.push([c.lng,c.lat]));if(wp.length<2){showToast('2 points min',true);return}
   const coords=wp.map(w=>w[0].toFixed(6)+','+w[1].toFixed(6)).join(';');
-  try{showToast(`${tr.icon} Calcul...`);const r=await fetch(`https://router.project-osrm.org/route/v1/${tr.osrm}/${coords}?overview=full&geometries=geojson`);const d=await r.json();
+  try{showToast(`${tr.icon} Calcul...`);const r=await fetch(`https://router.project-osrm.org/route/v1/${tr.osrm}/${coords}?overview=full&geometries=geojson&steps=true`),d=await r.json();
     if(d.code!=='Ok'||!d.routes.length){showToast('Route impossible',true);return}
     const route=d.routes[0];if(routeLine)routeMap.removeLayer(routeLine);
     const lc=currentTransport==='car'?'#4ae3b5':currentTransport==='bike'?'#5a8af2':currentTransport==='scooter'?'#f09052':'#a07cf2';
     routeLine=L.geoJSON(route.geometry,{style:{color:lc,weight:5,opacity:.85}}).addTo(routeMap);
     if(start){const sm=L.marker([start.lat,start.lng],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-blue"><div class="lp-marker-pin"><span>🏠</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(routeMap);routeMarkers.push(sm)}
     routeMap.fitBounds(routeLine.getBounds(),{padding:[80,80]});
+    navRouteCoords=route.geometry.coordinates.map(c=>[c[1],c[0]]);
+    navStops=cl;navTotalDist=route.distance;
     const dur=route.duration*tr.factor,dist=(route.distance/1000).toFixed(1),tm=Math.round(dur/60),h=Math.floor(tm/60),m=tm%60;
     document.getElementById('route-summary').style.display='flex';document.getElementById('rs-stops').textContent=cl.length;document.getElementById('rs-dist').textContent=dist+' km';document.getElementById('rs-time').textContent=h>0?`${h}h${m}min`:`${tm}min`;document.getElementById('rs-mode').textContent=tr.icon+' '+tr.label;
+    document.getElementById('nav-start-wrap').style.display='block';
     showToast(`${tr.icon} ${dist}km — ${h>0?h+'h':''}${m}min ✅`);
   }catch(e){showToast('Erreur route',true);console.error(e)}
 }
 
 async function optimizeRoute(){
-  const cl=getRouteClients();if(cl.length<2){buildRoute();return}const start=await parseStart();if(!start){showToast('Point de départ requis',true);return}
-  let rem=[...cl],sorted=[],cur={lat:start.lat,lng:start.lng};
-  while(rem.length){let bi=0,bd=Infinity;rem.forEach((c,i)=>{const dx=c.lat-cur.lat,dy=(c.lng-cur.lng)*Math.cos(cur.lat*Math.PI/180),d=dx*dx+dy*dy;if(d<bd){bd=d;bi=i}});sorted.push(rem[bi]);cur={lat:rem[bi].lat,lng:rem[bi].lng};rem.splice(bi,1)}
-  const list=document.getElementById('route-list');list.innerHTML=sorted.map((d,i)=>{const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name">${esc(d.name)}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||'')}</div></div></div>`}).join('');
+  const cl=getRouteClients();if(cl.length<2){buildRoute();return}const start=await parseStart();if(!start){showToast('Départ requis',true);return}
+  let rem=[...cl],sorted=[],cur={lat:start.lat,lng:start.lng};while(rem.length){let bi=0,bd=Infinity;rem.forEach((c,i)=>{const dx=c.lat-cur.lat,dy=(c.lng-cur.lng)*Math.cos(cur.lat*Math.PI/180),d=dx*dx+dy*dy;if(d<bd){bd=d;bi=i}});sorted.push(rem[bi]);cur={lat:rem[bi].lat,lng:rem[bi].lng};rem.splice(bi,1)}
+  const list=document.getElementById('route-list');list.innerHTML=sorted.map((d,i)=>{const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(d.name)}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||'')}</div></div></div>`}).join('');
   routeMarkers.forEach(m=>routeMap.removeLayer(m));routeMarkers=[];sorted.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m)});
+  navStops=sorted;
   const tr=TR[currentTransport];let wp=[[start.lng,start.lat]];sorted.forEach(c=>wp.push([c.lng,c.lat]));const coords=wp.map(w=>w[0].toFixed(6)+','+w[1].toFixed(6)).join(';');
-  try{const r=await fetch(`https://router.project-osrm.org/route/v1/${tr.osrm}/${coords}?overview=full&geometries=geojson`);const d=await r.json();if(d.code==='Ok'&&d.routes.length){const rt=d.routes[0];if(routeLine)routeMap.removeLayer(routeLine);const lc=currentTransport==='car'?'#4ae3b5':currentTransport==='bike'?'#5a8af2':currentTransport==='scooter'?'#f09052':'#a07cf2';routeLine=L.geoJSON(rt.geometry,{style:{color:lc,weight:5,opacity:.85}}).addTo(routeMap);const sm=L.marker([start.lat,start.lng],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-blue"><div class="lp-marker-pin"><span>🏠</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(routeMap);routeMarkers.push(sm);routeMap.fitBounds(routeLine.getBounds(),{padding:[80,80]});const dur=rt.duration*tr.factor,dist=(rt.distance/1000).toFixed(1),tm=Math.round(dur/60),h=Math.floor(tm/60),m=tm%60;document.getElementById('route-summary').style.display='flex';document.getElementById('rs-stops').textContent=sorted.length;document.getElementById('rs-dist').textContent=dist+'km';document.getElementById('rs-time').textContent=h>0?`${h}h${m}min`:`${tm}min`;document.getElementById('rs-mode').textContent=tr.icon+' '+tr.label;showToast(`⚡ Optimisé: ${dist}km`)}}catch(e){console.error(e)}
+  try{const r=await fetch(`https://router.project-osrm.org/route/v1/${tr.osrm}/${coords}?overview=full&geometries=geojson`),d=await r.json();if(d.code==='Ok'&&d.routes.length){const rt=d.routes[0];if(routeLine)routeMap.removeLayer(routeLine);const lc=currentTransport==='car'?'#4ae3b5':currentTransport==='bike'?'#5a8af2':currentTransport==='scooter'?'#f09052':'#a07cf2';routeLine=L.geoJSON(rt.geometry,{style:{color:lc,weight:5,opacity:.85}}).addTo(routeMap);const sm=L.marker([start.lat,start.lng],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-blue"><div class="lp-marker-pin"><span>🏠</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(routeMap);routeMarkers.push(sm);routeMap.fitBounds(routeLine.getBounds(),{padding:[80,80]});navRouteCoords=rt.geometry.coordinates.map(c=>[c[1],c[0]]);navTotalDist=rt.distance;const dur=rt.duration*tr.factor,dist=(rt.distance/1000).toFixed(1),tm=Math.round(dur/60),h=Math.floor(tm/60),m=tm%60;document.getElementById('route-summary').style.display='flex';document.getElementById('rs-stops').textContent=sorted.length;document.getElementById('rs-dist').textContent=dist+'km';document.getElementById('rs-time').textContent=h>0?`${h}h${m}min`:`${tm}min`;document.getElementById('rs-mode').textContent=tr.icon+' '+tr.label;document.getElementById('nav-start-wrap').style.display='block';showToast(`⚡ Optimisé: ${dist}km`)}}catch(e){console.error(e)}
 }
 
-// ═══════════════════════════════════
-// SETTINGS
-// ═══════════════════════════════════
-function toggleSection(header){header.classList.toggle('open');const body=header.nextElementSibling;body.classList.toggle('open')}
-
-function renderSettings(){renderTemplatesList();renderDtypesList();renderDataStats();updateTileStats();updatePWAStatus()}
-
-// ── TEMPLATES ──
-function renderTemplatesList(){
-  const c=document.getElementById('msg-templates-list');
-  if(!templates.length){c.innerHTML='<p style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Aucun modèle. Créez-en un ci-dessous.</p>';return}
-  c.innerHTML=templates.map((t,i)=>`<div class="s-msg-tpl"><div class="tpl-name">${esc(t.name)}<div class="s-actions"><button onclick="editTemplate(${i})" title="Modifier">✏️</button><button class="del" onclick="deleteTemplate(${i})" title="Supprimer">🗑️</button></div></div><div class="tpl-body">${esc(t.body)}</div></div>`).join('');
-}
-function addTemplate(){
-  const name=document.getElementById('tpl-name').value.trim(),body=document.getElementById('tpl-body').value.trim();
-  if(!name||!body){showToast('Nom et contenu requis',true);return}
-  templates.push({name,body});saveTpl();renderTemplatesList();document.getElementById('tpl-name').value='';document.getElementById('tpl-body').value='';showToast('Modèle ajouté ✅');
-}
-function editTemplate(i){
-  const t=templates[i];const name=prompt('Nom du modèle:',t.name);if(!name)return;
-  const body=prompt('Contenu du message:',t.body);if(!body)return;
-  templates[i]={name,body};saveTpl();renderTemplatesList();showToast('Modèle modifié');
-}
-function deleteTemplate(i){if(confirm(`Supprimer "${templates[i].name}" ?`)){templates.splice(i,1);saveTpl();renderTemplatesList();showToast('Modèle supprimé')}}
-
-// ── DELIVERY TYPES ──
-function renderDtypesList(){
-  const c=document.getElementById('dtypes-list');
-  c.innerHTML=dtypes.map((d,i)=>`<div class="s-list-item"><span class="s-label">${esc(d)}</span><div class="s-actions"><button onclick="editDtype(${i})">✏️</button><button class="del" onclick="deleteDtype(${i})">🗑️</button></div></div>`).join('');
-}
-function addDtype(){const v=document.getElementById('dtype-input').value.trim();if(!v){showToast('Nom requis',true);return}if(dtypes.includes(v)){showToast('Existe déjà',true);return}dtypes.push(v);saveDtypes();renderDtypesList();document.getElementById('dtype-input').value='';showToast('Type ajouté ✅')}
-function editDtype(i){const v=prompt('Modifier le type:',dtypes[i]);if(v&&v.trim()){dtypes[i]=v.trim();saveDtypes();renderDtypesList();showToast('Modifié')}}
-function deleteDtype(i){if(confirm(`Supprimer "${dtypes[i]}" ?`)){dtypes.splice(i,1);saveDtypes();renderDtypesList();showToast('Supprimé')}}
-function updateDtypesDatalist(){const dl=document.getElementById('dtypes-datalist');dl.innerHTML=dtypes.map(d=>`<option value="${esc(d)}">`).join('')}
-
-// ── MESSAGE SENDER ──
-function updateTplSelect(){const s=document.getElementById('msg-tpl-select');s.innerHTML='<option value="">— Choisir un modèle —</option>'+templates.map((t,i)=>`<option value="${i}">${esc(t.name)}</option>`).join('')}
-function previewMessage(){
-  const sel=document.getElementById('msg-tpl-select').value;
-  const prev=document.getElementById('msg-preview'),acts=document.getElementById('msg-actions');
-  if(sel===''){prev.style.display='none';return}
-  const tpl=templates[parseInt(sel)];if(!tpl)return;
-  const msg=tpl.body.replace(/\{client\}/g,document.getElementById('f-name').value||'Client').replace(/\{article\}/g,document.getElementById('f-article').value||'Article').replace(/\{qty\}/g,document.getElementById('f-qty').value||'1').replace(/\{prix\}/g,fmt(parseFloat(document.getElementById('f-price').value)||0)).replace(/\{phone\}/g,document.getElementById('f-phone').value||'').replace(/\{position\}/g,document.getElementById('f-position').value||'');
-  prev.textContent=msg;prev.style.display='block';
-}
-function getGeneratedMsg(){const prev=document.getElementById('msg-preview');return prev.textContent}
-function copyMessage(){navigator.clipboard.writeText(getGeneratedMsg()).then(()=>showToast('Copié 📋')).catch(()=>showToast('Erreur copie',true))}
-function sendWhatsApp(){const phone=(document.getElementById('f-phone').value||'').replace(/\s/g,'');const msg=encodeURIComponent(getGeneratedMsg());window.open(`https://wa.me/${phone}?text=${msg}`,'_blank')}
-function sendSMS(){const phone=document.getElementById('f-phone').value||'';const msg=encodeURIComponent(getGeneratedMsg());window.open(`sms:${phone}?body=${msg}`)}
-
-// ── OFFLINE TILES ──
-async function updateTileStats(){
-  try{const db=await openTileDB();const tx=db.transaction(TILESTORE,'readonly');const store=tx.objectStore(TILESTORE);const countReq=store.count();countReq.onsuccess=()=>{document.getElementById('tile-count').textContent=countReq.result;const size=countReq.result*15;document.getElementById('tile-size').textContent=size>1024?(size/1024).toFixed(1)+' Mo':size+' Ko'}}catch(e){document.getElementById('tile-count').textContent='—';document.getElementById('tile-size').textContent='—'}
-}
-async function downloadAreaTiles(){
-  // Use main map or route map bounds
-  const map=mainMap||routeMap;if(!map){showToast('Ouvrez la carte d\'abord',true);return}
-  const bounds=map.getBounds();const zoom=map.getZoom();
-  const minZ=Math.max(zoom-1,1),maxZ=Math.min(zoom+2,17);
-  const prog=document.getElementById('tile-progress'),fill=document.getElementById('tile-progress-fill'),txt=document.getElementById('tile-progress-text');
-  prog.style.display='block';txt.style.display='block';
-
-  let tiles=[],total=0;
-  for(let z=minZ;z<=maxZ;z++){
-    const min=latLngToTile(bounds.getSouthWest(),z),max=latLngToTile(bounds.getNorthEast(),z);
-    for(let x=min.x;x<=max.x;x++)for(let y=max.y;y<=min.y;y++)tiles.push({z,x,y});
-  }
-  total=tiles.length;
-  if(total>500){if(!confirm(`${total} tuiles à télécharger. Continuer ?`)){prog.style.display='none';txt.style.display='none';return}}
-  txt.textContent=`0 / ${total}`;let done=0;
-  const db=await openTileDB();
-  for(const t of tiles){
-    const key=`${t.z}/${t.x}/${t.y}`;
-    try{
-      const tx2=db.transaction(TILESTORE,'readonly');const exists=await new Promise(r=>{const rq=tx2.objectStore(TILESTORE).get(key);rq.onsuccess=()=>r(!!rq.result);rq.onerror=()=>r(false)});
-      if(!exists){
-        const sub=['a','b','c'][Math.floor(Math.random()*3)];
-        const url=`https://${sub}.basemaps.cartocdn.com/dark_all/${t.z}/${t.x}/${t.y}.png`;
-        const blob=await fetch(url).then(r=>r.blob());
-        const dataUrl=await new Promise(r=>{const rd=new FileReader();rd.onload=()=>r(rd.result);rd.readAsDataURL(blob)});
-        const wtx=db.transaction(TILESTORE,'readwrite');wtx.objectStore(TILESTORE).put(dataUrl,key);
-      }
-    }catch(e){}
-    done++;fill.style.width=((done/total)*100)+'%';txt.textContent=`${done} / ${total}`;
-  }
-  showToast(`${done} tuiles en cache ✅`);setTimeout(()=>{prog.style.display='none';txt.style.display='none'},2000);updateTileStats();
-}
-function latLngToTile(ll,z){const n=Math.pow(2,z);return{x:Math.floor((ll.lng+180)/360*n),y:Math.floor((1-Math.log(Math.tan(ll.lat*Math.PI/180)+1/Math.cos(ll.lat*Math.PI/180))/Math.PI)/2*n)}}
-async function clearTileCache(){if(!confirm('Vider le cache de tuiles ?'))return;try{await new Promise((ok,no)=>{const r=indexedDB.deleteDatabase(TILEDB);r.onsuccess=ok;r.onerror=no});showToast('Cache vidé ✅');updateTileStats()}catch(e){showToast('Erreur',true)}}
-
-// ── DATA ──
-function renderDataStats(){
-  const geo=data.filter(d=>d.lat&&d.lng).length;
-  document.getElementById('data-stats-section').innerHTML=`<div class="data-stat"><div class="ds-val">${data.length}</div><div class="ds-label">Livraisons</div></div><div class="data-stat"><div class="ds-val">${geo}</div><div class="ds-label">Géolocalisées</div></div><div class="data-stat"><div class="ds-val">${templates.length}</div><div class="ds-label">Modèles msg</div></div><div class="data-stat"><div class="ds-val">${dtypes.length}</div><div class="ds-label">Types livraison</div></div>`;
-}
-function exportJSON(){
-  const all={data,templates,dtypes,version:'LivraPro v4',exportDate:new Date().toISOString()};
-  const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('JSON exporté 📤');
-}
-function exportCSV(){
-  if(!data.length){showToast('Rien à exporter',true);return}
-  const h=['Client','Téléphone','Article','Qté','Prix','Bénéfice','Statut','Position','Lat','Lng','Date'];
-  const rows=data.map(d=>[d.name,d.phone,d.article,d.qty,d.price,d.profit,d.status,d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);
-  const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊');
-}
-function importJSON(e){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();reader.onload=ev=>{
-    try{
-      const obj=JSON.parse(ev.target.result);
-      if(obj.data&&Array.isArray(obj.data)){
-        const merge=confirm(`Importer ${obj.data.length} livraisons ?\n\n"OK" = Fusionner avec les données existantes\n"Annuler" = Annuler l'import`);
-        if(!merge)return;
-        const existingIds=new Set(data.map(d=>d.id));
-        let added=0;
-        obj.data.forEach(d=>{if(!existingIds.has(d.id)){data.push(d);added++}});
-        if(obj.templates)templates=[...templates,...obj.templates.filter(t=>!templates.find(x=>x.name===t.name))];
-        if(obj.dtypes)dtypes=[...new Set([...dtypes,...obj.dtypes])];
-        save();saveTpl();saveDtypes();renderTable();renderSettings();
-        showToast(`${added} livraisons importées ✅`);
-      }else{showToast('Format invalide',true)}
-    }catch(x){showToast('Fichier invalide',true)}
-  };reader.readAsText(file);e.target.value='';
-}
-function clearAllData(){
-  if(!confirm('⚠️ SUPPRIMER TOUTES LES DONNÉES ?\n\nCette action est irréversible !'))return;
-  if(!confirm('Êtes-vous VRAIMENT sûr ? Toutes les livraisons, modèles et types seront perdus.'))return;
-  data=[];templates=[];dtypes=['Brioche','Carte mémoire','Ciment','Fer','Bois','Électronique','Textile','Alimentaire'];
-  save();saveTpl();saveDtypes();renderTable();renderSettings();showToast('Données supprimées');
+// ═══════════════ NAVIGATION ═══════════════
+function startNavigation(){
+  if(!navigator.geolocation){showToast('GPS requis',true);return}
+  if(!navStops.length){showToast('Calculez la route d\'abord',true);return}
+  navActive=true;navCurrentStop=0;navVoice=true;
+  document.getElementById('route-sidebar').classList.add('hidden');
+  document.getElementById('nav-hud').classList.add('show');
+  document.getElementById('nav-hud-top').classList.add('show');
+  document.getElementById('nav-voice-btn').className='nav-btn nav-btn-voice';
+  document.getElementById('nav-voice-btn').textContent='🔊 Voix ON';
+  routeMap.invalidateSize();
+  speak('Navigation démarrée. Dirigez-vous vers '+navStops[0].name);
+  updateNavCard();
+  navWatchId=navigator.geolocation.watchPosition(onGpsUpdate,e=>{showToast('Signal GPS perdu',true)},{enableHighAccuracy:true,maximumAge:3000,timeout:10000});
 }
 
-// ═══════════════════════════════════
-// PWA
-// ═══════════════════════════════════
-// Manifest
-const manifest={name:'LivraPro',short_name:'LivraPro',description:'Gestion de livraison professionnelle',start_url:location.href,display:'standalone',background_color:'#0a0c10',theme_color:'#0a0c10',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%230a0c10" width="100" height="100" rx="20"/><text y="70" x="50" text-anchor="middle" font-size="55">🚚</text></svg>',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
-const manifestBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
-const manifestURL=URL.createObjectURL(manifestBlob);
-const link=document.createElement('link');link.rel='manifest';link.href=manifestURL;document.head.appendChild(link);
+function stopNavigation(){
+  navActive=false;
+  if(navWatchId!==null){navigator.geolocation.clearWatch(navWatchId);navWatchId=null}
+  if(navGpsMarker){routeMap.removeLayer(navGpsMarker);navGpsMarker=null}
+  document.getElementById('route-sidebar').classList.remove('hidden');
+  document.getElementById('nav-hud').classList.remove('show');
+  document.getElementById('nav-hud-top').classList.remove('show');
+  speechSynthesis.cancel();
+  setTimeout(()=>routeMap.invalidateSize(),400);
+  showToast('Navigation arrêtée');
+}
 
-// Service Worker
-const swCode=`
-const CACHE='livrapro-v4';
-const PRECACHE=[self.location.href];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(PRECACHE)).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});
-self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const clone=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,clone))}return resp}).catch(()=>caches.match(e.request)))});
-`;
+function toggleSidebar(){
+  const sb=document.getElementById('route-sidebar');
+  sb.classList.toggle('hidden');
+  setTimeout(()=>routeMap.invalidateSize(),400);
+}
 
-async function registerSW(){
-  if(!('serviceWorker' in navigator)){document.getElementById('sw-status').textContent='Non supporté';return}
-  try{
-    const blob=new Blob([swCode],{type:'application/javascript'});
-    const url=URL.createObjectURL(blob);
-    // Blob SW registration — may not work in all browsers
-    try{
-      const reg=await navigator.serviceWorker.register(url,{scope:'/'});
-      document.getElementById('sw-status').textContent='Actif ✅';
-    }catch(e){
-      // Blob URLs typically fail, show manual instructions
-      document.getElementById('sw-status').textContent='Mode cache auto via IndexedDB ✅';
+function toggleVoice(){
+  navVoice=!navVoice;
+  const btn=document.getElementById('nav-voice-btn');
+  if(navVoice){btn.className='nav-btn nav-btn-voice';btn.textContent='🔊 Voix ON'}
+  else{btn.className='nav-btn nav-btn-voice muted';btn.textContent='🔇 Voix OFF';speechSynthesis.cancel()}
+}
+
+function recenterNav(){
+  if(navGpsMarker)routeMap.setView(navGpsMarker.getLatLng(),17);
+}
+
+function speak(text){
+  if(!navVoice||!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='fr-FR';u.rate=1;u.pitch=1;
+  const voices=speechSynthesis.getVoices();
+  const fr=voices.find(v=>v.lang.startsWith('fr'));
+  if(fr)u.voice=fr;
+  speechSynthesis.speak(u);
+}
+
+function onGpsUpdate(pos){
+  const lat=pos.coords.latitude,lng=pos.coords.longitude;
+  // Update marker
+  if(!navGpsMarker){navGpsMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="gps-dot"></div>',iconSize:[20,20],iconAnchor:[10,10]})}).addTo(routeMap)}
+  else navGpsMarker.setLatLng([lat,lng]);
+  routeMap.setView([lat,lng],17);
+
+  if(navCurrentStop>=navStops.length)return;
+  const stop=navStops[navCurrentStop];
+  const dist=haversine(lat,lng,stop.lat,stop.lng);
+
+  // Update HUD
+  document.getElementById('nav-dist').textContent=dist<1?(dist*1000).toFixed(0)+' m':dist.toFixed(1)+' km';
+
+  // Progress
+  const pct=Math.min(100,((navCurrentStop/navStops.length)*100)+((1/navStops.length)*(1-dist/2))*100);
+  document.getElementById('nav-progress-fill').style.width=Math.max(0,Math.min(100,pct))+'%';
+
+  // ETA based on speed
+  const speed=pos.coords.speed||0;
+  if(speed>0.5){const eta=Math.round((dist*1000)/(speed*60));document.getElementById('nav-eta').textContent=eta>60?Math.floor(eta/60)+'h'+eta%60+'min':eta+'min'}
+
+  // Arrived? (within 50m)
+  if(dist<0.05){
+    speak(`Vous êtes arrivé chez ${stop.name}`);
+    showToast(`✅ Arrivé: ${stop.name}`);
+    // Highlight item in sidebar
+    document.querySelectorAll('.route-item').forEach((el,i)=>el.classList.toggle('active-stop',i===navCurrentStop));
+    navCurrentStop++;
+    if(navCurrentStop<navStops.length){
+      setTimeout(()=>{speak('Prochain arrêt: '+navStops[navCurrentStop].name);updateNavCard()},3000);
+    }else{
+      setTimeout(()=>{speak('Toutes les livraisons sont terminées. Bravo !');document.getElementById('nav-dest').textContent='🎉 Terminé !';document.getElementById('nav-dist').textContent='';document.getElementById('nav-addr').textContent='Toutes les livraisons effectuées';document.getElementById('nav-progress-fill').style.width='100%'},3000);
     }
-  }catch(e){document.getElementById('sw-status').textContent='Mode cache local ✅'}
-}
-
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;updatePWAStatus()});
-window.addEventListener('appinstalled',()=>{deferredPrompt=null;updatePWAStatus();showToast('App installée 📱')});
-
-function updatePWAStatus(){
-  const btn=document.getElementById('pwa-install-btn'),st=document.getElementById('pwa-status');
-  if(window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone){
-    btn.textContent='✅ Application installée';btn.disabled=true;btn.style.opacity='.6';st.textContent='LivraPro fonctionne en mode application';
-  }else if(deferredPrompt){
-    btn.textContent='📲 Installer sur l\'appareil';btn.disabled=false;btn.style.opacity='1';st.textContent='Prêt à installer';
+  }
+  // Approaching (200m)
+  else if(dist<0.2&&dist>0.05){
+    document.getElementById('nav-arrow').textContent='📍';
   }else{
-    btn.textContent='📲 Installer';btn.disabled=false;st.textContent='Sur iOS: Safari → Partager → "Sur l\'écran d\'accueil"';
+    document.getElementById('nav-arrow').textContent='➡️';
   }
 }
-async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted')showToast('Installation lancée 📱');deferredPrompt=null;updatePWAStatus()}else{showToast('Utilisez "Ajouter à l\'écran d\'accueil" dans votre navigateur');}}
 
-// ═══════════════════════════════════
-// TOAST + KEYBOARD
-// ═══════════════════════════════════
+function updateNavCard(){
+  if(navCurrentStop>=navStops.length)return;
+  const s=navStops[navCurrentStop];
+  document.getElementById('nav-dest').textContent=`${navCurrentStop+1}/${navStops.length} — ${s.name}`;
+  document.getElementById('nav-addr').textContent=s.position||`${s.lat.toFixed(4)}, ${s.lng.toFixed(4)}`;
+  document.getElementById('nav-arrow').textContent='➡️';
+}
+
+function haversine(lat1,lon1,lat2,lon2){const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180,a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))}
+
+// ═══════════════ SETTINGS ═══════════════
+function toggleSection(h){h.classList.toggle('open');h.nextElementSibling.classList.toggle('open')}
+function renderSettings(){renderTemplatesList();renderDtypesList();renderDataStats();updateTileStats();updatePWAStatus();renderSecurityToggles();renderLocationToggles()}
+function renderTemplatesList(){const c=document.getElementById('msg-templates-list');if(!templates.length){c.innerHTML='<p style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Aucun modèle.</p>';return}c.innerHTML=templates.map((t,i)=>`<div class="s-msg-tpl"><div class="tpl-name">${esc(t.name)}<div class="s-actions" style="display:flex;gap:4px"><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="editTemplate(${i})">✏️</button><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="deleteTemplate(${i})">🗑️</button></div></div><div class="tpl-body">${esc(t.body)}</div></div>`).join('')}
+function addTemplate(){const name=document.getElementById('tpl-name').value.trim(),body=document.getElementById('tpl-body').value.trim();if(!name||!body){showToast('Remplir les champs',true);return}templates.push({name,body});saveTpl();renderTemplatesList();document.getElementById('tpl-name').value='';document.getElementById('tpl-body').value='';showToast('Modèle ajouté ✅')}
+function editTemplate(i){const t=templates[i],name=prompt('Nom:',t.name);if(!name)return;const body=prompt('Contenu:',t.body);if(!body)return;templates[i]={name,body};saveTpl();renderTemplatesList()}
+function deleteTemplate(i){if(confirm(`Supprimer "${templates[i].name}" ?`)){templates.splice(i,1);saveTpl();renderTemplatesList()}}
+function renderDtypesList(){const c=document.getElementById('dtypes-list');if(!dtypes.length){c.innerHTML='<p style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Aucun type.</p>';return}c.innerHTML=dtypes.map((d,i)=>{const profit=((d.sellPrice||0)-(d.buyPrice||0));const profitClass=profit>=0?'':'negative';return`<div class="dtype-card"><div class="dtype-header"><span class="dtype-name">${esc(d.name)}</span><div style="display:flex;gap:4px"><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="editDtype(${i})">✏️</button><button style="background:var(--bg3);border:1px solid var(--border);color:var(--danger);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="deleteDtype(${i})">🗑️</button></div></div><div class="dtype-prices"><div class="dtype-price-box sell"><div class="dp-label">Prix vente</div><div class="dp-val">${fmt(d.sellPrice||0)}</div></div><div class="dtype-price-box buy"><div class="dp-label">Prix achat</div><div class="dp-val">${fmt(d.buyPrice||0)}</div></div><div class="dtype-price-box profit ${profitClass}"><div class="dp-label">Bénéfice</div><div class="dp-val">${profit>=0?'+':''}${fmt(profit)}</div></div></div></div>`}).join('')}
+function addDtype(){const v=document.getElementById('dtype-input').value.trim(),sp=parseFloat(document.getElementById('dtype-sell').value)||0,bp=parseFloat(document.getElementById('dtype-buy').value)||0;if(!v){showToast('Nom requis',true);return}if(dtypes.find(d=>d.name===v)){showToast('Existe déjà',true);return}dtypes.push({name:v,sellPrice:sp,buyPrice:bp});saveDtypes();renderDtypesList();document.getElementById('dtype-input').value='';document.getElementById('dtype-sell').value='';document.getElementById('dtype-buy').value='';showToast('Type ajouté ✅')}
+function editDtype(i){const d=dtypes[i];const name=prompt('Nom:',d.name);if(!name)return;const sp=parseFloat(prompt('Prix de vente (€):',d.sellPrice||0));const bp=parseFloat(prompt('Prix d\'achat (€):',d.buyPrice||0));dtypes[i]={name:name.trim(),sellPrice:isNaN(sp)?0:sp,buyPrice:isNaN(bp)?0:bp};saveDtypes();renderDtypesList();showToast('Modifié ✅')}
+function deleteDtype(i){if(confirm(`Supprimer "${dtypes[i].name}" ?`)){dtypes.splice(i,1);saveDtypes();renderDtypesList();showToast('Supprimé')}}
+function updateDtypesDatalist(){document.getElementById('dtypes-datalist').innerHTML=dtypes.map(d=>`<option value="${esc(d.name)}">`).join('')}
+function autoFillFromDtype(){const article=document.getElementById('f-article').value;const dt=dtypes.find(d=>d.name===article);if(dt){const qty=parseInt(document.getElementById('f-qty').value)||1;document.getElementById('f-price').value=(dt.sellPrice*qty).toFixed(2);document.getElementById('f-profit').value=((dt.sellPrice-dt.buyPrice)*qty).toFixed(2)}}
+
+// Offline tiles
+async function updateTileStats(){try{const db=await openTileDB(),tx=db.transaction(TILESTORE,'readonly'),req=tx.objectStore(TILESTORE).count();req.onsuccess=()=>{document.getElementById('tile-count').textContent=req.result;const s=req.result*15;document.getElementById('tile-size').textContent=s>1024?(s/1024).toFixed(1)+' Mo':s+' Ko'}}catch(e){}}
+async function downloadAreaTiles(){const map=mainMap||routeMap;if(!map){showToast('Ouvrez une carte d\'abord',true);return}const bounds=map.getBounds(),zoom=map.getZoom(),minZ=Math.max(zoom-1,1),maxZ=Math.min(zoom+2,17);const prog=document.getElementById('tile-progress'),fill=document.getElementById('tile-progress-fill'),txt=document.getElementById('tile-progress-text');prog.style.display='block';txt.style.display='block';let tiles=[];for(let z=minZ;z<=maxZ;z++){const mn=llToTile(bounds.getSouthWest(),z),mx=llToTile(bounds.getNorthEast(),z);for(let x=mn.x;x<=mx.x;x++)for(let y=mx.y;y<=mn.y;y++)tiles.push({z,x,y})}const total=tiles.length;if(total>500&&!confirm(`${total} tuiles. Continuer ?`)){prog.style.display='none';txt.style.display='none';return}let done=0;const db=await openTileDB();for(const t of tiles){const key=`${t.z}/${t.x}/${t.y}`;try{const tx2=db.transaction(TILESTORE,'readonly'),ex=await new Promise(r=>{const rq=tx2.objectStore(TILESTORE).get(key);rq.onsuccess=()=>r(!!rq.result);rq.onerror=()=>r(false)});if(!ex){const sub=['a','b','c'][Math.floor(Math.random()*3)],url=`https://${sub}.basemaps.cartocdn.com/${currentTheme==='light'?'light':'dark'}_all/${t.z}/${t.x}/${t.y}.png`,blob=await fetch(url).then(r=>r.blob()),du=await new Promise(r=>{const rd=new FileReader;rd.onload=()=>r(rd.result);rd.readAsDataURL(blob)});db.transaction(TILESTORE,'readwrite').objectStore(TILESTORE).put(du,key)}}catch(e){}done++;fill.style.width=(done/total*100)+'%';txt.textContent=`${done}/${total}`}showToast(`${done} tuiles ✅`);setTimeout(()=>{prog.style.display='none';txt.style.display='none'},2000);updateTileStats()}
+function llToTile(ll,z){const n=Math.pow(2,z);return{x:Math.floor((ll.lng+180)/360*n),y:Math.floor((1-Math.log(Math.tan(ll.lat*Math.PI/180)+1/Math.cos(ll.lat*Math.PI/180))/Math.PI)/2*n)}}
+async function clearTileCache(){if(!confirm('Vider le cache ?'))return;try{await new Promise((ok,no)=>{const r=indexedDB.deleteDatabase(TILEDB);r.onsuccess=ok;r.onerror=no});showToast('Cache vidé ✅');updateTileStats()}catch(e){}}
+
+// Data
+function renderDataStats(){const g=data.filter(d=>d.lat&&d.lng).length;document.getElementById('data-stats-section').innerHTML=`<div class="data-stat"><div class="ds-val">${data.length}</div><div class="ds-label">Livraisons</div></div><div class="data-stat"><div class="ds-val">${g}</div><div class="ds-label">GPS</div></div><div class="data-stat"><div class="ds-val">${templates.length}</div><div class="ds-label">Modèles</div></div><div class="data-stat"><div class="ds-val">${dtypes.length}</div><div class="ds-label">Types</div></div>`}
+function exportJSON(){const all={data,templates,dtypes,version:'LivraPro v5',exportDate:new Date().toISOString()};const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('JSON exporté 📤')}
+function exportCSV(){if(!data.length){showToast('Vide',true);return}const h=['Client','Tél','Article','Qté','Prix','Bénéfice','Statut','Position','Lat','Lng','Date'],rows=data.map(d=>[d.name,d.phone,d.article,d.qty,d.price,d.profit,d.status,d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊')}
+function importJSON(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader;reader.onload=ev=>{try{const obj=JSON.parse(ev.target.result);if(obj.data&&Array.isArray(obj.data)){if(!confirm(`Importer ${obj.data.length} livraisons ?`))return;const ids=new Set(data.map(d=>d.id));let n=0;obj.data.forEach(d=>{if(!ids.has(d.id)){data.push(d);n++}});if(obj.templates)templates=[...templates,...obj.templates.filter(t=>!templates.find(x=>x.name===t.name))];if(obj.dtypes){const incoming=obj.dtypes.map(d=>typeof d==='string'?{name:d,sellPrice:0,buyPrice:0}:d);dtypes=[...dtypes,...incoming.filter(d=>!dtypes.find(x=>x.name===d.name))]};save();saveTpl();saveDtypes();renderTable();renderSettings();showToast(`${n} importés ✅`)}else showToast('Format invalide',true)}catch(x){showToast('Fichier invalide',true)}};reader.readAsText(file);e.target.value=''}
+function clearAllData(){if(!confirm('⚠️ TOUT SUPPRIMER ?'))return;if(!confirm('Dernière chance !'))return;data=[];templates=[];dtypes=[{name:'Brioche',sellPrice:2,buyPrice:1},{name:'Carte mémoire',sellPrice:15,buyPrice:8},{name:'Ciment',sellPrice:12,buyPrice:7},{name:'Fer',sellPrice:25,buyPrice:15}];save();saveTpl();saveDtypes();renderTable();renderSettings();showToast('Données supprimées')}
+
+// PWA
+const manifest={name:'LivraPro',short_name:'LivraPro',description:'Gestion livraison pro',start_url:location.href,display:'standalone',background_color:'#0a0c10',theme_color:'#0a0c10',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%230a0c10" width="100" height="100" rx="20"/><text y="70" x="50" text-anchor="middle" font-size="55">🚚</text></svg>',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'}),mURL=URL.createObjectURL(mBlob),mLink=document.createElement('link');mLink.rel='manifest';mLink.href=mURL;document.head.appendChild(mLink);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;updatePWAStatus()});
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;updatePWAStatus()});
+function updatePWAStatus(){const btn=document.getElementById('pwa-install-btn'),st=document.getElementById('pwa-status');if(window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone){btn.textContent='✅ Installée';btn.disabled=true;st.textContent='Mode application'}else if(deferredPrompt){btn.textContent='📲 Installer';st.textContent='Prêt'}else{btn.textContent='📲 Installer';st.textContent='iOS: Safari → Partager → Écran d\'accueil'}}
+async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;updatePWAStatus()}else showToast('Utilisez "Ajouter à l\'écran d\'accueil"')}
+async function registerSW(){if(!('serviceWorker' in navigator)){document.getElementById('sw-status').textContent='Non supporté';return}try{document.getElementById('sw-status').textContent='Cache IndexedDB actif ✅'}catch(e){document.getElementById('sw-status').textContent='Cache local ✅'}}
+
 function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' error':'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else closeModal()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
 
-// ═══════════════════════════════════
-// INIT
-// ═══════════════════════════════════
-renderTable();renderStats();registerSW();
-// Show msg sender if templates exist
-document.getElementById('f-name').addEventListener('input',()=>{const ms=document.getElementById('msg-sender-section');if(templates.length)ms.style.display='block'});
+// Load voices
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+
+renderTable();renderStats();registerSW();applyTheme();
+if(hidePrices)document.body.classList.add('hide-prices');
+if(defaultStart)document.getElementById('route-start').value=defaultStart;
+if(autoGeo)setTimeout(detectMyLocation,1000);
+document.getElementById('f-name').addEventListener('input',()=>{if(templates.length)document.getElementById('msg-sender-section').style.display='block'});
 </script>
 </body>
 </html>
