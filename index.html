@@ -365,7 +365,12 @@ tr.has-dup{border-left:3px solid var(--orange)!important}
 .lp-marker-pick .lp-marker-pin{background:#a07cf2}
 /* GPS user marker */
 .gps-dot{width:20px;height:20px;background:var(--blue);border:3px solid #fff;border-radius:50%;box-shadow:0 0 16px rgba(90,138,242,.6),0 0 40px rgba(90,138,242,.3);animation:gpsPulse 2s infinite}
+.gps-ring{border:2px solid rgba(90,138,242,.3);background:rgba(90,138,242,.08);border-radius:50%}
 @keyframes gpsPulse{0%,100%{box-shadow:0 0 16px rgba(90,138,242,.6)}50%{box-shadow:0 0 28px rgba(90,138,242,.8),0 0 60px rgba(90,138,242,.3)}}
+.locate-me-btn{position:absolute;bottom:20px;right:10px;z-index:1000;width:44px;height:44px;border-radius:50%;background:var(--bg2);border:2px solid var(--border);color:var(--blue);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);transition:all .2s}
+.locate-me-btn:hover{border-color:var(--blue);background:var(--blue-glow);box-shadow:0 0 20px var(--blue-glow)}
+.locate-me-btn.tracking{border-color:var(--blue);background:var(--blue-glow);animation:gpsPulse 2s infinite}
+.locate-me-btn.loading{opacity:.6;pointer-events:none}
 .leaflet-control-zoom a{background:var(--bg2)!important;color:var(--text)!important;border-color:var(--border)!important}
 .leaflet-popup-content-wrapper{background:var(--bg2)!important;color:var(--text)!important;border-radius:var(--radius-sm)!important;box-shadow:var(--shadow)!important}
 .leaflet-popup-tip{background:var(--bg2)!important}
@@ -623,7 +628,7 @@ body.hide-prices .col-money *{color:transparent!important}
 </div>
 
 <!-- TAB MAP -->
-<div class="tab-content" id="tab-map"><div id="map-container"><div id="main-map"></div><div class="map-style-bar" id="map-style-bar-main"><button class="map-style-btn auto-style active" data-style="auto" onclick="setMapStyle('auto')">🔄 Auto</button><button class="map-style-btn" data-style="light" onclick="setMapStyle('light')">☀️ Jour</button><button class="map-style-btn" data-style="dark" onclick="setMapStyle('dark')">🌙 Nuit</button></div></div></div>
+<div class="tab-content" id="tab-map"><div id="map-container"><div id="main-map"></div><div class="map-style-bar" id="map-style-bar-main"><button class="map-style-btn auto-style active" data-style="auto" onclick="setMapStyle('auto')">🔄 Auto</button><button class="map-style-btn" data-style="light" onclick="setMapStyle('light')">☀️ Jour</button><button class="map-style-btn" data-style="dark" onclick="setMapStyle('dark')">🌙 Nuit</button></div><button class="locate-me-btn" id="locate-me-btn" onclick="toggleMyLocationTracking()" title="Ma position">📍</button></div></div>
 
 <!-- TAB ROUTE -->
 <div class="tab-content" id="tab-route">
@@ -968,6 +973,7 @@ if(!dtypes.length){dtypes=[{name:'Brioche',sellPrice:2,buyPrice:1,image:''},{nam
 let editingId=null,pendingEntry=null,currentTransport='car';
 let mainMap=null,routeMap=null,modalMap=null;
 let mainMarkers=[],routeMarkers=[],routeLine=null,modalMarker=null;
+let myLocMarker=null,myLocCircle=null,myLocWatchId=null,myLocTracking=false;
 let pickedLat=null,pickedLng=null,deferredPrompt=null;
 let selectedIds=new Set();
 let hidePrices=localStorage.getItem('livrapro_hideprices')==='true';
@@ -1174,7 +1180,7 @@ function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
-  if(tab==='map'){requestAnimationFrame(()=>setTimeout(()=>{const center=(centerMe&&myLat)?[myLat,myLng]:DCENTER;if(!mainMap){mainMap=L.map('main-map').setView(center,centerMe&&myLat?14:11);createTileLayer().addTo(mainMap)}mainMap.invalidateSize();renderMainMarkers()},60))}
+  if(tab==='map'){requestAnimationFrame(()=>setTimeout(()=>{const center=(centerMe&&myLat)?[myLat,myLng]:DCENTER;if(!mainMap){mainMap=L.map('main-map').setView(center,centerMe&&myLat?14:11);createTileLayer().addTo(mainMap);if(autoGeo&&!myLocTracking)setTimeout(toggleMyLocationTracking,500)}mainMap.invalidateSize();renderMainMarkers();if(myLocTracking&&myLat)updateMyLocationMarker({coords:{latitude:myLat,longitude:myLng,accuracy:20}})},60))}
   if(tab==='route'){requestAnimationFrame(()=>setTimeout(()=>{if(!routeMap){routeMap=L.map('route-map').setView(DCENTER,11);createTileLayer().addTo(routeMap)}routeMap.invalidateSize();if(!navActive)renderRouteList()},60))}
   if(tab==='settings')renderSettings();
 }
@@ -1707,6 +1713,7 @@ function detectMyLocation(){
     document.getElementById('loc-coords').textContent=`${myLat.toFixed(6)}, ${myLng.toFixed(6)} (±${Math.round(p.coords.accuracy)}m)`;
     showToast('Position détectée ✅');
     if(centerMe&&mainMap)mainMap.setView([myLat,myLng],14);
+    if(myLocTracking&&mainMap)updateMyLocationMarker(p);
   },()=>showToast('Erreur GPS',true),{enableHighAccuracy:highGPS,timeout:15000});
 }
 function toggleHighGPS(){highGPS=!highGPS;localStorage.setItem('livrapro_highgps',highGPS);setToggle('tog-highgps',highGPS);showToast(highGPS?'Haute précision ON':'Précision standard')}
@@ -1734,8 +1741,70 @@ function sendWhatsApp(){const ph=(document.getElementById('f-phone').value||'').
 function sendSMS(){const dev=getDeviceInfo();const ph=document.getElementById('f-phone').value||'';window.open(`sms:${ph}${dev.smsSep}${encodeURIComponent(getGeneratedMsg())}`);if(editingId){const d=data.find(x=>x.id===editingId);if(d){d.lastMsgAt=Date.now();d.lastMsgType='sms';save()}}}
 
 // ═══════════════ MAIN MAP ═══════════════
-function renderMainMarkers(){if(!mainMap)return;mainMarkers.forEach(m=>mainMap.removeLayer(m));mainMarkers=[];const geo=data.filter(d=>d.lat&&d.lng);if(!geo.length)return;const bounds=[];geo.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(mainMap);m.bindPopup(`<div class="popup-name">${esc(fullName(d))}</div><div class="popup-detail">${esc(d.article)} ×${d.qty} — ${fmt(d.price)}</div>`);mainMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)mainMap.fitBounds(bounds,{padding:[50,50]});else mainMap.setView(bounds[0],15)}
+function renderMainMarkers(){if(!mainMap)return;mainMarkers.forEach(m=>mainMap.removeLayer(m));mainMarkers=[];const geo=data.filter(d=>d.lat&&d.lng);if(!geo.length){if(myLat&&myLocTracking)mainMap.setView([myLat,myLng],14);return}const bounds=[];geo.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(mainMap);m.bindPopup(`<div class="popup-name">${esc(fullName(d))}</div><div class="popup-detail">${esc(d.article)} ×${d.qty} — ${fmt(d.price)}</div>`);mainMarkers.push(m);bounds.push([d.lat,d.lng])});if(myLat&&myLocTracking)bounds.push([myLat,myLng]);if(bounds.length>1)mainMap.fitBounds(bounds,{padding:[50,50]});else mainMap.setView(bounds[0],15)}
 function focusClient(id){const d=data.find(x=>x.id===id);if(!d||!d.lat||!d.lng){showToast('Pas de GPS',true);return}switchTab('map');setTimeout(()=>{if(mainMap){mainMap.setView([d.lat,d.lng],16);mainMarkers.forEach(m=>{const l=m.getLatLng();if(Math.abs(l.lat-d.lat)<.0001&&Math.abs(l.lng-d.lng)<.0001)m.openPopup()})}},200)}
+
+// ═══════════════ MY LOCATION ON MAP ═══════════════
+function toggleMyLocationTracking(){
+  if(myLocTracking){stopMyLocationTracking();return}
+  if(!navigator.geolocation){showToast('GPS non disponible',true);return}
+  const btn=document.getElementById('locate-me-btn');
+  btn.classList.add('loading');btn.textContent='⏳';
+  showToast('Recherche GPS...');
+  // First get position, then start watching
+  navigator.geolocation.getCurrentPosition(pos=>{
+    myLat=pos.coords.latitude;myLng=pos.coords.longitude;
+    updateMyLocationMarker(pos);
+    mainMap.setView([myLat,myLng],16);
+    btn.classList.remove('loading');btn.classList.add('tracking');btn.textContent='📍';
+    myLocTracking=true;
+    // Start continuous tracking
+    myLocWatchId=navigator.geolocation.watchPosition(updateMyLocationMarker,err=>{
+      showToast('Signal GPS perdu',true);
+    },{enableHighAccuracy:highGPS,maximumAge:5000,timeout:15000});
+    showToast('Position activée ✅');
+    // Update settings display
+    document.getElementById('loc-coords').textContent=`${myLat.toFixed(6)}, ${myLng.toFixed(6)} (±${Math.round(pos.coords.accuracy)}m)`;
+  },err=>{
+    btn.classList.remove('loading');btn.textContent='📍';
+    showToast('Impossible d\'obtenir la position',true);
+  },{enableHighAccuracy:highGPS,timeout:15000});
+}
+
+function stopMyLocationTracking(){
+  myLocTracking=false;
+  if(myLocWatchId!==null){navigator.geolocation.clearWatch(myLocWatchId);myLocWatchId=null}
+  if(myLocMarker){mainMap.removeLayer(myLocMarker);myLocMarker=null}
+  if(myLocCircle){mainMap.removeLayer(myLocCircle);myLocCircle=null}
+  const btn=document.getElementById('locate-me-btn');
+  btn.classList.remove('tracking');btn.textContent='📍';
+  showToast('Position désactivée');
+}
+
+function updateMyLocationMarker(pos){
+  const lat=pos.coords.latitude,lng=pos.coords.longitude,acc=pos.coords.accuracy;
+  myLat=lat;myLng=lng;
+  if(!mainMap)return;
+  // Blue dot
+  if(!myLocMarker){
+    myLocMarker=L.marker([lat,lng],{
+      icon:L.divIcon({className:'',html:'<div class="gps-dot"></div>',iconSize:[20,20],iconAnchor:[10,10]}),
+      zIndexOffset:1000
+    }).addTo(mainMap);
+    myLocMarker.bindPopup('<div class="popup-name">📍 Ma position</div><div class="popup-detail" id="myloc-popup-detail">—</div>');
+  }else{
+    myLocMarker.setLatLng([lat,lng]);
+  }
+  // Accuracy circle
+  if(!myLocCircle){
+    myLocCircle=L.circle([lat,lng],{radius:acc,className:'gps-ring',fillOpacity:0.08,weight:2,color:'rgba(90,138,242,.3)',interactive:false}).addTo(mainMap);
+  }else{
+    myLocCircle.setLatLng([lat,lng]);myLocCircle.setRadius(acc);
+  }
+  // Update popup content
+  const popupEl=document.getElementById('myloc-popup-detail');
+  if(popupEl)popupEl.textContent=`${lat.toFixed(6)}, ${lng.toFixed(6)} (±${Math.round(acc)}m)`;
+}
 
 // ═══════════════ ROUTE ═══════════════
 function getRouteClients(){const f=document.getElementById('route-filter').value;return data.filter(d=>d.lat&&d.lng&&(f==='all'||d.status===f))}
