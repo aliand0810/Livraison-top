@@ -508,6 +508,7 @@ body.hide-col-status .sticky-name-table th:nth-child(9),body.hide-col-status .st
 body.hide-col-delivery .sticky-name-table th:nth-child(10),body.hide-col-delivery .sticky-name-table td:nth-child(10){display:none!important}
 body.hide-col-position .sticky-name-table th:nth-child(11),body.hide-col-position .sticky-name-table td:nth-child(11){display:none!important}
 body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .sticky-name-table td:nth-child(12){display:none!important}
+body.hide-col-duedate .sticky-name-table th:nth-child(13),body.hide-col-duedate .sticky-name-table td:nth-child(13){display:none!important}
 
 /* Column visibility grid */
 .col-vis-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -740,7 +741,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
     </div>
     <div class="section-body open" id="pending-section">
       <div class="table-wrap" style="padding:0">
-        <table class="sticky-name-table"><thead><tr><th><input type="checkbox" class="cb" id="selectAllPending" onchange="toggleSelectAll('pending')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body-pending"></tbody></table>
+        <table class="sticky-name-table"><thead><tr><th><input type="checkbox" class="cb" id="selectAllPending" onchange="toggleSelectAll('pending')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>📅 Livr.</th><th>Actions</th></tr></thead><tbody id="table-body-pending"></tbody></table>
       </div>
       <div class="empty-state" id="empty-pending" style="display:none;padding:20px"><div class="eico">🎉</div><h3>Tout est livré !</h3></div>
     </div>
@@ -755,7 +756,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
     </div>
     <div class="section-body open" id="delivered-section">
       <div class="table-wrap" style="padding:0">
-        <table class="sticky-name-table"><thead><tr><th><input type="checkbox" class="cb" id="selectAllDelivered" onchange="toggleSelectAll('delivered')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body-delivered"></tbody></table>
+        <table class="sticky-name-table"><thead><tr><th><input type="checkbox" class="cb" id="selectAllDelivered" onchange="toggleSelectAll('delivered')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>📅 Livr.</th><th>Actions</th></tr></thead><tbody id="table-body-delivered"></tbody></table>
       </div>
       <div class="empty-state" id="empty-delivered" style="display:none;padding:20px"><div class="eico">📦</div><h3>Aucune livraison terminée</h3></div>
     </div>
@@ -770,7 +771,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
     </div>
     <div class="section-body" id="absent-section">
       <div class="table-wrap" style="padding:0">
-        <table class="sticky-name-table"><thead><tr><th><input type="checkbox" class="cb" id="selectAllAbsent" onchange="toggleSelectAll('absent')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body-absent"></tbody></table>
+        <table class="sticky-name-table"><thead><tr><th><input type="checkbox" class="cb" id="selectAllAbsent" onchange="toggleSelectAll('absent')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>📅 Livr.</th><th>Actions</th></tr></thead><tbody id="table-body-absent"></tbody></table>
       </div>
       <div class="empty-state" id="empty-absent" style="display:none;padding:20px"><div class="eico">👍</div><h3>Tous les clients sont disponibles</h3></div>
     </div>
@@ -1124,6 +1125,12 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
       <div class="pv-row" id="pv-absent-row" style="display:none"><span class="pv-label">🚫 Absent</span><span id="pv-absent-date" style="color:var(--danger)">—</span></div>
       <div class="pv-row" id="pv-comment-row" style="display:none"><span class="pv-label">💬 Note</span><span id="pv-comment" style="font-size:12px;color:var(--text2);white-space:pre-wrap;max-width:260px">—</span></div>
       <div class="pv-row" id="pv-msg-row" style="display:none"><span class="pv-label">💬 Message</span><span id="pv-msg-status">—</span></div>
+      <!-- PREVIEW ACTIONS -->
+      <div style="display:flex;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <button class="btn btn-primary" style="flex:1;padding:10px" onclick="editFromPreview()">✏️ Modifier</button>
+        <button class="btn btn-secondary" style="flex:1;padding:10px" onclick="commentFromPreview()">💬 Note</button>
+        <button class="btn btn-route" style="padding:10px" id="pv-call-btn" onclick="">📞</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1275,7 +1282,8 @@ const COLUMNS=[
   {key:'status',icon:'📋',label:'Statut paiement'},
   {key:'delivery',icon:'🚚',label:'Livraison'},
   {key:'position',icon:'📍',label:'Position'},
-  {key:'date',icon:'📅',label:'Date'}
+  {key:'date',icon:'📅',label:'Date création'},
+  {key:'duedate',icon:'🗓️',label:'Date livraison prévue'}
 ];
 let hiddenCols=JSON.parse(localStorage.getItem('livrapro_hidden_cols')||'[]');
 let currentTheme=localStorage.getItem('livrapro_theme')||'dark';
@@ -1566,7 +1574,7 @@ function buildRow(d,i,sel){
   const dupBadge=isDup?`<span class="dup-badge" title="Doublon détecté" onclick="event.stopPropagation();showDupForEntry(${d.id})">⚠️ Dup</span>`:'';
   const commentIcon=d.comment?`<span title="${esc(d.comment).replace(/"/g,'&quot;')}" style="font-size:10px;cursor:pointer;color:var(--blue)" onclick="event.stopPropagation();openQuickComment(${d.id})">💬</span>`:`<span style="font-size:9px;cursor:pointer;color:var(--text3);opacity:.4" onclick="event.stopPropagation();openQuickComment(${d.id})" title="Ajouter un commentaire">💬</span>`;
   const dueBadge=getDueDateBadge(d);
-  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="clientNameClick(event,${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${commentIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}${absentTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}${dueBadge}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
+  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="clientNameClick(event,${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${commentIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}${absentTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td>${dueBadge}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
 }
 
 function renderTable(){
@@ -1633,7 +1641,8 @@ function toggleCheckboxes(){
 
 // ═══════════════ DUE DATE ═══════════════
 function getDueDateBadge(d){
-  if(!d.dueDate||d.delivered)return'';
+  if(!d.dueDate)return'<span style="font-size:9px;color:var(--text3)">—</span>';
+  if(d.delivered)return`<span style="font-size:9px;color:var(--accent);opacity:.6">✅ ${new Date(d.dueDate+'T00:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</span>`;
   const today=new Date();today.setHours(0,0,0,0);
   const due=new Date(d.dueDate+'T00:00:00');
   const diff=Math.floor((due-today)/(1000*60*60*24));
@@ -1730,7 +1739,9 @@ function clientNameClick(e,id){
 }
 
 // ═══════════════ CLIENT PREVIEW ═══════════════
+let previewEntryId=null;
 function showPreview(id){
+  previewEntryId=id;
   const d=data.find(x=>x.id===id);if(!d)return;
   const dt=dtypes.find(t=>t.name===d.article);
   const imgWrap=document.getElementById('preview-img-wrap');
@@ -1742,6 +1753,8 @@ function showPreview(id){
   document.getElementById('pv-name').textContent=fullName(d);
   document.getElementById('pv-phone').textContent=d.phone||'—';
   document.getElementById('pv-phone').href=d.phone?'tel:'+d.phone:'#';
+  const callBtn=document.getElementById('pv-call-btn');
+  if(d.phone){callBtn.style.display='';callBtn.onclick=()=>{window.location.href='tel:'+d.phone}}else{callBtn.style.display='none'}
   document.getElementById('pv-article').textContent=d.article;
   // Article badge with image
   const badge=document.getElementById('pv-article-badge');
@@ -1772,6 +1785,37 @@ function showPreview(id){
   document.getElementById('preview-overlay').classList.add('active');
 }
 function closePreview(){document.getElementById('preview-overlay').classList.remove('active')}
+
+function editFromPreview(){
+  if(!previewEntryId)return;
+  const e=data.find(d=>d.id===previewEntryId);
+  closePreview();
+  if(e){
+    if(lockEdit&&secPinEnabled&&secPin){pendingAuthAction=()=>openModal(e);showPinModal('Modifier la livraison');return}
+    openModal(e);
+  }
+}
+function commentFromPreview(){
+  if(!previewEntryId)return;
+  closePreview();
+  openQuickComment(previewEntryId);
+}
+
+function editFromPreview(){
+  if(!previewEntryId)return;
+  const e=data.find(d=>d.id===previewEntryId);
+  closePreview();
+  if(e){
+    if(lockEdit&&secPinEnabled&&secPin){pendingAuthAction=()=>openModal(e);showPinModal('Modifier la livraison');return}
+    openModal(e);
+  }
+}
+
+function commentFromPreview(){
+  if(!previewEntryId)return;
+  closePreview();
+  openQuickComment(previewEntryId);
+}
 
 // ═══════════════ QUICK COMMENT ═══════════════
 let qcEntryId=null;
