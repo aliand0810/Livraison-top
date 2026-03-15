@@ -23,15 +23,21 @@ body.light .lp-marker-pin{border-color:#1a1e28}
 body.light .section-wrap.pending{border-color:rgba(200,147,10,.25)}
 body.light .section-wrap.pending .section-header{background:rgba(200,147,10,.05)}
 body.light .section-wrap.pending thead th{background:rgba(200,147,10,.07)}
-body.light .section-wrap.pending .sticky-name-table td:nth-child(3){background:#fff}
+body.light .section-wrap.pending .sticky-name-table td:nth-child(3){background:#ffffff}
+body.light .section-wrap.pending .sticky-name-table th:nth-child(3){background:#faf6ee}
+body.light .section-wrap.pending .sticky-name-table tr:hover td:nth-child(3){background:#f8f4ea}
 body.light .section-wrap.delivered{border-color:rgba(13,155,110,.2)}
 body.light .section-wrap.delivered .section-header{background:rgba(13,155,110,.04)}
 body.light .section-wrap.delivered thead th{background:rgba(13,155,110,.06)}
-body.light .section-wrap.delivered .sticky-name-table td:nth-child(3){background:#fff}
+body.light .section-wrap.delivered .sticky-name-table td:nth-child(3){background:#ffffff}
+body.light .section-wrap.delivered .sticky-name-table th:nth-child(3){background:#eef8f4}
+body.light .section-wrap.delivered .sticky-name-table tr:hover td:nth-child(3){background:#ebf5f0}
 body.light .section-wrap.absent{border-color:rgba(217,68,82,.2)}
 body.light .section-wrap.absent .section-header{background:rgba(217,68,82,.04)}
 body.light .section-wrap.absent thead th{background:rgba(217,68,82,.06)}
-body.light .section-wrap.absent .sticky-name-table td:nth-child(3){background:#fff}
+body.light .section-wrap.absent .sticky-name-table td:nth-child(3){background:#ffffff}
+body.light .section-wrap.absent .sticky-name-table th:nth-child(3){background:#faf0f0}
+body.light .section-wrap.absent .sticky-name-table tr:hover td:nth-child(3){background:#f6eaeb}
 .theme-toggle{width:40px;height:22px;border-radius:11px;border:2px solid var(--border);background:var(--bg3);position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
 .theme-toggle .knob{width:16px;height:16px;border-radius:50%;background:var(--accent);position:absolute;top:1px;left:1px;transition:transform .3s}
 body.light .theme-toggle .knob{transform:translateX(18px);background:var(--warn)}
@@ -100,6 +106,15 @@ body.light .theme-toggle .knob{transform:translateX(18px);background:var(--warn)
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+/* STATUS STRIP */
+.status-strip{display:flex;align-items:center;justify-content:space-between;padding:2px 12px;background:var(--bg);font-size:9px;font-family:'Space Mono',monospace;color:var(--text3);border-bottom:1px solid var(--border);min-height:18px}
+.status-strip .ss-left,.status-strip .ss-right{display:flex;align-items:center;gap:5px}
+.status-strip .ss-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.status-strip .ss-dot.online{background:#4ae3b5;box-shadow:0 0 6px rgba(74,227,181,.5)}
+.status-strip .ss-dot.offline{background:#f06272;box-shadow:0 0 6px rgba(240,98,114,.4);animation:gpsPulse 2s infinite}
+.status-strip .ss-dot.saving{background:var(--warn);animation:gpsPulse 1s infinite}
+.status-strip .ss-label{opacity:.7}
+.save-footer{text-align:left;padding:6px 16px;font-size:9px;color:var(--text3);font-family:'Space Mono',monospace;opacity:.5}
 .logo{display:flex;align-items:center;gap:10px}
 .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 0 20px var(--accent-glow)}
 .logo h1{font-family:'Space Mono',monospace;font-size:17px;font-weight:700}
@@ -226,6 +241,18 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .route-item .ri-nav-btn{padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:3px}
 .route-item .ri-nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
 .route-item.active-stop{background:rgba(74,227,181,.08);border-left:3px solid var(--accent)}
+.route-item.delivered-item{opacity:.7;border-left:3px solid var(--accent)}
+.route-item.delivered-item .route-number{opacity:.6}
+.route-item.absent-item{opacity:.7;border-left:3px solid var(--danger)}
+.route-item.absent-item .route-number{opacity:.6}
+.route-include-bar{display:flex;gap:6px;margin-top:6px}
+.route-include-btn{flex:1;display:flex;align-items:center;gap:5px;padding:7px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;transition:all .2s;font-size:10px;font-weight:600;color:var(--text3)}
+.route-include-btn:hover{background:var(--bg3)}
+.route-include-btn.active{border-color:var(--accent);color:var(--text)}
+.route-include-btn .rib-dot{width:8px;height:8px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;transition:all .2s}
+.route-include-btn.active .rib-dot{background:var(--accent);border-color:var(--accent)}
+.route-include-btn.active.absent-toggle{border-color:var(--danger)}
+.route-include-btn.active.absent-toggle .rib-dot{background:var(--danger);border-color:var(--danger)}
 .route-number{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;font-family:'Space Mono',monospace;color:#0a0c10}
 
 /* NAV HUD */
@@ -263,6 +290,34 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .nav-btn-voice.muted{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
 .nav-btn-stop{background:var(--danger);color:#fff}
 .nav-btn-recenter{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+
+/* ARRIVAL ACTION MODAL */
+.arrival-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);z-index:4000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.arrival-overlay.active{opacity:1;pointer-events:all}
+.arrival-box{background:var(--bg2);border-radius:20px;max-width:420px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);transform:translateY(30px);transition:transform .3s}
+.arrival-overlay.active .arrival-box{transform:translateY(0)}
+.arrival-top{background:linear-gradient(135deg,var(--accent),var(--accent2));padding:24px 20px;text-align:center;color:#0a0c10}
+.arrival-top .at-icon{font-size:48px;margin-bottom:6px}
+.arrival-top .at-title{font-size:18px;font-weight:800}
+.arrival-top .at-name{font-size:22px;font-weight:900;margin-top:4px}
+.arrival-top .at-detail{font-size:12px;opacity:.7;margin-top:4px}
+.arrival-actions{padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.arrival-action{display:flex;align-items:center;gap:14px;padding:16px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg);cursor:pointer;transition:all .2s}
+.arrival-action:hover{background:var(--bg3);border-color:var(--border2)}
+.arrival-action:active{transform:scale(.98)}
+.arrival-action .aa-icon{font-size:30px;flex-shrink:0}
+.arrival-action .aa-info{flex:1}
+.arrival-action .aa-title{font-size:14px;font-weight:700;color:var(--text)}
+.arrival-action .aa-desc{font-size:11px;color:var(--text3);margin-top:2px}
+.arrival-action.green:hover{border-color:var(--accent);background:var(--accent-glow)}
+.arrival-action.red:hover{border-color:var(--danger);background:var(--danger-glow)}
+.arrival-action.blue:hover{border-color:var(--blue);background:var(--blue-glow)}
+.arrival-action.yellow:hover{border-color:var(--warn);background:var(--warn-glow)}
+.arrival-comment{padding:0 20px 16px}
+.arrival-comment textarea{width:100%;min-height:50px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;resize:vertical}
+.arrival-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:center}
+.arrival-skip{font-size:11px;color:var(--text3);cursor:pointer;text-align:center;padding:6px;transition:color .2s}
+.arrival-skip:hover{color:var(--text2)}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:14px;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -516,6 +571,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 .section-wrap.delivered tbody tr:hover{background:rgba(74,227,181,.04)}
 .section-wrap.delivered tbody tr.selected{background:rgba(74,227,181,.1)!important}
 .section-wrap.delivered tbody td{opacity:.85}
+.section-wrap.delivered .sticky-name-table tbody td:nth-child(3){opacity:1!important}
 .section-wrap.delivered .client-name{color:var(--text2)}
 
 /* ABSENT SECTION - Red/Danger tones */
@@ -527,6 +583,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 .section-wrap.absent tbody tr:hover{background:rgba(240,98,114,.04)}
 .section-wrap.absent tbody tr.selected{background:rgba(240,98,114,.1)!important}
 .section-wrap.absent tbody td{opacity:.75}
+.section-wrap.absent .sticky-name-table tbody td:nth-child(3){opacity:1!important}
 .section-wrap.absent .client-name{color:var(--text3);font-style:italic}
 
 /* ABSENT BADGE */
@@ -538,19 +595,28 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 
 /* STICKY NAME COLUMN ON MOBILE */
 .sticky-name-table th:nth-child(3),.sticky-name-table td:nth-child(3){
-  position:sticky;left:0;z-index:10;background:var(--bg2);min-width:120px;max-width:160px;
-  box-shadow:4px 0 12px rgba(0,0,0,.15);
+  position:sticky;left:0;z-index:10;min-width:120px;max-width:160px;
+  box-shadow:4px 0 12px rgba(0,0,0,.2);
+  opacity:1!important;
 }
 .sticky-name-table th:nth-child(3){z-index:11}
-.section-wrap.pending .sticky-name-table th:nth-child(3){background:rgba(240,178,74,.06)}
-.section-wrap.pending .sticky-name-table td:nth-child(3){background:var(--bg2)}
-.section-wrap.pending .sticky-name-table tr:hover td:nth-child(3){background:rgba(240,178,74,.06)}
-.section-wrap.delivered .sticky-name-table th:nth-child(3){background:rgba(74,227,181,.05)}
-.section-wrap.delivered .sticky-name-table td:nth-child(3){background:var(--bg2)}
-.section-wrap.delivered .sticky-name-table tr:hover td:nth-child(3){background:rgba(74,227,181,.05)}
-.section-wrap.absent .sticky-name-table th:nth-child(3){background:rgba(240,98,114,.05)}
-.section-wrap.absent .sticky-name-table td:nth-child(3){background:var(--bg2)}
-.section-wrap.absent .sticky-name-table tr:hover td:nth-child(3){background:rgba(240,98,114,.05)}
+/* Dark mode solid backgrounds */
+.section-wrap.pending .sticky-name-table th:nth-child(3){background:#1e1e12}
+.section-wrap.pending .sticky-name-table td:nth-child(3){background:#12151c}
+.section-wrap.pending .sticky-name-table tr:hover td:nth-child(3){background:#1a1a12}
+.section-wrap.pending .sticky-name-table tr.selected td:nth-child(3){background:#1e1c10}
+.section-wrap.delivered .sticky-name-table th:nth-child(3){background:#0f1a18}
+.section-wrap.delivered .sticky-name-table td:nth-child(3){background:#12151c}
+.section-wrap.delivered .sticky-name-table tr:hover td:nth-child(3){background:#101a18}
+.section-wrap.delivered .sticky-name-table tr.selected td:nth-child(3){background:#0e1c18}
+.section-wrap.absent .sticky-name-table th:nth-child(3){background:#1a1214}
+.section-wrap.absent .sticky-name-table td:nth-child(3){background:#12151c}
+.section-wrap.absent .sticky-name-table tr:hover td:nth-child(3){background:#1a1214}
+.section-wrap.absent .sticky-name-table tr.selected td:nth-child(3){background:#1e1416}
+/* Ensure name text is always fully visible */
+.sticky-name-table td:nth-child(3) .client-name{color:var(--text)!important;opacity:1!important;font-style:normal!important}
+.section-wrap.delivered .sticky-name-table td:nth-child(3) .client-name{color:var(--text)!important}
+.section-wrap.absent .sticky-name-table td:nth-child(3) .client-name{color:var(--text)!important;font-style:normal!important}
 /* Hide checkbox and # columns on small screens to save space */
 @media(max-width:640px){
   .sticky-name-table th:nth-child(1),.sticky-name-table td:nth-child(1),
@@ -617,6 +683,10 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 </style>
 </head>
 <body>
+<div class="status-strip" id="status-strip">
+  <div class="ss-left"><div class="ss-dot online" id="ss-conn-dot"></div><span class="ss-label" id="ss-conn-label">En ligne</span></div>
+  <div class="ss-right"><span id="ss-save-time">—</span></div>
+</div>
 <div class="header"><div class="logo"><div class="logo-icon">🚚</div><h1>Livra<span>Pro</span></h1></div><div class="header-actions"><div class="theme-toggle-wrap"><span id="theme-icon">🌙</span><div class="theme-toggle" onclick="toggleTheme()"><div class="knob"></div></div></div><button class="btn btn-secondary" onclick="openModal()">＋ <span class="hide-mobile">Nouveau</span></button></div></div>
 <div class="tab-bar">
   <button class="tab-btn active" data-tab="list" onclick="switchTab('list')">📋 Liste</button>
@@ -741,6 +811,10 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
         </div>
         <div style="display:flex;gap:6px"><button class="btn btn-route" style="flex:1;font-size:11px;padding:7px" onclick="buildRoute()">🧭 Calculer</button><button class="btn btn-secondary" style="font-size:11px;padding:7px" onclick="useMyLocation()">📍</button></div>
         <select class="fsel" id="route-filter" style="width:100%" onchange="renderRouteList()"><option value="all">Tous</option><option value="en attente">⏳ Attente</option><option value="impayé">❌ Impayé</option><option value="payé">✅ Payé</option></select>
+        <div class="route-include-bar">
+          <div class="route-include-btn" id="ri-delivered" onclick="toggleRouteInclude('delivered')"><div class="rib-dot"></div>✅ Déjà livrés</div>
+          <div class="route-include-btn absent-toggle" id="ri-absent" onclick="toggleRouteInclude('absent')"><div class="rib-dot"></div>🚫 Absents</div>
+        </div>
       </div>
       <div class="route-summary" id="route-summary" style="display:none"><div class="rs-item"><span class="rs-label">Arrêts</span><span class="rs-value" id="rs-stops">0</span></div><div class="rs-item"><span class="rs-label">Distance</span><span class="rs-value" id="rs-dist">—</span></div><div class="rs-item"><span class="rs-label">Durée</span><span class="rs-value" id="rs-time">—</span></div><div class="rs-item"><span class="rs-label">Mode</span><span class="rs-value" id="rs-mode">🚗</span></div></div>
       <div id="route-list"></div>
@@ -1023,6 +1097,41 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
   </div>
 </div>
 
+<!-- ARRIVAL ACTION -->
+<div class="arrival-overlay" id="arrival-overlay">
+  <div class="arrival-box">
+    <div class="arrival-top">
+      <div class="at-icon">📍</div>
+      <div class="at-title">Vous êtes arrivé !</div>
+      <div class="at-name" id="arrival-name">—</div>
+      <div class="at-detail" id="arrival-detail">—</div>
+    </div>
+    <div class="arrival-actions">
+      <div class="arrival-action green" onclick="arrivalAction('delivered')">
+        <div class="aa-icon">✅</div>
+        <div class="aa-info"><div class="aa-title">Livraison effectuée</div><div class="aa-desc">La commande a bien été remise au client</div></div>
+      </div>
+      <div class="arrival-action red" onclick="arrivalAction('absent')">
+        <div class="aa-icon">🚫</div>
+        <div class="aa-info"><div class="aa-title">Client absent</div><div class="aa-desc">Personne n'est disponible pour réceptionner</div></div>
+      </div>
+      <div class="arrival-action yellow" onclick="arrivalAction('partial')">
+        <div class="aa-icon">📦</div>
+        <div class="aa-info"><div class="aa-title">Livraison partielle</div><div class="aa-desc">Commande remise partiellement ou avec remarque</div></div>
+      </div>
+      <div class="arrival-action blue" onclick="arrivalAction('postpone')">
+        <div class="aa-icon">🕐</div>
+        <div class="aa-info"><div class="aa-title">Reporter</div><div class="aa-desc">Le client demande de revenir plus tard</div></div>
+      </div>
+    </div>
+    <div class="arrival-comment">
+      <textarea id="arrival-comment-text" placeholder="Ajouter un commentaire (optionnel)..."></textarea>
+    </div>
+    <div class="arrival-skip" onclick="arrivalAction('skip')">Passer sans action →</div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
 <!-- QUICK COMMENT -->
 <div class="qc-overlay" id="qc-overlay" onclick="if(event.target===this)closeQuickComment()">
   <div class="qc-box">
@@ -1091,6 +1200,8 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
     <button class="btn btn-secondary" onclick="cancelPin()">Annuler</button>
   </div>
 </div>
+
+<div class="save-footer" id="save-bar-bottom">💾 Aucune sauvegarde</div>
 
 <div class="toast" id="toast"></div>
 
@@ -1163,9 +1274,54 @@ let lastSyncTime=parseInt(localStorage.getItem('livrapro_lastsync'))||0;
 let navActive=false,navWatchId=null,navGpsMarker=null,navVoice=true;
 let navStops=[],navCurrentStop=0,navTotalDist=0,navRouteCoords=[];
 let navSteps=[],navCurrentStep=0,navTotalDuration=0,navStartTime=0;
-function save(){localStorage.setItem(SK,JSON.stringify(data));if(autoSaveEnabled)triggerAutoSave()}
-function saveTpl(){localStorage.setItem(SK_TPL,JSON.stringify(templates));if(autoSaveEnabled)triggerAutoSave()}
-function saveDtypes(){localStorage.setItem(SK_DTYPE,JSON.stringify(dtypes));if(autoSaveEnabled)triggerAutoSave()}
+function save(){localStorage.setItem(SK,JSON.stringify(data));updateSaveTimestamp();if(autoSaveEnabled)triggerAutoSave()}
+
+function updateSaveTimestamp(){
+  const now=Date.now();
+  localStorage.setItem('livrapro_last_save',now);
+  displaySaveTime(now);
+}
+
+function displaySaveTime(ts){
+  if(!ts)ts=parseInt(localStorage.getItem('livrapro_last_save'))||0;
+  const el=document.getElementById('ss-save-time');
+  const bottom=document.getElementById('save-bar-bottom');
+  if(!ts){
+    if(el)el.textContent='—';
+    if(bottom)bottom.textContent='';
+    return;
+  }
+  const d=new Date(ts);
+  const time=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const date=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+  if(el)el.textContent=`💾 ${time}`;
+  if(bottom)bottom.textContent=`💾 ${date} ${time}`;
+}
+
+function showSavingIndicator(){
+  const dot=document.getElementById('ss-conn-dot');
+  if(dot&&navigator.onLine){dot.className='ss-dot saving';setTimeout(()=>updateConnStatus(),800)}
+}
+
+// ═══════════════ CONNECTION STATUS ═══════════════
+function updateConnStatus(){
+  const dot=document.getElementById('ss-conn-dot');
+  const label=document.getElementById('ss-conn-label');
+  if(!dot||!label)return;
+  if(navigator.onLine){
+    dot.className='ss-dot online';
+    label.textContent='En ligne';
+    label.style.color='';
+  }else{
+    dot.className='ss-dot offline';
+    label.textContent='Hors ligne';
+    label.style.color='var(--danger)';
+  }
+}
+window.addEventListener('online',()=>{updateConnStatus();showToast('🟢 Connexion rétablie')});
+window.addEventListener('offline',()=>{updateConnStatus();showToast('🔴 Connexion perdue',true)});
+function saveTpl(){localStorage.setItem(SK_TPL,JSON.stringify(templates));updateSaveTimestamp();if(autoSaveEnabled)triggerAutoSave()}
+function saveDtypes(){localStorage.setItem(SK_DTYPE,JSON.stringify(dtypes));updateSaveTimestamp();if(autoSaveEnabled)triggerAutoSave()}
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
 function fmt(v){return parseFloat(v).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}
 function formatNom(s){return(s||'').toUpperCase()}
@@ -2139,11 +2295,27 @@ function updateMyLocationMarker(pos){
 }
 
 // ═══════════════ ROUTE ═══════════════
-function getRouteClients(){const f=document.getElementById('route-filter').value;return data.filter(d=>d.lat&&d.lng&&!d.absent&&!d.delivered&&(f==='all'||d.status===f))}
+let routeIncludeDelivered=false,routeIncludeAbsent=false;
+function toggleRouteInclude(type){
+  if(type==='delivered'){routeIncludeDelivered=!routeIncludeDelivered;document.getElementById('ri-delivered').classList.toggle('active',routeIncludeDelivered)}
+  else{routeIncludeAbsent=!routeIncludeAbsent;document.getElementById('ri-absent').classList.toggle('active',routeIncludeAbsent)}
+  renderRouteList();
+}
+function getRouteClients(){
+  const f=document.getElementById('route-filter').value;
+  return data.filter(d=>{
+    if(!d.lat||!d.lng)return false;
+    if(f!=='all'&&d.status!==f)return false;
+    // By default: only non-delivered, non-absent
+    if(d.delivered&&!routeIncludeDelivered)return false;
+    if(d.absent&&!routeIncludeAbsent)return false;
+    return true;
+  });
+}
 function renderRouteList(){const cl=getRouteClients(),list=document.getElementById('route-list'),em=document.getElementById('route-empty');routeMarkers.forEach(m=>routeMap&&routeMap.removeLayer(m));routeMarkers=[];if(routeLine){routeMap.removeLayer(routeLine);routeLine=null}document.getElementById('route-summary').style.display='none';document.getElementById('nav-start-wrap').style.display='none';if(!cl.length){list.innerHTML='';em.style.display='block';return}em.style.display='none';
   // Sort by distance from my position if available
   if(myLat&&myLng){cl.forEach(c=>c._distFromMe=haversine(myLat,myLng,c.lat,c.lng));cl.sort((a,b)=>a._distFromMe-b._distFromMe)}
-  list.innerHTML=cl.map((d,i)=>{const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';const distLabel=(myLat&&d._distFromMe)?`<div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);text-align:right">${d._distFromMe<1?`${(d._distFromMe*1000).toFixed(0)}m`:`${d._distFromMe.toFixed(1)}km`}</div>`:'';return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">${distLabel}<button class="ri-nav-btn" onclick="event.stopPropagation();openNativeMaps(${d.lat},${d.lng},'${esc(fullName(d)).replace(/'/g,"\\'")}')">🗺️ Y aller</button></div></div>`}).join('');const bounds=[];cl.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)routeMap.fitBounds(bounds,{padding:[80,80]});else if(bounds.length)routeMap.setView(bounds[0],15)}
+  list.innerHTML=cl.map((d,i)=>{const c=d.absent?'#6a7290':d.delivered?'#4ae3b5':d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';const itemClass=d.absent?'absent-item':d.delivered?'delivered-item':'';const statusBadge=d.absent?'<span style="font-size:9px;color:var(--danger);font-weight:700">🚫 ABSENT</span>':d.delivered?'<span style="font-size:9px;color:var(--accent);font-weight:700">✅ LIVRÉ</span>':'';const distLabel=(myLat&&d._distFromMe)?`<div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);text-align:right">${d._distFromMe<1?`${(d._distFromMe*1000).toFixed(0)}m`:`${d._distFromMe.toFixed(1)}km`}</div>`:'';return`<div class="route-item ${itemClass}" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))} ${statusBadge}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">${distLabel}<button class="ri-nav-btn" onclick="event.stopPropagation();openNativeMaps(${d.lat},${d.lng},'${esc(fullName(d)).replace(/'/g,"\\'")}')">🗺️ Y aller</button></div></div>`}).join('');const bounds=[];cl.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)routeMap.fitBounds(bounds,{padding:[80,80]});else if(bounds.length)routeMap.setView(bounds[0],15)}
 function useMyLocation(){if(!navigator.geolocation){showToast('GPS indisponible',true);return}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('route-start').value=`${p.coords.latitude.toFixed(6)}, ${p.coords.longitude.toFixed(6)}`;showToast('GPS ✅')},()=>showToast('Erreur GPS',true),{enableHighAccuracy:true,timeout:10000})}
 async function parseStart(){const v=document.getElementById('route-start').value.trim();if(!v)return null;const p=v.split(',').map(s=>parseFloat(s.trim()));if(p.length===2&&!isNaN(p[0])&&!isNaN(p[1])&&Math.abs(p[0])<=90)return{lat:p[0],lng:p[1]};try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(v)}&limit=1&accept-language=fr`),d=await r.json();if(d.length)return{lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)}}catch(e){}return null}
 
@@ -2231,11 +2403,13 @@ function renderRouteListSorted(clients,start){
     prevLat=d.lat;prevLng=d.lng;
   });
   list.innerHTML=clients.map((d,i)=>{
-    const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':d.absent?'#6a7290':'#f0b24a';
+    const c=d.absent?'#6a7290':d.delivered?'#4ae3b5':d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';
+    const itemClass=d.absent?'absent-item':d.delivered?'delivered-item':'';
+    const statusBadge=d.absent?'<span style="font-size:9px;color:var(--danger);font-weight:700">🚫 ABSENT</span>':d.delivered?'<span style="font-size:9px;color:var(--accent);font-weight:700">✅ LIVRÉ</span>':'';
     const distKm=d._distFromMe;
     const distLabel=distKm<1?`${(distKm*1000).toFixed(0)}m`:`${distKm.toFixed(1)}km`;
     const legLabel=d._legDist<1?`${(d._legDist*1000).toFixed(0)}m`:`${d._legDist.toFixed(1)}km`;
-    return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0"><div style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent)">${distLabel}</div><div style="font-size:9px;color:var(--text3)">+${legLabel} du précéd.</div><button class="ri-nav-btn" onclick="event.stopPropagation();openNativeMaps(${d.lat},${d.lng},'${esc(fullName(d)).replace(/'/g,"\\'")}')">🗺️ Y aller</button></div></div>`;
+    return`<div class="route-item ${itemClass}" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))} ${statusBadge}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0"><div style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent)">${distLabel}</div><div style="font-size:9px;color:var(--text3)">+${legLabel} du précéd.</div><button class="ri-nav-btn" onclick="event.stopPropagation();openNativeMaps(${d.lat},${d.lng},'${esc(fullName(d)).replace(/'/g,"\\'")}')">🗺️ Y aller</button></div></div>`;
   }).join('');
   clients.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m)});
   if(clients.length>1){const bounds=clients.map(d=>[d.lat,d.lng]);bounds.push([start.lat,start.lng]);routeMap.fitBounds(bounds,{padding:[80,80]})}
@@ -2291,7 +2465,8 @@ function startNavigation(){
 }
 
 function stopNavigation(){
-  navActive=false;
+  navActive=false;arrivalModalOpen=false;
+  document.getElementById('arrival-overlay').classList.remove('active');
   if(navWatchId!==null){navigator.geolocation.clearWatch(navWatchId);navWatchId=null}
   if(navGpsMarker){routeMap.removeLayer(navGpsMarker);navGpsMarker=null}
   document.getElementById('route-sidebar').classList.remove('hidden');
@@ -2305,6 +2480,91 @@ function stopNavigation(){
 function toggleSidebar(){document.getElementById('route-sidebar').classList.toggle('hidden');setTimeout(()=>routeMap.invalidateSize(),400)}
 function toggleVoice(){navVoice=!navVoice;const btn=document.getElementById('nav-voice-btn');if(navVoice){btn.className='nav-btn nav-btn-voice';btn.textContent='🔊 Voix ON'}else{btn.className='nav-btn nav-btn-voice muted';btn.textContent='🔇 Voix OFF';speechSynthesis.cancel()}}
 function recenterNav(){if(navGpsMarker)routeMap.setView(navGpsMarker.getLatLng(),17)}
+
+// ═══════════════ ARRIVAL MODAL ═══════════════
+let arrivalModalOpen=false,arrivalStopData=null,arrivalStopIndex=-1;
+
+function showArrivalModal(stop,index){
+  arrivalModalOpen=true;arrivalStopData=stop;arrivalStopIndex=index;
+  speak(`Vous êtes arrivé chez ${fullName(stop)}`);
+  document.getElementById('arrival-name').textContent=fullName(stop);
+  document.getElementById('arrival-detail').textContent=`${stop.article} ×${stop.qty} — ${fmt(stop.price)}${stop.position?' — 📍'+stop.position:''}`;
+  document.getElementById('arrival-comment-text').value=stop.comment||'';
+  document.getElementById('arrival-overlay').classList.add('active');
+  // Highlight route item
+  document.querySelectorAll('.route-item').forEach((el,i)=>el.classList.toggle('active-stop',i===index));
+  // Vibrate if supported
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+}
+
+function closeArrivalModal(){
+  arrivalModalOpen=false;
+  document.getElementById('arrival-overlay').classList.remove('active');
+}
+
+function arrivalAction(action){
+  if(!arrivalStopData)return;
+  const d=data.find(x=>x.id===arrivalStopData.id);
+  if(!d){closeArrivalModal();advanceToNextStop();return}
+  const comment=document.getElementById('arrival-comment-text').value.trim();
+  // Save comment if entered
+  if(comment)d.comment=comment;
+
+  switch(action){
+    case'delivered':
+      d.delivered=true;d.deliveredAt=Date.now();d.absent=false;
+      showToast(`✅ ${fullName(d)} — Livré !`);
+      speak('Livraison confirmée');
+      break;
+    case'absent':
+      d.absent=true;d.absentAt=Date.now();d.delivered=false;d.deliveredAt=null;
+      showToast(`🚫 ${fullName(d)} — Absent`);
+      speak('Client marqué absent');
+      break;
+    case'partial':
+      d.delivered=true;d.deliveredAt=Date.now();d.absent=false;
+      if(!d.comment&&!comment)d.comment='Livraison partielle';
+      else if(!comment)d.comment=(d.comment?d.comment+' | ':'')+'Livraison partielle';
+      showToast(`📦 ${fullName(d)} — Livraison partielle`);
+      speak('Livraison partielle enregistrée');
+      break;
+    case'postpone':
+      d.absent=false;d.delivered=false;
+      if(!d.comment&&!comment)d.comment='Reporté — client demande de revenir';
+      else if(!comment)d.comment=(d.comment?d.comment+' | ':'')+'Reporté';
+      showToast(`🕐 ${fullName(d)} — Reporté`);
+      speak('Livraison reportée');
+      break;
+    case'skip':
+      showToast(`⏩ ${fullName(d)} — Passé`);
+      break;
+  }
+
+  save();renderTable();
+  closeArrivalModal();
+  advanceToNextStop();
+}
+
+function advanceToNextStop(){
+  navCurrentStop++;
+  lastSpokenStep=-1;
+  if(navCurrentStop<navStops.length){
+    setTimeout(()=>{
+      speak('Prochain arrêt: '+fullName(navStops[navCurrentStop]));
+      updateNavHUD();
+    },2000);
+  }else{
+    setTimeout(()=>{
+      speak('Toutes les livraisons sont terminées. Bravo !');
+      document.getElementById('nt-arrow').textContent='🎉';
+      document.getElementById('nav-turn').style.background='var(--accent)';
+      document.getElementById('nt-street').textContent='Toutes les livraisons terminées !';
+      document.getElementById('nt-dist').textContent='';
+      document.getElementById('nt-after').textContent='';
+      document.getElementById('nav-progress-fill').style.width='100%';
+    },2000);
+  }
+}
 
 function speak(text){if(!navVoice||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1;u.pitch=1;const voices=speechSynthesis.getVoices();const fr=voices.find(v=>v.lang.startsWith('fr'));if(fr)u.voice=fr;speechSynthesis.speak(u)}
 
@@ -2375,24 +2635,8 @@ function onGpsUpdate(pos){
     document.getElementById('nav-eta-dist').textContent=fmtDist(distToStop*1000);
 
     // Arrived at stop (50m)
-    if(distToStop<0.05){
-      speak(`Vous êtes arrivé chez ${fullName(stop)}`);
-      showToast(`✅ Arrivé: ${fullName(stop)}`);
-      document.querySelectorAll('.route-item').forEach((el,i)=>el.classList.toggle('active-stop',i===navCurrentStop));
-      navCurrentStop++;
-      lastSpokenStep=-1;
-      if(navCurrentStop<navStops.length){
-        setTimeout(()=>{speak('Prochain arrêt: '+fullName(navStops[navCurrentStop]));updateNavHUD()},3000);
-      }else{
-        setTimeout(()=>{speak('Toutes les livraisons sont terminées. Bravo !');
-        document.getElementById('nt-arrow').textContent='🎉';
-        document.getElementById('nav-turn').style.background='var(--accent)';
-        document.getElementById('nt-street').textContent='Toutes les livraisons terminées !';
-        document.getElementById('nt-dist').textContent='';
-        document.getElementById('nt-after').textContent='';
-        document.getElementById('nav-progress-fill').style.width='100%';
-        },3000);
-      }
+    if(distToStop<0.05&&!arrivalModalOpen){
+      showArrivalModal(stop,navCurrentStop);
     }
   }
 
@@ -2555,10 +2799,12 @@ function toggleAutoSave(){autoSaveEnabled=!autoSaveEnabled;localStorage.setItem(
 let autoSaveTimer=null;
 function triggerAutoSave(){
   clearTimeout(autoSaveTimer);
+  showSavingIndicator();
   autoSaveTimer=setTimeout(()=>{
     if(saveLocation==='drive'||saveLocation==='both'){if(gdriveToken)saveToGDrive(true)}
     lastSyncTime=Date.now();localStorage.setItem('livrapro_lastsync',lastSyncTime);
     const el=document.getElementById('last-sync-text');if(el)el.textContent='Auto-save: '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    displaySaveTime();
   },2000);
 }
 
@@ -2726,12 +2972,13 @@ async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();await def
 async function registerSW(){if(!('serviceWorker' in navigator)){document.getElementById('sw-status').textContent='Non supporté';return}try{document.getElementById('sw-status').textContent='Cache IndexedDB actif ✅'}catch(e){document.getElementById('sw-status').textContent='Cache local ✅'}}
 
 function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' error':'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('qc-overlay').classList.contains('active'))closeQuickComment();else if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('dup-overlay').classList.contains('active'))closeDupModal();else if(document.getElementById('bulk-action-overlay').classList.contains('active'))closeBulkAction();else if(document.getElementById('preview-overlay').classList.contains('active'))closePreview();else if(document.getElementById('deliver-overlay').classList.contains('active'))cancelDeliver();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('arrival-overlay').classList.contains('active')){/*don't close arrival on escape*/}else if(document.getElementById('qc-overlay').classList.contains('active'))closeQuickComment();else if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('dup-overlay').classList.contains('active'))closeDupModal();else if(document.getElementById('bulk-action-overlay').classList.contains('active'))closeBulkAction();else if(document.getElementById('preview-overlay').classList.contains('active'))closePreview();else if(document.getElementById('deliver-overlay').classList.contains('active'))cancelDeliver();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
 
 // Load voices
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
 
 renderTable();renderStats();registerSW();applyTheme();applyColumnVisibility();
+displaySaveTime();updateConnStatus();
 if(hidePrices)document.body.classList.add('hide-prices');
 if(defaultStart)document.getElementById('route-start').value=defaultStart;
 if(autoGeo)setTimeout(detectMyLocation,1000);
