@@ -28,6 +28,10 @@ body.light .section-wrap.delivered{border-color:rgba(13,155,110,.2)}
 body.light .section-wrap.delivered .section-header{background:rgba(13,155,110,.04)}
 body.light .section-wrap.delivered thead th{background:rgba(13,155,110,.06)}
 body.light .section-wrap.delivered .sticky-name-table td:nth-child(3){background:#fff}
+body.light .section-wrap.absent{border-color:rgba(217,68,82,.2)}
+body.light .section-wrap.absent .section-header{background:rgba(217,68,82,.04)}
+body.light .section-wrap.absent thead th{background:rgba(217,68,82,.06)}
+body.light .section-wrap.absent .sticky-name-table td:nth-child(3){background:#fff}
 .theme-toggle{width:40px;height:22px;border-radius:11px;border:2px solid var(--border);background:var(--bg3);position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
 .theme-toggle .knob{width:16px;height:16px;border-radius:50%;background:var(--accent);position:absolute;top:1px;left:1px;transition:transform .3s}
 body.light .theme-toggle .knob{transform:translateX(18px);background:var(--warn)}
@@ -223,20 +227,34 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .route-number{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;font-family:'Space Mono',monospace;color:#0a0c10}
 
 /* NAV HUD */
-.nav-hud{position:absolute;bottom:0;left:0;right:0;z-index:1001;background:linear-gradient(to top,var(--bg2) 85%,transparent);padding:16px;display:none;flex-direction:column;gap:10px}
+.nav-hud{position:absolute;bottom:0;left:0;right:0;z-index:1001;background:linear-gradient(to top,var(--bg2) 90%,transparent);padding:12px;display:none;flex-direction:column;gap:8px}
 .nav-hud.show{display:flex}
 .nav-hud-top{position:absolute;top:10px;right:10px;z-index:1002;display:none;gap:6px}
 .nav-hud-top.show{display:flex}
-.nav-next{background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 0 24px var(--accent-glow)}
-.nav-next .nav-arrow{font-size:32px;flex-shrink:0}
-.nav-next .nav-info{flex:1}
-.nav-next .nav-dest{font-weight:700;font-size:15px;color:var(--text)}
-.nav-next .nav-dist{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);margin-top:2px}
-.nav-next .nav-addr{font-size:11px;color:var(--text3);margin-top:1px}
+
+/* TURN INSTRUCTION BANNER */
+.nav-turn{background:var(--blue);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(0,0,0,.4);color:#fff}
+.nav-turn .nt-arrow{font-size:36px;flex-shrink:0;min-width:44px;text-align:center}
+.nav-turn .nt-info{flex:1}
+.nav-turn .nt-street{font-weight:700;font-size:14px}
+.nav-turn .nt-dist{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;margin-top:2px}
+.nav-turn .nt-after{font-size:10px;opacity:.7;margin-top:2px}
+
+/* NEXT STOP CARD */
+.nav-next{background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 0 20px var(--accent-glow)}
+.nav-next .nav-stop-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#0a0c10;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:900;font-size:14px;flex-shrink:0}
+.nav-next .nav-info{flex:1;min-width:0}
+.nav-next .nav-dest{font-weight:700;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-next .nav-addr{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-next .nav-eta-badge{text-align:right;flex-shrink:0}
+.nav-next .nav-eta-time{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--accent)}
+.nav-next .nav-eta-dist{font-size:10px;color:var(--text3);margin-top:1px}
+
+/* PROGRESS + CONTROLS */
 .nav-bar{display:flex;gap:8px;align-items:center}
 .nav-bar .nav-progress{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
 .nav-bar .nav-progress .fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s}
-.nav-bar .nav-eta{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);white-space:nowrap}
+.nav-bar .nav-total-eta{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);white-space:nowrap}
 .nav-controls{display:flex;gap:6px}
 .nav-btn{flex:1;padding:10px;border-radius:var(--radius-sm);border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
 .nav-btn-voice{background:var(--blue);color:#fff}
@@ -463,6 +481,24 @@ body.hide-prices .col-money *{color:transparent!important}
 .section-wrap.delivered tbody td{opacity:.85}
 .section-wrap.delivered .client-name{color:var(--text2)}
 
+/* ABSENT SECTION - Red/Danger tones */
+.section-wrap.absent{border-color:rgba(240,98,114,.2)}
+.section-wrap.absent .section-header{border-left:4px solid var(--danger);background:rgba(240,98,114,.04)}
+.section-wrap.absent .sec-count{background:var(--danger-glow);color:var(--danger);border:1px solid rgba(240,98,114,.3)}
+.section-wrap.absent thead th{background:rgba(240,98,114,.05);border-bottom-color:rgba(240,98,114,.15)}
+.section-wrap.absent tbody tr{border-bottom-color:rgba(240,98,114,.06)}
+.section-wrap.absent tbody tr:hover{background:rgba(240,98,114,.04)}
+.section-wrap.absent tbody tr.selected{background:rgba(240,98,114,.1)!important}
+.section-wrap.absent tbody td{opacity:.75}
+.section-wrap.absent .client-name{color:var(--text3);font-style:italic}
+
+/* ABSENT BADGE */
+.btn-absent{padding:4px 8px;border-radius:6px;border:1px solid rgba(240,98,114,.3);background:rgba(240,98,114,.08);color:var(--danger);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-absent:hover{background:rgba(240,98,114,.2);border-color:var(--danger)}
+.btn-unabsent{padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-unabsent:hover{background:var(--bg);color:var(--text2)}
+.badge-absent{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:6px;background:var(--danger-glow);color:var(--danger);font-size:10px;font-weight:700;border:1px solid rgba(240,98,114,.3)}
+
 /* STICKY NAME COLUMN ON MOBILE */
 .sticky-name-table th:nth-child(3),.sticky-name-table td:nth-child(3){
   position:sticky;left:0;z-index:10;background:var(--bg2);min-width:120px;max-width:160px;
@@ -475,6 +511,9 @@ body.hide-prices .col-money *{color:transparent!important}
 .section-wrap.delivered .sticky-name-table th:nth-child(3){background:rgba(74,227,181,.05)}
 .section-wrap.delivered .sticky-name-table td:nth-child(3){background:var(--bg2)}
 .section-wrap.delivered .sticky-name-table tr:hover td:nth-child(3){background:rgba(74,227,181,.05)}
+.section-wrap.absent .sticky-name-table th:nth-child(3){background:rgba(240,98,114,.05)}
+.section-wrap.absent .sticky-name-table td:nth-child(3){background:var(--bg2)}
+.section-wrap.absent .sticky-name-table tr:hover td:nth-child(3){background:rgba(240,98,114,.05)}
 /* Hide checkbox and # columns on small screens to save space */
 @media(max-width:640px){
   .sticky-name-table th:nth-child(1),.sticky-name-table td:nth-child(1),
@@ -588,6 +627,21 @@ body.hide-prices .col-money *{color:transparent!important}
       <div class="empty-state" id="empty-delivered" style="display:none;padding:20px"><div class="eico">📦</div><h3>Aucune livraison terminée</h3></div>
     </div>
   </div>
+
+  <!-- SECTION: ABSENT -->
+  <div class="section-wrap absent">
+    <div class="section-header" onclick="toggleListSection(this)">
+      <h3>🚫 Absent / Indisponible <span class="sec-count" id="absent-count">0</span></h3>
+      <div class="sec-stats" id="absent-stats"></div>
+      <span class="sec-arrow">▶</span>
+    </div>
+    <div class="section-body" id="absent-section">
+      <div class="table-wrap" style="padding:0">
+        <table class="sticky-name-table"><thead><tr><th><input type="checkbox" class="cb" id="selectAllAbsent" onchange="toggleSelectAll('absent')"></th><th>#</th><th>Client</th><th>Tél</th><th>Article</th><th>Qté</th><th class="col-money">Prix</th><th class="col-money">Bénéf.</th><th>Statut</th><th>Livraison</th><th>Position</th><th>Date</th><th>Actions</th></tr></thead><tbody id="table-body-absent"></tbody></table>
+      </div>
+      <div class="empty-state" id="empty-absent" style="display:none;padding:20px"><div class="eico">👍</div><h3>Tous les clients sont disponibles</h3></div>
+    </div>
+  </div>
 </div>
 <!-- FLOATING ACTION BAR -->
 <div class="fab" id="fab">
@@ -617,6 +671,8 @@ body.hide-prices .col-money *{color:transparent!important}
     <div class="bulk-action-grid">
       <div class="ba-option green" onclick="bulkSetDelivered(true)"><div class="ba-icon">📦✅</div><div class="ba-label">Marquer livré</div><div class="ba-desc">Confirmer la livraison</div></div>
       <div class="ba-option yellow" onclick="bulkSetDelivered(false)"><div class="ba-icon">📦↩</div><div class="ba-label">Remettre en cours</div><div class="ba-desc">Annuler la livraison</div></div>
+      <div class="ba-option red" onclick="bulkSetAbsent(true)"><div class="ba-icon">🚫</div><div class="ba-label">Marquer absent</div><div class="ba-desc">Client indisponible</div></div>
+      <div class="ba-option blue" onclick="bulkSetAbsent(false)"><div class="ba-icon">👤✅</div><div class="ba-label">Remettre disponible</div><div class="ba-desc">Retour en cours</div></div>
     </div>
 
     <div class="ba-result" id="ba-result"><div class="ba-r-count" id="ba-r-count">0</div><span id="ba-r-text">clients modifiés</span></div>
@@ -660,11 +716,22 @@ body.hide-prices .col-money *{color:transparent!important}
       <button class="btn btn-secondary" style="padding:6px 10px" onclick="toggleSidebar()">📋</button>
     </div>
     <div class="nav-hud" id="nav-hud">
-      <div class="nav-next" id="nav-next-card">
-        <div class="nav-arrow" id="nav-arrow">➡️</div>
-        <div class="nav-info"><div class="nav-dest" id="nav-dest">—</div><div class="nav-dist" id="nav-dist">—</div><div class="nav-addr" id="nav-addr">—</div></div>
+      <!-- TURN INSTRUCTION -->
+      <div class="nav-turn" id="nav-turn">
+        <div class="nt-arrow" id="nt-arrow">⬆️</div>
+        <div class="nt-info">
+          <div class="nt-dist" id="nt-dist">—</div>
+          <div class="nt-street" id="nt-street">—</div>
+          <div class="nt-after" id="nt-after"></div>
+        </div>
       </div>
-      <div class="nav-bar"><div class="nav-progress"><div class="fill" id="nav-progress-fill"></div></div><div class="nav-eta" id="nav-eta">—</div></div>
+      <!-- NEXT STOP -->
+      <div class="nav-next" id="nav-next-card">
+        <div class="nav-stop-num" id="nav-stop-num">1</div>
+        <div class="nav-info"><div class="nav-dest" id="nav-dest">—</div><div class="nav-addr" id="nav-addr">—</div></div>
+        <div class="nav-eta-badge"><div class="nav-eta-time" id="nav-eta-time">—</div><div class="nav-eta-dist" id="nav-eta-dist">—</div></div>
+      </div>
+      <div class="nav-bar"><div class="nav-progress"><div class="fill" id="nav-progress-fill"></div></div><div class="nav-total-eta" id="nav-total-eta">—</div></div>
       <div class="nav-controls">
         <button class="nav-btn nav-btn-voice" id="nav-voice-btn" onclick="toggleVoice()">🔊 Voix ON</button>
         <button class="nav-btn nav-btn-recenter" onclick="recenterNav()">🎯 Recentrer</button>
@@ -886,6 +953,7 @@ body.hide-prices .col-money *{color:transparent!important}
       <div class="pv-row"><span class="pv-label">📍 Position</span><span id="pv-position">—</span></div>
       <div class="pv-row"><span class="pv-label">📅 Date</span><span id="pv-date">—</span></div>
       <div class="pv-row" id="pv-deliver-row" style="display:none"><span class="pv-label">✅ Livré</span><span id="pv-deliver-date">—</span></div>
+      <div class="pv-row" id="pv-absent-row" style="display:none"><span class="pv-label">🚫 Absent</span><span id="pv-absent-date" style="color:var(--danger)">—</span></div>
       <div class="pv-row" id="pv-msg-row" style="display:none"><span class="pv-label">💬 Message</span><span id="pv-msg-status">—</span></div>
     </div>
   </div>
@@ -1018,6 +1086,7 @@ let lastSyncTime=parseInt(localStorage.getItem('livrapro_lastsync'))||0;
 // Navigation state
 let navActive=false,navWatchId=null,navGpsMarker=null,navVoice=true;
 let navStops=[],navCurrentStop=0,navTotalDist=0,navRouteCoords=[];
+let navSteps=[],navCurrentStep=0,navTotalDuration=0,navStartTime=0;
 function save(){localStorage.setItem(SK,JSON.stringify(data));if(autoSaveEnabled)triggerAutoSave()}
 function saveTpl(){localStorage.setItem(SK_TPL,JSON.stringify(templates));if(autoSaveEnabled)triggerAutoSave()}
 function saveDtypes(){localStorage.setItem(SK_DTYPE,JSON.stringify(dtypes));if(autoSaveEnabled)triggerAutoSave()}
@@ -1194,14 +1263,21 @@ function toggleListSection(h){h.classList.toggle('open');h.nextElementSibling.cl
 function buildRow(d,i,sel){
   const sc=d.status==='payé'?'paid':d.status==='impayé'?'unpaid':'pending',sl=d.status==='payé'?'✅Payé':d.status==='impayé'?'❌Impayé':'⏳Att.',pc=parseFloat(d.profit)>=0?'pos':'neg',dt=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}),hg=d.lat&&d.lng;
   const isDelivered=d.delivered;
-  const delivCol=isDelivered
-    ?`<span class="badge-delivered">✅ Livré</span><br><button class="btn-undeliver" onclick="undeliverEntry(${d.id})">↩ Annuler</button>`
-    :`<button class="btn-deliver" onclick="askDeliver(${d.id})">📦 Confirmer</button>`;
+  const isAbsent=d.absent;
+  let delivCol;
+  if(isAbsent){
+    delivCol=`<span class="badge-absent">🚫 Absent</span><br><button class="btn-unabsent" onclick="unmarkAbsent(${d.id})">↩ Disponible</button>`;
+  }else if(isDelivered){
+    delivCol=`<span class="badge-delivered">✅ Livré</span><br><button class="btn-undeliver" onclick="undeliverEntry(${d.id})">↩ Annuler</button>`;
+  }else{
+    delivCol=`<div style="display:flex;flex-direction:column;gap:3px"><button class="btn-deliver" onclick="askDeliver(${d.id})">📦 Confirmer</button><button class="btn-absent" onclick="markAbsent(${d.id})">🚫 Absent</button></div>`;
+  }
   const delivTime=isDelivered&&d.deliveredAt?`<div style="font-size:9px;color:var(--text3);margin-top:2px">${new Date(d.deliveredAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`:'';
+  const absentTime=isAbsent&&d.absentAt?`<div style="font-size:9px;color:var(--danger);margin-top:2px">${new Date(d.absentAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`:'';
   const msgIcon=d.lastMsgAt?`<span title="Contacté ${timeAgo(d.lastMsgAt)} via ${d.lastMsgType||'?'}" style="font-size:10px;cursor:help">${d.lastMsgType==='whatsapp'?'💬':d.lastMsgType==='telegram'?'✈️':d.lastMsgType==='sms'?'📱':'📋'}</span>`:'';
   const isDup=currentDupMap.has(d.id);
   const dupBadge=isDup?`<span class="dup-badge" title="Doublon détecté" onclick="event.stopPropagation();showDupForEntry(${d.id})">⚠️ Dup</span>`:'';
-  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="showPreview(${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
+  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="showPreview(${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}${absentTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
 }
 
 function renderTable(){
@@ -1210,8 +1286,9 @@ function renderTable(){
   let list=data.filter(d=>{const fn=fullName(d).toLowerCase();const ms=!q||fn.includes(q)||d.article.toLowerCase().includes(q)||d.phone.toLowerCase().includes(q)||(d.position||'').toLowerCase().includes(q);return ms&&(fs==='all'||d.status===fs)});
   list.sort((a,b)=>{switch(so){case'date-desc':return b.id-a.id;case'date-asc':return a.id-b.id;case'name-asc':return a.name.localeCompare(b.name);case'price-desc':return(parseFloat(b.price)||0)-(parseFloat(a.price)||0)}return 0});
 
-  const pending=list.filter(d=>!d.delivered);
-  const delivered=list.filter(d=>d.delivered);
+  const pending=list.filter(d=>!d.delivered&&!d.absent);
+  const delivered=list.filter(d=>d.delivered&&!d.absent);
+  const absent=list.filter(d=>d.absent);
 
   // Pending table
   const tbP=document.getElementById('table-body-pending'),emP=document.getElementById('empty-pending');
@@ -1227,15 +1304,23 @@ function renderTable(){
   document.getElementById('delivered-count').textContent=delivered.length;
   renderSectionStats('delivered-stats',delivered);
 
+  // Absent table
+  const tbA=document.getElementById('table-body-absent'),emA=document.getElementById('empty-absent');
+  if(!absent.length){tbA.innerHTML='';emA.style.display='block'}
+  else{emA.style.display='none';tbA.innerHTML=absent.map((d,i)=>buildRow(d,i,selectedIds.has(d.id))).join('')}
+  document.getElementById('absent-count').textContent=absent.length;
+  renderSectionStats('absent-stats',absent);
+
   renderStats();updateFab();updateDupIndicators();
 }
 
 function toggleSelect(id,checked){if(checked)selectedIds.add(id);else selectedIds.delete(id);updateFab();document.querySelectorAll('[data-id="'+id+'"]').forEach(tr=>tr.classList.toggle('selected',checked))}
 
 function toggleSelectAll(section){
-  const prefix=section==='delivered'?'Delivered':'Pending';
+  const nameMap={delivered:'Delivered',pending:'Pending',absent:'Absent'};
+  const prefix=nameMap[section]||'Pending';
   const checked=document.getElementById('selectAll'+prefix).checked;
-  const tbody=document.getElementById('table-body-'+(section==='delivered'?'delivered':'pending'));
+  const tbody=document.getElementById('table-body-'+section);
   tbody.querySelectorAll('.cb').forEach(cb=>{
     cb.checked=checked;
     const tr=cb.closest('tr');const id=parseInt(tr.dataset.id);
@@ -1277,6 +1362,18 @@ function undeliverEntry(id){
   d.delivered=false;d.deliveredAt=null;save();renderTable();showToast(`↩ ${fullName(d)} — Remis en cours`);
 }
 
+function markAbsent(id){
+  const d=data.find(x=>x.id===id);if(!d)return;
+  d.absent=true;d.absentAt=Date.now();d.delivered=false;d.deliveredAt=null;
+  save();renderTable();showToast(`🚫 ${fullName(d)} — Marqué absent`);
+}
+
+function unmarkAbsent(id){
+  const d=data.find(x=>x.id===id);if(!d)return;
+  d.absent=false;d.absentAt=null;
+  save();renderTable();showToast(`✅ ${fullName(d)} — Remis disponible`);
+}
+
 // ═══════════════ CLIENT PREVIEW ═══════════════
 function showPreview(id){
   const d=data.find(x=>x.id===id);if(!d)return;
@@ -1309,6 +1406,8 @@ function showPreview(id){
   if(d.lastMsgAt){msgRow.style.display='flex';const mtype=d.lastMsgType==='whatsapp'?'💬 WhatsApp':d.lastMsgType==='telegram'?'✈️ Telegram':d.lastMsgType==='sms'?'📱 SMS':'📋 Copié';document.getElementById('pv-msg-status').innerHTML=`${mtype} — ${timeAgo(d.lastMsgAt)}`}else{msgRow.style.display='none'}
   const dvRow=document.getElementById('pv-deliver-row');
   if(d.delivered&&d.deliveredAt){dvRow.style.display='flex';document.getElementById('pv-deliver-date').textContent=new Date(d.deliveredAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}else{dvRow.style.display='none'}
+  const abRow=document.getElementById('pv-absent-row');
+  if(d.absent&&d.absentAt){abRow.style.display='flex';document.getElementById('pv-absent-date').textContent=new Date(d.absentAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}else{abRow.style.display='none'}
   document.getElementById('preview-overlay').classList.add('active');
 }
 function closePreview(){document.getElementById('preview-overlay').classList.remove('active')}
@@ -1340,11 +1439,29 @@ function bulkSetDelivered(delivered){
     if(selectedIds.has(d.id)&&d.delivered!==delivered){
       d.delivered=delivered;
       d.deliveredAt=delivered?now:null;
+      if(delivered)d.absent=false;// delivering clears absent
       count++;
     }
   });
   if(count){save();renderTable()}
   const label=delivered?'📦✅ Livré':'📦↩ En cours';
+  showBulkResult(count,`→ ${label}`);
+  showToast(`${count} client${count>1?'s':''} → ${label}`);
+}
+
+function bulkSetAbsent(absent){
+  let count=0;
+  const now=Date.now();
+  data.forEach(d=>{
+    if(selectedIds.has(d.id)&&d.absent!==absent){
+      d.absent=absent;
+      d.absentAt=absent?now:null;
+      if(absent){d.delivered=false;d.deliveredAt=null}
+      count++;
+    }
+  });
+  if(count){save();renderTable()}
+  const label=absent?'🚫 Absent':'👤 Disponible';
   showBulkResult(count,`→ ${label}`);
   showToast(`${count} client${count>1?'s':''} → ${label}`);
 }
@@ -1824,7 +1941,10 @@ async function buildRoute(){
     if(start){const sm=L.marker([start.lat,start.lng],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-blue"><div class="lp-marker-pin"><span>🏠</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(routeMap);routeMarkers.push(sm)}
     routeMap.fitBounds(routeLine.getBounds(),{padding:[80,80]});
     navRouteCoords=route.geometry.coordinates.map(c=>[c[1],c[0]]);
-    navStops=cl;navTotalDist=route.distance;
+    navStops=cl;navTotalDist=route.distance;navTotalDuration=route.duration*tr.factor;
+    // Extract turn-by-turn steps
+    navSteps=[];
+    if(route.legs){route.legs.forEach((leg,li)=>{if(leg.steps){leg.steps.forEach(s=>{navSteps.push({maneuver:s.maneuver,name:s.name||'',distance:s.distance,duration:s.duration*tr.factor,legIndex:li,location:s.maneuver.location})})}})};
     const dur=route.duration*tr.factor,dist=(route.distance/1000).toFixed(1),tm=Math.round(dur/60),h=Math.floor(tm/60),m=tm%60;
     document.getElementById('route-summary').style.display='flex';document.getElementById('rs-stops').textContent=cl.length;document.getElementById('rs-dist').textContent=dist+' km';document.getElementById('rs-time').textContent=h>0?`${h}h${m}min`:`${tm}min`;document.getElementById('rs-mode').textContent=tr.icon+' '+tr.label;
     document.getElementById('nav-start-wrap').style.display='block';
@@ -1839,22 +1959,54 @@ async function optimizeRoute(){
   routeMarkers.forEach(m=>routeMap.removeLayer(m));routeMarkers=[];sorted.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m)});
   navStops=sorted;
   const tr=TR[currentTransport];let wp=[[start.lng,start.lat]];sorted.forEach(c=>wp.push([c.lng,c.lat]));const coords=wp.map(w=>w[0].toFixed(6)+','+w[1].toFixed(6)).join(';');
-  try{const r=await fetch(`https://router.project-osrm.org/route/v1/${tr.osrm}/${coords}?overview=full&geometries=geojson`),d=await r.json();if(d.code==='Ok'&&d.routes.length){const rt=d.routes[0];if(routeLine)routeMap.removeLayer(routeLine);const lc=currentTransport==='car'?'#4ae3b5':currentTransport==='bike'?'#5a8af2':currentTransport==='scooter'?'#f09052':'#a07cf2';routeLine=L.geoJSON(rt.geometry,{style:{color:lc,weight:5,opacity:.85}}).addTo(routeMap);const sm=L.marker([start.lat,start.lng],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-blue"><div class="lp-marker-pin"><span>🏠</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(routeMap);routeMarkers.push(sm);routeMap.fitBounds(routeLine.getBounds(),{padding:[80,80]});navRouteCoords=rt.geometry.coordinates.map(c=>[c[1],c[0]]);navTotalDist=rt.distance;const dur=rt.duration*tr.factor,dist=(rt.distance/1000).toFixed(1),tm=Math.round(dur/60),h=Math.floor(tm/60),m=tm%60;document.getElementById('route-summary').style.display='flex';document.getElementById('rs-stops').textContent=sorted.length;document.getElementById('rs-dist').textContent=dist+'km';document.getElementById('rs-time').textContent=h>0?`${h}h${m}min`:`${tm}min`;document.getElementById('rs-mode').textContent=tr.icon+' '+tr.label;document.getElementById('nav-start-wrap').style.display='block';showToast(`⚡ Optimisé: ${dist}km`)}}catch(e){console.error(e)}
+  try{const r=await fetch(`https://router.project-osrm.org/route/v1/${tr.osrm}/${coords}?overview=full&geometries=geojson&steps=true`),d=await r.json();if(d.code==='Ok'&&d.routes.length){const rt=d.routes[0];if(routeLine)routeMap.removeLayer(routeLine);const lc=currentTransport==='car'?'#4ae3b5':currentTransport==='bike'?'#5a8af2':currentTransport==='scooter'?'#f09052':'#a07cf2';routeLine=L.geoJSON(rt.geometry,{style:{color:lc,weight:5,opacity:.85}}).addTo(routeMap);const sm=L.marker([start.lat,start.lng],{icon:L.divIcon({className:'',html:'<div class="lp-marker lp-marker-blue"><div class="lp-marker-pin"><span>🏠</span></div></div>',iconSize:[34,34],iconAnchor:[17,34]})}).addTo(routeMap);routeMarkers.push(sm);routeMap.fitBounds(routeLine.getBounds(),{padding:[80,80]});navRouteCoords=rt.geometry.coordinates.map(c=>[c[1],c[0]]);navTotalDist=rt.distance;navTotalDuration=rt.duration*tr.factor;navSteps=[];if(rt.legs){rt.legs.forEach((leg,li)=>{if(leg.steps){leg.steps.forEach(s=>{navSteps.push({maneuver:s.maneuver,name:s.name||'',distance:s.distance,duration:s.duration*tr.factor,legIndex:li,location:s.maneuver.location})})}})}const dur=rt.duration*tr.factor,dist=(rt.distance/1000).toFixed(1),tm=Math.round(dur/60),h=Math.floor(tm/60),m=tm%60;document.getElementById('route-summary').style.display='flex';document.getElementById('rs-stops').textContent=sorted.length;document.getElementById('rs-dist').textContent=dist+'km';document.getElementById('rs-time').textContent=h>0?`${h}h${m}min`:`${tm}min`;document.getElementById('rs-mode').textContent=tr.icon+' '+tr.label;document.getElementById('nav-start-wrap').style.display='block';showToast(`⚡ Optimisé: ${dist}km`)}}catch(e){console.error(e)}
 }
 
 // ═══════════════ NAVIGATION ═══════════════
+// ═══════════════ TURN-BY-TURN NAV ═══════════════
+const MANEUVER_ARROWS={'turn-right':'↗️','turn-sharp-right':'⤴️','turn-slight-right':'↗️','turn-left':'↙️','turn-sharp-left':'⤵️','turn-slight-left':'↙️','straight':'⬆️','uturn':'↩️','depart':'🏁','arrive':'📍','roundabout-right':'🔄','roundabout-left':'🔄','roundabout':'🔄','merge-right':'↗️','merge-left':'↙️','fork-right':'↗️','fork-left':'↙️','ramp-right':'↗️','ramp-left':'↙️','end-of-road-right':'↗️','end-of-road-left':'↙️','new-name':'⬆️','continue':'⬆️','exit-roundabout':'⬆️','notification':'ℹ️'};
+const MANEUVER_FR={'turn-right':'Tournez à droite','turn-sharp-right':'Tournez fortement à droite','turn-slight-right':'Tournez légèrement à droite','turn-left':'Tournez à gauche','turn-sharp-left':'Tournez fortement à gauche','turn-slight-left':'Tournez légèrement à gauche','straight':'Continuez tout droit','uturn':'Faites demi-tour','depart':'Départ','arrive':'Arrivée','roundabout':'Au rond-point','roundabout-right':'Au rond-point, sortie à droite','roundabout-left':'Au rond-point, sortie à gauche','merge-right':'Insérez-vous à droite','merge-left':'Insérez-vous à gauche','fork-right':'Prenez à droite','fork-left':'Prenez à gauche','ramp-right':'Prenez la bretelle à droite','ramp-left':'Prenez la bretelle à gauche','end-of-road-right':'En fin de route, tournez à droite','end-of-road-left':'En fin de route, tournez à gauche','new-name':'Continuez','continue':'Continuez','exit-roundabout':'Sortez du rond-point','notification':''};
+const TURN_COLORS={'turn-right':'#5a8af2','turn-left':'#5a8af2','turn-sharp-right':'#f09052','turn-sharp-left':'#f09052','uturn':'#f06272','roundabout':'#a07cf2','roundabout-right':'#a07cf2','roundabout-left':'#a07cf2','arrive':'#4ae3b5'};
+
+function getManeuverKey(m){
+  if(!m)return'straight';
+  const type=m.type||'';const mod=m.modifier||'';
+  if(type==='arrive')return'arrive';
+  if(type==='depart')return'depart';
+  if(type==='roundabout'||type==='rotary')return mod?'roundabout-'+mod.replace(' ',''):'roundabout';
+  if(type==='end of road')return mod.includes('left')?'end-of-road-left':'end-of-road-right';
+  if(type==='new name')return'new-name';
+  if(type==='turn'||type==='ramp'||type==='fork'||type==='merge'){
+    const dir=mod.includes('sharp left')?'sharp-left':mod.includes('sharp right')?'sharp-right':mod.includes('slight left')?'slight-left':mod.includes('slight right')?'slight-right':mod.includes('left')?'left':mod.includes('right')?'right':'';
+    return dir?type+'-'+dir:type;
+  }
+  return'straight';
+}
+
+function getArrow(m){return MANEUVER_ARROWS[getManeuverKey(m)]||'⬆️'}
+function getInstruction(m,street){
+  const key=getManeuverKey(m);
+  let text=MANEUVER_FR[key]||'Continuez';
+  if(street&&key!=='depart'&&key!=='arrive')text+=` sur ${street}`;
+  return text;
+}
+function getTurnColor(m){return TURN_COLORS[getManeuverKey(m)]||'var(--blue)'}
+function fmtDist(m){return m<100?Math.round(m)+' m':m<1000?(Math.round(m/10)*10)+' m':(m/1000).toFixed(1)+' km'}
+function fmtDuration(s){const m=Math.round(s/60);if(m<1)return'< 1 min';const h=Math.floor(m/60);return h>0?`${h}h${m%60<10?'0':''}${m%60}`:`${m} min`}
+function fmtETA(seconds){const arrival=new Date(Date.now()+seconds*1000);return arrival.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+
 function startNavigation(){
   if(!navigator.geolocation){showToast('GPS requis',true);return}
   if(!navStops.length){showToast('Calculez la route d\'abord',true);return}
-  navActive=true;navCurrentStop=0;navVoice=true;
+  navActive=true;navCurrentStop=0;navCurrentStep=0;navVoice=true;navStartTime=Date.now();
   document.getElementById('route-sidebar').classList.add('hidden');
   document.getElementById('nav-hud').classList.add('show');
   document.getElementById('nav-hud-top').classList.add('show');
   document.getElementById('nav-voice-btn').className='nav-btn nav-btn-voice';
   document.getElementById('nav-voice-btn').textContent='🔊 Voix ON';
   routeMap.invalidateSize();
-  speak('Navigation démarrée. Dirigez-vous vers '+fullName(navStops[0]));
-  updateNavCard();
+  updateNavHUD();
+  speak('Navigation démarrée. '+getInstruction(navSteps[0]?.maneuver,navSteps[0]?.name));
   navWatchId=navigator.geolocation.watchPosition(onGpsUpdate,e=>{showToast('Signal GPS perdu',true)},{enableHighAccuracy:true,maximumAge:3000,timeout:10000});
 }
 
@@ -1870,83 +2022,110 @@ function stopNavigation(){
   showToast('Navigation arrêtée');
 }
 
-function toggleSidebar(){
-  const sb=document.getElementById('route-sidebar');
-  sb.classList.toggle('hidden');
-  setTimeout(()=>routeMap.invalidateSize(),400);
+function toggleSidebar(){document.getElementById('route-sidebar').classList.toggle('hidden');setTimeout(()=>routeMap.invalidateSize(),400)}
+function toggleVoice(){navVoice=!navVoice;const btn=document.getElementById('nav-voice-btn');if(navVoice){btn.className='nav-btn nav-btn-voice';btn.textContent='🔊 Voix ON'}else{btn.className='nav-btn nav-btn-voice muted';btn.textContent='🔇 Voix OFF';speechSynthesis.cancel()}}
+function recenterNav(){if(navGpsMarker)routeMap.setView(navGpsMarker.getLatLng(),17)}
+
+function speak(text){if(!navVoice||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1;u.pitch=1;const voices=speechSynthesis.getVoices();const fr=voices.find(v=>v.lang.startsWith('fr'));if(fr)u.voice=fr;speechSynthesis.speak(u)}
+
+function updateNavHUD(){
+  // Turn instruction
+  if(navSteps.length&&navCurrentStep<navSteps.length){
+    const step=navSteps[navCurrentStep];
+    const arrow=getArrow(step.maneuver);
+    const color=getTurnColor(step.maneuver);
+    document.getElementById('nt-arrow').textContent=arrow;
+    document.getElementById('nav-turn').style.background=color;
+    document.getElementById('nt-dist').textContent=fmtDist(step.distance);
+    document.getElementById('nt-street').textContent=getInstruction(step.maneuver,step.name);
+    // Show next instruction after this one
+    const nextStep=navSteps[navCurrentStep+1];
+    document.getElementById('nt-after').textContent=nextStep?`Puis: ${getArrow(nextStep.maneuver)} ${getInstruction(nextStep.maneuver,nextStep.name).substring(0,40)}`:'';
+  }
+  // Next stop info
+  if(navCurrentStop<navStops.length){
+    const stop=navStops[navCurrentStop];
+    document.getElementById('nav-stop-num').textContent=navCurrentStop+1;
+    document.getElementById('nav-dest').textContent=fullName(stop);
+    document.getElementById('nav-addr').textContent=stop.position||`${stop.lat.toFixed(4)}, ${stop.lng.toFixed(4)}`;
+  }
 }
 
-function toggleVoice(){
-  navVoice=!navVoice;
-  const btn=document.getElementById('nav-voice-btn');
-  if(navVoice){btn.className='nav-btn nav-btn-voice';btn.textContent='🔊 Voix ON'}
-  else{btn.className='nav-btn nav-btn-voice muted';btn.textContent='🔇 Voix OFF';speechSynthesis.cancel()}
-}
-
-function recenterNav(){
-  if(navGpsMarker)routeMap.setView(navGpsMarker.getLatLng(),17);
-}
-
-function speak(text){
-  if(!navVoice||!('speechSynthesis' in window))return;
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='fr-FR';u.rate=1;u.pitch=1;
-  const voices=speechSynthesis.getVoices();
-  const fr=voices.find(v=>v.lang.startsWith('fr'));
-  if(fr)u.voice=fr;
-  speechSynthesis.speak(u);
-}
-
+let lastSpokenStep=-1;
 function onGpsUpdate(pos){
-  const lat=pos.coords.latitude,lng=pos.coords.longitude;
-  // Update marker
+  const lat=pos.coords.latitude,lng=pos.coords.longitude,speed=pos.coords.speed||0;
   if(!navGpsMarker){navGpsMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="gps-dot"></div>',iconSize:[20,20],iconAnchor:[10,10]})}).addTo(routeMap)}
   else navGpsMarker.setLatLng([lat,lng]);
   routeMap.setView([lat,lng],17);
 
-  if(navCurrentStop>=navStops.length)return;
-  const stop=navStops[navCurrentStop];
-  const dist=haversine(lat,lng,stop.lat,stop.lng);
+  // Find nearest step
+  if(navSteps.length){
+    let bestStep=navCurrentStep,bestDist=Infinity;
+    for(let i=navCurrentStep;i<Math.min(navCurrentStep+5,navSteps.length);i++){
+      const s=navSteps[i];if(!s.location)continue;
+      const d=haversine(lat,lng,s.location[1],s.location[0]);
+      if(d<bestDist){bestDist=d;bestStep=i}
+    }
+    // Advance step if passed current
+    if(bestStep>navCurrentStep){
+      navCurrentStep=bestStep;
+      updateNavHUD();
+    }
+    // Update distance to next maneuver
+    const curStep=navSteps[navCurrentStep];
+    if(curStep&&curStep.location){
+      const dToManeuver=haversine(lat,lng,curStep.location[1],curStep.location[0])*1000;
+      document.getElementById('nt-dist').textContent=fmtDist(dToManeuver);
 
-  // Update HUD
-  document.getElementById('nav-dist').textContent=dist<1?(dist*1000).toFixed(0)+' m':dist.toFixed(1)+' km';
-
-  // Progress
-  const pct=Math.min(100,((navCurrentStop/navStops.length)*100)+((1/navStops.length)*(1-dist/2))*100);
-  document.getElementById('nav-progress-fill').style.width=Math.max(0,Math.min(100,pct))+'%';
-
-  // ETA based on speed
-  const speed=pos.coords.speed||0;
-  if(speed>0.5){const eta=Math.round((dist*1000)/(speed*60));document.getElementById('nav-eta').textContent=eta>60?Math.floor(eta/60)+'h'+eta%60+'min':eta+'min'}
-
-  // Arrived? (within 50m)
-  if(dist<0.05){
-    speak(`Vous êtes arrivé chez ${fullName(stop)}`);
-    showToast(`✅ Arrivé: ${fullName(stop)}`);
-    // Highlight item in sidebar
-    document.querySelectorAll('.route-item').forEach((el,i)=>el.classList.toggle('active-stop',i===navCurrentStop));
-    navCurrentStop++;
-    if(navCurrentStop<navStops.length){
-      setTimeout(()=>{speak('Prochain arrêt: '+fullName(navStops[navCurrentStop]));updateNavCard()},3000);
-    }else{
-      setTimeout(()=>{speak('Toutes les livraisons sont terminées. Bravo !');document.getElementById('nav-dest').textContent='🎉 Terminé !';document.getElementById('nav-dist').textContent='';document.getElementById('nav-addr').textContent='Toutes les livraisons effectuées';document.getElementById('nav-progress-fill').style.width='100%'},3000);
+      // Voice announcement at 200m and 50m
+      if(dToManeuver<200&&lastSpokenStep!==navCurrentStep){
+        speak(getInstruction(curStep.maneuver,curStep.name)+' dans '+fmtDist(dToManeuver));
+        lastSpokenStep=navCurrentStep;
+      }
     }
   }
-  // Approaching (200m)
-  else if(dist<0.2&&dist>0.05){
-    document.getElementById('nav-arrow').textContent='📍';
-  }else{
-    document.getElementById('nav-arrow').textContent='➡️';
-  }
-}
 
-function updateNavCard(){
-  if(navCurrentStop>=navStops.length)return;
-  const s=navStops[navCurrentStop];
-  document.getElementById('nav-dest').textContent=`${navCurrentStop+1}/${navStops.length} — ${fullName(s)}`;
-  document.getElementById('nav-addr').textContent=s.position||`${s.lat.toFixed(4)}, ${s.lng.toFixed(4)}`;
-  document.getElementById('nav-arrow').textContent='➡️';
+  // Check arrival at stops
+  if(navCurrentStop<navStops.length){
+    const stop=navStops[navCurrentStop];
+    const distToStop=haversine(lat,lng,stop.lat,stop.lng);
+    // Update stop ETA
+    const etaSec=speed>0.5?(distToStop*1000)/speed:distToStop*1000/1.4;
+    document.getElementById('nav-eta-time').textContent=fmtETA(etaSec);
+    document.getElementById('nav-eta-dist').textContent=fmtDist(distToStop*1000);
+
+    // Arrived at stop (50m)
+    if(distToStop<0.05){
+      speak(`Vous êtes arrivé chez ${fullName(stop)}`);
+      showToast(`✅ Arrivé: ${fullName(stop)}`);
+      document.querySelectorAll('.route-item').forEach((el,i)=>el.classList.toggle('active-stop',i===navCurrentStop));
+      navCurrentStop++;
+      lastSpokenStep=-1;
+      if(navCurrentStop<navStops.length){
+        setTimeout(()=>{speak('Prochain arrêt: '+fullName(navStops[navCurrentStop]));updateNavHUD()},3000);
+      }else{
+        setTimeout(()=>{speak('Toutes les livraisons sont terminées. Bravo !');
+        document.getElementById('nt-arrow').textContent='🎉';
+        document.getElementById('nav-turn').style.background='var(--accent)';
+        document.getElementById('nt-street').textContent='Toutes les livraisons terminées !';
+        document.getElementById('nt-dist').textContent='';
+        document.getElementById('nt-after').textContent='';
+        document.getElementById('nav-progress-fill').style.width='100%';
+        },3000);
+      }
+    }
+  }
+
+  // Total progress
+  const pct=navStops.length?Math.min(100,(navCurrentStop/navStops.length)*100):0;
+  document.getElementById('nav-progress-fill').style.width=pct+'%';
+  // Total remaining ETA
+  let remainDist=0;
+  for(let i=navCurrentStop;i<navStops.length;i++){
+    remainDist+=haversine(lat,lng,navStops[i].lat,navStops[i].lng);
+  }
+  const totalRemainSec=speed>0.5?(remainDist*1000)/speed:remainDist*1000/1.4;
+  document.getElementById('nav-total-eta').textContent=`${navStops.length-navCurrentStop} arrêt${navStops.length-navCurrentStop>1?'s':''} • ${fmtDuration(totalRemainSec)} • Arrivée ${fmtETA(totalRemainSec)}`;
 }
 
 function haversine(lat1,lon1,lat2,lon2){const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180,a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))}
@@ -1998,7 +2177,7 @@ async function clearTileCache(){if(!confirm('Vider le cache ?'))return;try{await
 // Data
 function renderDataStats(){const g=data.filter(d=>d.lat&&d.lng).length,dlv=data.filter(d=>d.delivered).length;document.getElementById('data-stats-section').innerHTML=`<div class="data-stat"><div class="ds-val">${data.length}</div><div class="ds-label">Livraisons</div></div><div class="data-stat"><div class="ds-val">${dlv}</div><div class="ds-label">Livrées</div></div><div class="data-stat"><div class="ds-val">${g}</div><div class="ds-label">GPS</div></div><div class="data-stat"><div class="ds-val">${templates.length}</div><div class="ds-label">Modèles</div></div>`}
 function exportJSON(){const all={data,templates,dtypes,version:'LivraPro v5',exportDate:new Date().toISOString()};const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('JSON exporté 📤')}
-function exportCSV(){if(!data.length){showToast('Vide',true);return}const h=['NOM','Prénom','Tél','Article','Qté','Prix','Bénéfice','Statut','Livré','Date livraison','Dernier msg','Via','Position','Lat','Lng','Date'],rows=data.map(d=>[formatNom(d.lastname||''),formatPrenom(d.firstname||''),d.phone,d.article,d.qty,d.price,d.profit,d.status,d.delivered?'Oui':'Non',d.deliveredAt?new Date(d.deliveredAt).toLocaleString('fr-FR'):'',d.lastMsgAt?new Date(d.lastMsgAt).toLocaleString('fr-FR'):'',d.lastMsgType||'',d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊')}
+function exportCSV(){if(!data.length){showToast('Vide',true);return}const h=['NOM','Prénom','Tél','Article','Qté','Prix','Bénéfice','Statut','Livré','Date livraison','Absent','Date absent','Dernier msg','Via','Position','Lat','Lng','Date'],rows=data.map(d=>[formatNom(d.lastname||''),formatPrenom(d.firstname||''),d.phone,d.article,d.qty,d.price,d.profit,d.status,d.delivered?'Oui':'Non',d.deliveredAt?new Date(d.deliveredAt).toLocaleString('fr-FR'):'',d.absent?'Oui':'Non',d.absentAt?new Date(d.absentAt).toLocaleString('fr-FR'):'',d.lastMsgAt?new Date(d.lastMsgAt).toLocaleString('fr-FR'):'',d.lastMsgType||'',d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊')}
 function importJSON(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader;reader.onload=ev=>{try{const obj=JSON.parse(ev.target.result);if(obj.data&&Array.isArray(obj.data)){if(!confirm(`Importer ${obj.data.length} livraisons ?`))return;const ids=new Set(data.map(d=>d.id));let n=0;obj.data.forEach(d=>{if(!ids.has(d.id)){data.push(d);n++}});if(obj.templates)templates=[...templates,...obj.templates.filter(t=>!templates.find(x=>x.name===t.name))];if(obj.dtypes){const incoming=obj.dtypes.map(d=>typeof d==='string'?{name:d,sellPrice:0,buyPrice:0,image:''}:({...d,image:d.image||''}));dtypes=[...dtypes,...incoming.filter(d=>!dtypes.find(x=>x.name===d.name))]};save();saveTpl();saveDtypes();renderTable();renderSettings();showToast(`${n} importés ✅`)}else showToast('Format invalide',true)}catch(x){showToast('Fichier invalide',true)}};reader.readAsText(file);e.target.value=''}
 function clearAllData(){if(!confirm('⚠️ TOUT SUPPRIMER ?'))return;if(!confirm('Dernière chance !'))return;data=[];templates=[];dtypes=[{name:'Brioche',sellPrice:2,buyPrice:1,image:''},{name:'Carte mémoire',sellPrice:15,buyPrice:8,image:''},{name:'Ciment',sellPrice:12,buyPrice:7,image:''},{name:'Fer',sellPrice:25,buyPrice:15,image:''}];accentColor='';localStorage.removeItem('livrapro_accent');document.body.style.removeProperty('--accent');document.body.style.removeProperty('--accent2');document.body.style.removeProperty('--accent-glow');save();saveTpl();saveDtypes();renderTable();renderSettings();showToast('Données supprimées')}
 
