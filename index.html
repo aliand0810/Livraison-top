@@ -338,6 +338,21 @@ tr.has-dup{border-left:3px solid var(--orange)!important}
 .dup-count-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(240,144,82,.08);border:1px solid rgba(240,144,82,.2);border-radius:8px;font-size:11px;color:var(--orange);font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:10px}
 .dup-count-bar:hover{background:rgba(240,144,82,.15)}
 .dup-count-bar .dcb-count{font-family:'Space Mono',monospace;font-weight:700;font-size:13px}
+
+/* QUICK COMMENT */
+.qc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:3600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+.qc-overlay.active{opacity:1;pointer-events:all}
+.qc-box{background:var(--bg2);border:1px solid var(--blue);border-radius:16px;max-width:420px;width:100%;box-shadow:0 0 30px var(--blue-glow);transform:scale(.92);transition:transform .25s;overflow:hidden}
+.qc-overlay.active .qc-box{transform:scale(1)}
+.qc-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.qc-header h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.qc-body{padding:16px 20px}
+.qc-client{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.qc-client .qc-article{font-size:11px;font-weight:400;color:var(--text3)}
+.qc-textarea{width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;transition:border-color .2s}
+.qc-textarea:focus{border-color:var(--blue)}
+.qc-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.qc-hint{font-size:10px;color:var(--text3);margin-top:6px}
 .bulk-send-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
 
 /* SETTINGS */
@@ -404,6 +419,26 @@ tr.has-dup{border-left:3px solid var(--orange)!important}
 .col-money{transition:opacity .3s}
 body.hide-prices .col-money{opacity:0!important;user-select:none;pointer-events:none}
 body.hide-prices .col-money *{color:transparent!important}
+/* Column visibility */
+body.hide-col-tel .sticky-name-table th:nth-child(4),body.hide-col-tel .sticky-name-table td:nth-child(4){display:none!important}
+body.hide-col-article .sticky-name-table th:nth-child(5),body.hide-col-article .sticky-name-table td:nth-child(5){display:none!important}
+body.hide-col-qty .sticky-name-table th:nth-child(6),body.hide-col-qty .sticky-name-table td:nth-child(6){display:none!important}
+body.hide-col-price .sticky-name-table th:nth-child(7),body.hide-col-price .sticky-name-table td:nth-child(7),body.hide-col-price .sticky-name-table th:nth-child(8),body.hide-col-price .sticky-name-table td:nth-child(8){display:none!important}
+body.hide-col-price .sec-stat.value{display:none!important}
+body.hide-col-price .pv-row.col-money{display:none!important}
+body.hide-col-status .sticky-name-table th:nth-child(9),body.hide-col-status .sticky-name-table td:nth-child(9){display:none!important}
+body.hide-col-delivery .sticky-name-table th:nth-child(10),body.hide-col-delivery .sticky-name-table td:nth-child(10){display:none!important}
+body.hide-col-position .sticky-name-table th:nth-child(11),body.hide-col-position .sticky-name-table td:nth-child(11){display:none!important}
+body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .sticky-name-table td:nth-child(12){display:none!important}
+
+/* Column visibility grid */
+.col-vis-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.col-vis-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;user-select:none}
+.col-vis-item:hover{background:var(--bg3)}
+.col-vis-item .cvi-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s}
+.col-vis-item.visible .cvi-check{background:var(--accent);border-color:var(--accent);color:#0a0c10}
+.col-vis-item .cvi-label{font-size:12px;font-weight:600;color:var(--text)}
+.col-vis-item .cvi-icon{font-size:14px;flex-shrink:0}
 
 /* DELETE CONFIRM MODAL */
 .delete-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:3500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -838,6 +873,11 @@ body.hide-prices .col-money *{color:transparent!important}
       <div class="setting-toggle"><div class="st-info"><div class="st-title">🔒 Verrouiller l'affichage des prix</div><div class="st-desc">Demander le PIN pour réafficher les prix</div></div><div class="toggle-switch" id="tog-lock-prices" onclick="toggleLock('prices')"><div class="tknob"></div></div></div>
     </div></div>
 
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>👁️ Colonnes du tableau</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-columns">
+      <p style="font-size:11px;color:var(--text3);margin-bottom:10px">Choisissez les colonnes à afficher dans le tableau de livraisons.</p>
+      <div class="col-vis-grid" id="col-vis-grid"></div>
+    </div></div>
+
     <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>📍 Localisation</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-location">
       <div class="loc-current" id="loc-current"><span class="loc-icon">📍</span><div class="loc-info"><strong style="font-size:13px;color:var(--text)">Position actuelle</strong><div class="loc-coords" id="loc-coords">Non détectée</div></div><button class="btn btn-secondary" style="flex-shrink:0" onclick="detectMyLocation()">🔄 Détecter</button></div>
       <div class="form-group" style="margin-bottom:10px"><label style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase">Adresse par défaut (point de départ)</label><input type="text" id="default-start-addr" placeholder="Votre adresse ou magasin..." style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;width:100%" onchange="saveDefaultStart()"></div>
@@ -976,6 +1016,22 @@ body.hide-prices .col-money *{color:transparent!important}
   </div>
 </div>
 
+<!-- QUICK COMMENT -->
+<div class="qc-overlay" id="qc-overlay" onclick="if(event.target===this)closeQuickComment()">
+  <div class="qc-box">
+    <div class="qc-header"><h3>💬 Commentaire</h3><button class="modal-close" onclick="closeQuickComment()">✕</button></div>
+    <div class="qc-body">
+      <div class="qc-client"><span id="qc-name">—</span><span class="qc-article" id="qc-article">—</span></div>
+      <textarea class="qc-textarea" id="qc-text" placeholder="Ajouter une note, remarque, instructions..."></textarea>
+      <div class="qc-hint">💡 Double-clic sur un nom pour ouvrir • Ctrl+Entrée pour sauvegarder</div>
+    </div>
+    <div class="qc-footer">
+      <button class="btn btn-secondary" onclick="clearQuickComment()">🗑️ Effacer</button>
+      <button class="btn btn-primary" onclick="saveQuickComment()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <!-- DUPLICATE DETECTION -->
 <div class="dup-overlay" id="dup-overlay" onclick="if(event.target===this)closeDupModal()">
   <div class="dup-box">
@@ -1047,6 +1103,17 @@ let myLocMarker=null,myLocCircle=null,myLocWatchId=null,myLocTracking=false;
 let pickedLat=null,pickedLng=null,deferredPrompt=null;
 let selectedIds=new Set();
 let hidePrices=localStorage.getItem('livrapro_hideprices')==='true';
+const COLUMNS=[
+  {key:'tel',icon:'📱',label:'Téléphone'},
+  {key:'article',icon:'📦',label:'Article'},
+  {key:'qty',icon:'🔢',label:'Quantité'},
+  {key:'price',icon:'💰',label:'Prix / Bénéfice'},
+  {key:'status',icon:'📋',label:'Statut paiement'},
+  {key:'delivery',icon:'🚚',label:'Livraison'},
+  {key:'position',icon:'📍',label:'Position'},
+  {key:'date',icon:'📅',label:'Date'}
+];
+let hiddenCols=JSON.parse(localStorage.getItem('livrapro_hidden_cols')||'[]');
 let currentTheme=localStorage.getItem('livrapro_theme')||'dark';
 let accentColor=localStorage.getItem('livrapro_accent')||'';
 const COLOR_PRESETS=[
@@ -1163,7 +1230,8 @@ function createTileLayer(){return new L.TileLayer.Cached(getTileUrl(),{attributi
 function applyTheme(){
   // Reset class but preserve inline accent styles
   const savedAccent=accentColor;
-  document.body.className=currentTheme+(hidePrices?' hide-prices':'');
+  const colClasses=hiddenCols.map(k=>'hide-col-'+k).join(' ');
+  document.body.className=currentTheme+(hidePrices?' hide-prices':'')+(colClasses?' '+colClasses:'');
   document.getElementById('theme-icon').textContent=currentTheme==='dark'?'🌙':'☀️';
   const mc=document.querySelector('meta[name="theme-color"]');
   if(mc)mc.content=currentTheme==='light'?'#f0f2f5':'#0a0c10';
@@ -1279,8 +1347,8 @@ function buildRow(d,i,sel){
   const msgIcon=d.lastMsgAt?`<span title="Contacté ${timeAgo(d.lastMsgAt)} via ${d.lastMsgType||'?'}" style="font-size:10px;cursor:help">${d.lastMsgType==='whatsapp'?'💬':d.lastMsgType==='telegram'?'✈️':d.lastMsgType==='sms'?'📱':'📋'}</span>`:'';
   const isDup=currentDupMap.has(d.id);
   const dupBadge=isDup?`<span class="dup-badge" title="Doublon détecté" onclick="event.stopPropagation();showDupForEntry(${d.id})">⚠️ Dup</span>`:'';
-  const commentIcon=d.comment?`<span title="${esc(d.comment).replace(/"/g,'&quot;')}" style="font-size:10px;cursor:help;color:var(--blue)">💬</span>`:'';
-  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="showPreview(${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${commentIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}${absentTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
+  const commentIcon=d.comment?`<span title="${esc(d.comment).replace(/"/g,'&quot;')}" style="font-size:10px;cursor:pointer;color:var(--blue)" onclick="event.stopPropagation();openQuickComment(${d.id})">💬</span>`:`<span style="font-size:9px;cursor:pointer;color:var(--text3);opacity:.4" onclick="event.stopPropagation();openQuickComment(${d.id})" title="Ajouter un commentaire">💬</span>`;
+  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="clientNameClick(event,${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${commentIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}${absentTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
 }
 
 function renderTable(){
@@ -1377,6 +1445,20 @@ function unmarkAbsent(id){
   save();renderTable();showToast(`✅ ${fullName(d)} — Remis disponible`);
 }
 
+let _clickTimer=null,_clickId=null;
+function clientNameClick(e,id){
+  e.stopPropagation();
+  if(_clickTimer&&_clickId===id){
+    // Double click
+    clearTimeout(_clickTimer);_clickTimer=null;_clickId=null;
+    openQuickComment(id);
+  }else{
+    // Single click — wait to see if double click follows
+    _clickId=id;
+    _clickTimer=setTimeout(()=>{_clickTimer=null;_clickId=null;showPreview(id)},280);
+  }
+}
+
 // ═══════════════ CLIENT PREVIEW ═══════════════
 function showPreview(id){
   const d=data.find(x=>x.id===id);if(!d)return;
@@ -1416,6 +1498,36 @@ function showPreview(id){
   document.getElementById('preview-overlay').classList.add('active');
 }
 function closePreview(){document.getElementById('preview-overlay').classList.remove('active')}
+
+// ═══════════════ QUICK COMMENT ═══════════════
+let qcEntryId=null;
+function openQuickComment(id){
+  const d=data.find(x=>x.id===id);if(!d)return;
+  qcEntryId=id;
+  document.getElementById('qc-name').textContent=fullName(d);
+  document.getElementById('qc-article').textContent=`${d.article} ×${d.qty}`;
+  document.getElementById('qc-text').value=d.comment||'';
+  document.getElementById('qc-overlay').classList.add('active');
+  setTimeout(()=>{
+    const ta=document.getElementById('qc-text');
+    ta.focus();
+    ta.addEventListener('keydown',function handler(ev){
+      if(ev.key==='Enter'&&(ev.ctrlKey||ev.metaKey)){ev.preventDefault();saveQuickComment();ta.removeEventListener('keydown',handler)}
+    });
+  },200);
+}
+function closeQuickComment(){document.getElementById('qc-overlay').classList.remove('active');qcEntryId=null}
+function saveQuickComment(){
+  if(qcEntryId===null)return;
+  const d=data.find(x=>x.id===qcEntryId);if(!d)return;
+  d.comment=document.getElementById('qc-text').value.trim();
+  save();renderTable();closeQuickComment();
+  showToast(d.comment?'💬 Commentaire enregistré ✅':'💬 Commentaire supprimé');
+}
+function clearQuickComment(){
+  document.getElementById('qc-text').value='';
+  saveQuickComment();
+}
 
 function cycleStatus(id){const e=data.find(d=>d.id===id);if(!e)return;const c=['en attente','payé','impayé'];e.status=c[(c.indexOf(e.status)+1)%3];save();renderTable();showToast(`Statut → ${e.status}`)}
 
@@ -1812,17 +1924,41 @@ function toggleLock(type){
 }
 function toggleHidePrices(){
   if(hidePrices&&lockPrices&&secPinEnabled&&secPin){
-    pendingAuthAction=()=>{hidePrices=false;localStorage.setItem('livrapro_hideprices','false');document.body.classList.remove('hide-prices');renderSecurityToggles();showToast('Prix affichés')};
+    pendingAuthAction=()=>{hidePrices=false;localStorage.setItem('livrapro_hideprices','false');applyTheme();renderSecurityToggles();showToast('Prix affichés')};
     showPinModal('Afficher les prix');return;
   }
   hidePrices=!hidePrices;localStorage.setItem('livrapro_hideprices',hidePrices);
-  document.body.classList.toggle('hide-prices',hidePrices);renderSecurityToggles();
+  applyTheme();renderSecurityToggles();
 }
 function renderSecurityToggles(){
   setToggle('tog-pin',secPinEnabled);
   document.getElementById('pin-config').style.display=(!secPinEnabled&&document.getElementById('pin-config').style.display==='block')?'block':'none';
   setToggle('tog-lock-edit',lockEdit);setToggle('tog-lock-delete',lockDelete);
   setToggle('tog-hide-prices',hidePrices);setToggle('tog-lock-prices',lockPrices);
+}
+
+// ═══════════════ COLUMN VISIBILITY ═══════════════
+function renderColumnToggles(){
+  const grid=document.getElementById('col-vis-grid');if(!grid)return;
+  grid.innerHTML=COLUMNS.map(c=>{
+    const visible=!hiddenCols.includes(c.key);
+    return`<div class="col-vis-item ${visible?'visible':''}" onclick="toggleColumn('${c.key}')"><div class="cvi-check">${visible?'✓':''}</div><span class="cvi-icon">${c.icon}</span><span class="cvi-label">${c.label}</span></div>`;
+  }).join('');
+}
+
+function toggleColumn(key){
+  const idx=hiddenCols.indexOf(key);
+  if(idx>=0)hiddenCols.splice(idx,1);else hiddenCols.push(key);
+  localStorage.setItem('livrapro_hidden_cols',JSON.stringify(hiddenCols));
+  applyColumnVisibility();
+  renderColumnToggles();
+}
+
+function applyColumnVisibility(){
+  // Remove all hide-col classes
+  COLUMNS.forEach(c=>document.body.classList.remove('hide-col-'+c.key));
+  // Apply hidden ones
+  hiddenCols.forEach(k=>document.body.classList.add('hide-col-'+k));
 }
 function setToggle(id,on){const el=document.getElementById(id);if(el)el.classList.toggle('on',on)}
 
@@ -2202,7 +2338,7 @@ function haversine(lat1,lon1,lat2,lon2){const R=6371,dLat=(lat2-lat1)*Math.PI/18
 
 // ═══════════════ SETTINGS ═══════════════
 function toggleSection(h){h.classList.toggle('open');h.nextElementSibling.classList.toggle('open')}
-function renderSettings(){renderColorGrid();renderTemplatesList();renderDtypesList();renderDataStats();renderSaveLocationUI();updateTileStats();updatePWAStatus();renderSecurityToggles();renderLocationToggles()}
+function renderSettings(){renderColorGrid();renderTemplatesList();renderDtypesList();renderDataStats();renderSaveLocationUI();updateTileStats();updatePWAStatus();renderSecurityToggles();renderColumnToggles();renderLocationToggles()}
 function renderTemplatesList(){const c=document.getElementById('msg-templates-list');if(!templates.length){c.innerHTML='<p style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Aucun modèle.</p>';return}c.innerHTML=templates.map((t,i)=>`<div class="s-msg-tpl"><div class="tpl-name">${esc(t.name)}<div class="s-actions" style="display:flex;gap:4px"><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="editTemplate(${i})">✏️</button><button style="background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px" onclick="deleteTemplate(${i})">🗑️</button></div></div><div class="tpl-body">${esc(t.body)}</div></div>`).join('')}
 function addTemplate(){const name=document.getElementById('tpl-name').value.trim(),body=document.getElementById('tpl-body').value.trim();if(!name||!body){showToast('Remplir les champs',true);return}templates.push({name,body});saveTpl();renderTemplatesList();document.getElementById('tpl-name').value='';document.getElementById('tpl-body').value='';showToast('Modèle ajouté ✅')}
 function editTemplate(i){
@@ -2516,12 +2652,12 @@ async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();await def
 async function registerSW(){if(!('serviceWorker' in navigator)){document.getElementById('sw-status').textContent='Non supporté';return}try{document.getElementById('sw-status').textContent='Cache IndexedDB actif ✅'}catch(e){document.getElementById('sw-status').textContent='Cache local ✅'}}
 
 function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' error':'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('dup-overlay').classList.contains('active'))closeDupModal();else if(document.getElementById('bulk-action-overlay').classList.contains('active'))closeBulkAction();else if(document.getElementById('preview-overlay').classList.contains('active'))closePreview();else if(document.getElementById('deliver-overlay').classList.contains('active'))cancelDeliver();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('qc-overlay').classList.contains('active'))closeQuickComment();else if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('dup-overlay').classList.contains('active'))closeDupModal();else if(document.getElementById('bulk-action-overlay').classList.contains('active'))closeBulkAction();else if(document.getElementById('preview-overlay').classList.contains('active'))closePreview();else if(document.getElementById('deliver-overlay').classList.contains('active'))cancelDeliver();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
 
 // Load voices
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
 
-renderTable();renderStats();registerSW();applyTheme();
+renderTable();renderStats();registerSW();applyTheme();applyColumnVisibility();
 if(hidePrices)document.body.classList.add('hide-prices');
 if(defaultStart)document.getElementById('route-start').value=defaultStart;
 if(autoGeo)setTimeout(detectMyLocation,1000);
