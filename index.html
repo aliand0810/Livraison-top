@@ -284,6 +284,34 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .msg-channel-grid .btn{justify-content:center;padding:12px}
 .msg-history-hint{font-size:10px;color:var(--text3);text-align:center;padding:6px;margin-top:6px;background:var(--bg);border-radius:6px;border:1px solid var(--border)}
 .msg-history-hint strong{color:var(--accent)}
+
+/* DUPLICATES */
+.dup-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;background:rgba(240,144,82,.12);color:var(--orange);border:1px solid rgba(240,144,82,.3);cursor:pointer;vertical-align:middle}
+.dup-badge:hover{background:rgba(240,144,82,.25)}
+tr.has-dup{border-left:3px solid var(--orange)!important}
+.dup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:3900;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.dup-overlay.active{opacity:1;pointer-events:all}
+.dup-box{background:var(--bg2);border:1px solid var(--orange);border-radius:16px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 0 40px rgba(240,144,82,.15);transform:scale(.92);transition:transform .25s}
+.dup-overlay.active .dup-box{transform:scale(1)}
+.dup-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.dup-header h3{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.dup-body{padding:18px 20px}
+.dup-new{background:var(--accent-glow);border:2px solid var(--accent);border-radius:var(--radius);padding:14px;margin-bottom:14px}
+.dup-new .dup-label{font-size:9px;color:var(--accent);text-transform:uppercase;font-weight:700;letter-spacing:.5px;margin-bottom:4px}
+.dup-new .dup-name{font-size:16px;font-weight:700}
+.dup-new .dup-detail{font-size:12px;color:var(--text2);margin-top:2px}
+.dup-match-label{font-size:10px;color:var(--orange);text-transform:uppercase;font-weight:700;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.dup-match{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.dup-match .dm-info{flex:1;min-width:0}
+.dup-match .dm-name{font-weight:700;font-size:13px}
+.dup-match .dm-detail{font-size:11px;color:var(--text3);margin-top:2px}
+.dup-match .dm-reason{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;flex-shrink:0}
+.dm-reason.phone{background:rgba(90,138,242,.1);color:var(--blue);border:1px solid rgba(90,138,242,.3)}
+.dm-reason.name{background:rgba(160,124,242,.1);color:var(--purple);border:1px solid rgba(160,124,242,.3)}
+.dup-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.dup-count-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(240,144,82,.08);border:1px solid rgba(240,144,82,.2);border-radius:8px;font-size:11px;color:var(--orange);font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.dup-count-bar:hover{background:rgba(240,144,82,.15)}
+.dup-count-bar .dcb-count{font-family:'Space Mono',monospace;font-weight:700;font-size:13px}
 .bulk-send-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
 
 /* SETTINGS */
@@ -478,6 +506,7 @@ body.hide-prices .col-money *{color:transparent!important}
     <div class="search-box"><span class="ico">🔍</span><input type="text" id="search" placeholder="Rechercher..." oninput="renderTable()"></div>
     <select class="fsel" id="filterStatus" onchange="renderTable()"><option value="all">Tous</option><option value="payé">✅ Payé</option><option value="en attente">⏳ Attente</option><option value="impayé">❌ Impayé</option></select>
     <select class="fsel" id="sortBy" onchange="renderTable()"><option value="date-desc">Récent</option><option value="date-asc">Ancien</option><option value="name-asc">A→Z</option><option value="price-desc">Prix ↓</option></select>
+    <div class="dup-count-bar" id="dup-count-bar" style="display:none" onclick="showAllDuplicates()">⚠️ <span class="dcb-count" id="dup-total-count">0</span> doublons détectés</div>
   </div>
 
   <!-- SECTION: EN COURS -->
@@ -627,32 +656,35 @@ body.hide-prices .col-money *{color:transparent!important}
 
       <!-- GOOGLE DRIVE -->
       <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:8px">
-        <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">☁️ Google Drive</label>
+        <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:default;user-select:none" ondblclick="toggleGDriveConfig()">☁️ Google Drive <span style="font-size:8px;color:var(--text3);font-weight:400;opacity:.5">double-clic pour configurer</span></label>
         <div class="gdrive-status" id="gdrive-status"><div class="gd-dot offline" id="gd-dot"></div><div class="gd-info"><strong id="gd-user">Non connecté</strong><span id="gd-email">Connectez-vous pour synchroniser</span></div></div>
 
-        <!-- REDIRECT URI HELPER -->
-        <div style="background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:10px;margin-bottom:10px">
-          <div style="font-size:10px;font-weight:700;color:var(--warn);margin-bottom:4px">⚠️ URI de redirection à copier dans Google Cloud Console :</div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <code id="gdrive-redirect-uri" style="flex:1;font-size:9px;color:var(--accent);background:var(--bg2);padding:6px 8px;border-radius:4px;border:1px solid var(--border);word-break:break-all;font-family:'Space Mono',monospace">—</code>
-            <button class="btn btn-secondary" style="padding:5px 8px;font-size:10px;flex-shrink:0" onclick="copyRedirectUri()">📋</button>
+        <!-- HIDDEN CONFIG (shown on double-click) -->
+        <div id="gdrive-config-panel" style="display:none">
+          <!-- REDIRECT URI HELPER -->
+          <div style="background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:10px;margin-bottom:10px">
+            <div style="font-size:10px;font-weight:700;color:var(--warn);margin-bottom:4px">⚠️ URI de redirection à copier dans Google Cloud Console :</div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <code id="gdrive-redirect-uri" style="flex:1;font-size:9px;color:var(--accent);background:var(--bg2);padding:6px 8px;border-radius:4px;border:1px solid var(--border);word-break:break-all;font-family:'Space Mono',monospace">—</code>
+              <button class="btn btn-secondary" style="padding:5px 8px;font-size:10px;flex-shrink:0" onclick="copyRedirectUri()">📋</button>
+            </div>
+            <details style="margin-top:8px">
+              <summary style="font-size:10px;color:var(--blue);cursor:pointer;font-weight:600">📖 Comment configurer Google Cloud ?</summary>
+              <ol style="font-size:10px;color:var(--text2);padding-left:16px;margin-top:6px;line-height:1.6">
+                <li>Allez sur <strong>console.cloud.google.com</strong></li>
+                <li>Créez un projet ou sélectionnez-en un</li>
+                <li>Activez l'API <strong>Google Drive API</strong></li>
+                <li>Allez dans <strong>Identifiants → Créer des identifiants → ID client OAuth</strong></li>
+                <li>Type : <strong>Application Web</strong></li>
+                <li>Dans <strong>« URI de redirection autorisées »</strong>, collez l'URI ci-dessus</li>
+                <li>Copiez le <strong>Client ID</strong> et collez-le ci-dessous</li>
+                <li>Dans <strong>Écran de consentement OAuth</strong>, ajoutez votre email en tant qu'utilisateur test</li>
+              </ol>
+            </details>
           </div>
-          <details style="margin-top:8px">
-            <summary style="font-size:10px;color:var(--blue);cursor:pointer;font-weight:600">📖 Comment configurer Google Cloud ?</summary>
-            <ol style="font-size:10px;color:var(--text2);padding-left:16px;margin-top:6px;line-height:1.6">
-              <li>Allez sur <strong>console.cloud.google.com</strong></li>
-              <li>Créez un projet ou sélectionnez-en un</li>
-              <li>Activez l'API <strong>Google Drive API</strong></li>
-              <li>Allez dans <strong>Identifiants → Créer des identifiants → ID client OAuth</strong></li>
-              <li>Type : <strong>Application Web</strong></li>
-              <li>Dans <strong>« URI de redirection autorisées »</strong>, collez l'URI ci-dessus</li>
-              <li>Copiez le <strong>Client ID</strong> et collez-le ci-dessous</li>
-              <li>Dans <strong>Écran de consentement OAuth</strong>, ajoutez votre email en tant qu'utilisateur test</li>
-            </ol>
-          </details>
+          <div class="form-group" style="margin-bottom:8px"><label style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Client ID Google</label><input type="text" id="gdrive-client-id" placeholder="123456789.apps.googleusercontent.com" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:10px;outline:none;width:100%" onchange="saveGDriveConfig()"></div>
         </div>
 
-        <div class="form-group" style="margin-bottom:8px"><label style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Client ID Google</label><input type="text" id="gdrive-client-id" placeholder="123456789.apps.googleusercontent.com" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:10px;outline:none;width:100%" onchange="saveGDriveConfig()"></div>
         <div style="display:flex;gap:6px;margin-bottom:8px">
           <button class="btn btn-route" style="flex:1" id="gdrive-connect-btn" onclick="connectGDrive()">☁️ Connecter</button>
           <button class="btn btn-secondary" style="flex:1" id="gdrive-disconnect-btn" onclick="disconnectGDrive()">🔌 Déconnecter</button>
@@ -824,6 +856,29 @@ body.hide-prices .col-money *{color:transparent!important}
   </div>
 </div>
 
+<!-- DUPLICATE DETECTION -->
+<div class="dup-overlay" id="dup-overlay" onclick="if(event.target===this)closeDupModal()">
+  <div class="dup-box">
+    <div class="dup-header">
+      <h3>⚠️ Doublon détecté</h3>
+      <button class="modal-close" onclick="closeDupModal()">✕</button>
+    </div>
+    <div class="dup-body">
+      <div class="dup-new" id="dup-new-entry">
+        <div class="dup-label">Nouvelle entrée</div>
+        <div class="dup-name" id="dup-new-name">—</div>
+        <div class="dup-detail" id="dup-new-detail">—</div>
+      </div>
+      <div class="dup-match-label">⚠️ Correspond à :</div>
+      <div id="dup-matches"></div>
+    </div>
+    <div class="dup-footer">
+      <button class="btn btn-secondary" onclick="closeDupModal()">Annuler</button>
+      <button class="btn btn-warn" onclick="ignoreDuplicate()">🔄 Ignorer et ajouter</button>
+    </div>
+  </div>
+</div>
+
 <!-- DELETE CONFIRM -->
 <div class="delete-overlay" id="delete-overlay">
   <div class="delete-box">
@@ -928,11 +983,48 @@ const TILE_DARK='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 const TILE_LIGHT='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const TILE_VOYAGER='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 let mapStyle=localStorage.getItem('livrapro_mapstyle')||'auto';
+// ═══════════════ SUNRISE / SUNSET ═══════════════
+function getSunTimes(lat,lng,date){
+  // Simplified solar calculation
+  const d=date||new Date();
+  const rad=Math.PI/180;
+  const dayOfYear=Math.floor((d-new Date(d.getFullYear(),0,0))/(1000*60*60*24));
+  // Solar declination
+  const decl=23.45*Math.sin(rad*(360/365)*(dayOfYear-81));
+  // Hour angle for sunrise/sunset (when sun is at -0.833 degrees)
+  const cosH=(Math.sin(-0.833*rad)-Math.sin(lat*rad)*Math.sin(decl*rad))/(Math.cos(lat*rad)*Math.cos(decl*rad));
+  if(cosH>1)return{sunrise:8,sunset:17};// polar night fallback
+  if(cosH<-1)return{sunrise:3,sunset:22};// midnight sun fallback
+  const H=Math.acos(cosH)/rad;
+  // Solar noon (approximate with timezone offset)
+  const tzOffset=-d.getTimezoneOffset()/60;
+  const lngCorrection=lng/15;
+  const solarNoon=12-lngCorrection+tzOffset;
+  const sunrise=solarNoon-H/15;
+  const sunset=solarNoon+H/15;
+  return{sunrise:Math.max(0,Math.min(24,sunrise)),sunset:Math.max(0,Math.min(24,sunset))};
+}
+
+function isDaytime(){
+  const now=new Date();
+  const hours=now.getHours()+now.getMinutes()/60;
+  // Use user location if available, otherwise default
+  const lat=myLat||45.75;
+  const lng=myLng||4.85;
+  const sun=getSunTimes(lat,lng,now);
+  return hours>=sun.sunrise&&hours<sun.sunset;
+}
+
+function getAutoMapLabel(){
+  if(mapStyle!=='auto')return'🔄 Auto';
+  return isDaytime()?'🔄 ☀️ Auto':'🔄 🌙 Auto';
+}
+
 function getActiveMapTile(){
   if(mapStyle==='dark')return TILE_DARK;
   if(mapStyle==='light')return TILE_LIGHT;
-  // auto: follow app theme
-  return currentTheme==='light'?TILE_LIGHT:TILE_DARK;
+  // auto: follow real daylight based on timezone + location
+  return isDaytime()?TILE_LIGHT:TILE_DARK;
 }
 function getTileUrl(){return getActiveMapTile()}
 const TATTR='©OSM ©CARTO',DCENTER=[45.75,4.85];
@@ -990,25 +1082,42 @@ function toggleTheme(){
   currentTheme=currentTheme==='dark'?'light':'dark';
   localStorage.setItem('livrapro_theme',currentTheme);
   applyTheme();
-  // Rebuild map tiles only if mapStyle is auto
-  if(mapStyle==='auto')refreshAllMapTiles();
 }
 
 function setMapStyle(style){
   mapStyle=style;localStorage.setItem('livrapro_mapstyle',style);
-  // Update all style bar buttons
-  document.querySelectorAll('.map-style-btn').forEach(b=>{
-    b.classList.remove('active','night','auto-style');
-    if(b.dataset.style===style){
-      b.classList.add('active');
-      if(style==='dark')b.classList.add('night');
-      if(style==='auto')b.classList.add('auto-style');
-    }
-  });
+  updateMapStyleButtons();
   refreshAllMapTiles();
-  const labels={auto:'🔄 Auto (suit le thème)',light:'☀️ Mode Jour',dark:'🌙 Mode Nuit'};
+  const labels={auto:isDaytime()?'🔄 ☀️ Auto Jour':'🔄 🌙 Auto Nuit',light:'☀️ Mode Jour',dark:'🌙 Mode Nuit'};
   showToast(`Carte: ${labels[style]}`);
 }
+
+function updateMapStyleButtons(){
+  document.querySelectorAll('.map-style-btn').forEach(b=>{
+    b.classList.remove('active','night','auto-style');
+    if(b.dataset.style===mapStyle){
+      b.classList.add('active');
+      if(mapStyle==='dark')b.classList.add('night');
+      if(mapStyle==='auto')b.classList.add('auto-style');
+    }
+    // Update auto button label with current day/night
+    if(b.dataset.style==='auto')b.textContent=getAutoMapLabel();
+  });
+}
+
+// Auto-switch check every 5 minutes
+let lastAutoState=null;
+setInterval(()=>{
+  if(mapStyle!=='auto')return;
+  const nowDay=isDaytime();
+  if(lastAutoState!==null&&lastAutoState!==nowDay){
+    refreshAllMapTiles();updateMapStyleButtons();
+    showToast(nowDay?'🌅 Carte → Mode Jour':'🌙 Carte → Mode Nuit');
+  }
+  lastAutoState=nowDay;
+},300000);
+// Initial check
+setTimeout(()=>{lastAutoState=isDaytime()},1000);
 
 function refreshAllMapTiles(){
   if(mainMap){mainMap.eachLayer(l=>{if(l instanceof L.TileLayer)mainMap.removeLayer(l)});createTileLayer().addTo(mainMap)}
@@ -1039,10 +1148,13 @@ function buildRow(d,i,sel){
     :`<button class="btn-deliver" onclick="askDeliver(${d.id})">📦 Confirmer</button>`;
   const delivTime=isDelivered&&d.deliveredAt?`<div style="font-size:9px;color:var(--text3);margin-top:2px">${new Date(d.deliveredAt).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`:'';
   const msgIcon=d.lastMsgAt?`<span title="Contacté ${timeAgo(d.lastMsgAt)} via ${d.lastMsgType||'?'}" style="font-size:10px;cursor:help">${d.lastMsgType==='whatsapp'?'💬':d.lastMsgType==='telegram'?'✈️':d.lastMsgType==='sms'?'📱':'📋'}</span>`:'';
-  return`<tr class="${sel?'selected':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="showPreview(${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
+  const isDup=currentDupMap.has(d.id);
+  const dupBadge=isDup?`<span class="dup-badge" title="Doublon détecté" onclick="event.stopPropagation();showDupForEntry(${d.id})">⚠️ Dup</span>`:'';
+  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="showPreview(${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
 }
 
 function renderTable(){
+  currentDupMap=getAllDuplicates();
   const q=document.getElementById('search').value.toLowerCase(),fs=document.getElementById('filterStatus').value,so=document.getElementById('sortBy').value;
   let list=data.filter(d=>{const fn=fullName(d).toLowerCase();const ms=!q||fn.includes(q)||d.article.toLowerCase().includes(q)||d.phone.toLowerCase().includes(q)||(d.position||'').toLowerCase().includes(q);return ms&&(fs==='all'||d.status===fs)});
   list.sort((a,b)=>{switch(so){case'date-desc':return b.id-a.id;case'date-asc':return a.id-b.id;case'name-asc':return a.name.localeCompare(b.name);case'price-desc':return(parseFloat(b.price)||0)-(parseFloat(a.price)||0)}return 0});
@@ -1064,7 +1176,7 @@ function renderTable(){
   document.getElementById('delivered-count').textContent=delivered.length;
   renderSectionStats('delivered-stats',delivered);
 
-  renderStats();updateFab();
+  renderStats();updateFab();updateDupIndicators();
 }
 
 function toggleSelect(id,checked){if(checked)selectedIds.add(id);else selectedIds.delete(id);updateFab();document.querySelectorAll('[data-id="'+id+'"]').forEach(tr=>tr.classList.toggle('selected',checked))}
@@ -1310,7 +1422,146 @@ function preSave(){const lastname=formatNom(document.getElementById('f-lastname'
 function showConfirm(e){pendingEntry=e;document.getElementById('confirm-addr').textContent=e.position||'Carte';document.getElementById('confirm-coords-text').textContent=`GPS: ${e.lat.toFixed(5)}, ${e.lng.toFixed(5)}`;document.getElementById('confirm-overlay').classList.add('active')}
 async function geocodeAndConfirm(e){try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(e.position)}&limit=1&accept-language=fr`),d=await r.json();if(d.length){e.lat=parseFloat(d[0].lat);e.lng=parseFloat(d[0].lon);showConfirm(e)}else doSave(e)}catch(x){doSave(e)}}
 function confirmPosition(w){document.getElementById('confirm-overlay').classList.remove('active');if(!pendingEntry)return;if(!w){pendingEntry.lat=null;pendingEntry.lng=null}doSave(pendingEntry);pendingEntry=null}
-function doSave(e){if(editingId){const x=data.find(d=>d.id===editingId);if(x)Object.assign(x,e);showToast('Modifié ✏️')}else{e.id=Date.now();data.push(e);showToast('Ajouté ✅')}save();renderTable();closeModal()}
+let pendingSaveEntry=null;
+let ignoredDups=JSON.parse(localStorage.getItem('livrapro_ignored_dups')||'[]');
+
+function doSave(e){
+  if(editingId){
+    const x=data.find(d=>d.id===editingId);if(x)Object.assign(x,e);showToast('Modifié ✏️');
+    save();renderTable();closeModal();return;
+  }
+  // Check duplicates for new entries
+  const dups=findDuplicates(e);
+  if(dups.length>0){
+    pendingSaveEntry=e;
+    showDupModal(e,dups);
+  }else{
+    e.id=Date.now();data.push(e);showToast('Ajouté ✅');
+    save();renderTable();closeModal();
+  }
+}
+
+function findDuplicates(entry,excludeId){
+  const matches=[];
+  const newPhone=normalizePhone(entry.phone);
+  const newName=(formatNom(entry.lastname)+formatPrenom(entry.firstname)).toLowerCase().replace(/\s/g,'');
+  data.forEach(d=>{
+    if(excludeId&&d.id===excludeId)return;
+    const reasons=[];
+    // Phone match
+    if(newPhone&&newPhone.length>=6){
+      const existPhone=normalizePhone(d.phone);
+      if(existPhone&&existPhone===newPhone)reasons.push('phone');
+    }
+    // Name match
+    const existName=(formatNom(d.lastname||'')+formatPrenom(d.firstname||'')).toLowerCase().replace(/\s/g,'');
+    if(newName&&newName.length>=3&&existName===newName)reasons.push('name');
+    if(reasons.length)matches.push({entry:d,reasons});
+  });
+  return matches;
+}
+
+function normalizePhone(p){
+  if(!p)return'';
+  return p.replace(/[\s\-\.\(\)\+]/g,'').replace(/^0/,'').slice(-9);
+}
+
+function showDupModal(newEntry,matches){
+  document.getElementById('dup-new-name').textContent=formatNom(newEntry.lastname)+' '+formatPrenom(newEntry.firstname);
+  document.getElementById('dup-new-detail').textContent=`📱 ${newEntry.phone||'—'} • ${newEntry.article} ×${newEntry.qty} • ${fmt(newEntry.price)}`;
+  document.getElementById('dup-new-entry').innerHTML=`<div class="dup-label">Nouvelle entrée</div><div class="dup-name">${esc(formatNom(newEntry.lastname)+' '+formatPrenom(newEntry.firstname))}</div><div class="dup-detail">📱 ${esc(newEntry.phone||'—')} • ${esc(newEntry.article)} ×${newEntry.qty} • ${fmt(newEntry.price)}</div>`;
+  document.getElementById('dup-matches').innerHTML=matches.map(m=>{
+    const d=m.entry;
+    const reasonBadges=m.reasons.map(r=>r==='phone'?'<span class="dm-reason phone">📱 Même tél</span>':'<span class="dm-reason name">👤 Même nom</span>').join(' ');
+    const dt=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    return`<div class="dup-match"><div class="dm-info"><div class="dm-name">${esc(fullName(d))}</div><div class="dm-detail">📱 ${esc(d.phone||'—')} • ${esc(d.article)} ×${d.qty} • ${fmt(d.price)} • ${dt}</div></div>${reasonBadges}</div>`;
+  }).join('');
+  document.getElementById('dup-overlay').querySelector('.dup-footer').innerHTML=`<button class="btn btn-secondary" onclick="closeDupModal()">Annuler</button><button class="btn btn-warn" onclick="ignoreDuplicate()">🔄 Ignorer et ajouter</button>`;
+  document.getElementById('dup-overlay').classList.add('active');
+}
+
+function closeDupModal(){document.getElementById('dup-overlay').classList.remove('active');pendingSaveEntry=null}
+
+function ignoreDuplicate(){
+  document.getElementById('dup-overlay').classList.remove('active');
+  if(!pendingSaveEntry)return;
+  const e=pendingSaveEntry;pendingSaveEntry=null;
+  e.id=Date.now();e.dupIgnored=true;data.push(e);
+  showToast('Ajouté (doublon ignoré) ✅');
+  save();renderTable();closeModal();
+}
+
+// Detect all duplicates in existing data
+function getAllDuplicates(){
+  const dupMap=new Map();
+  data.forEach((d,i)=>{
+    const phone=normalizePhone(d.phone);
+    const name=(formatNom(d.lastname||'')+formatPrenom(d.firstname||'')).toLowerCase().replace(/\s/g,'');
+    // Check against all others after this one
+    data.forEach((d2,j)=>{
+      if(j<=i)return;
+      let reasons=[];
+      if(phone&&phone.length>=6&&normalizePhone(d2.phone)===phone)reasons.push('phone');
+      const name2=(formatNom(d2.lastname||'')+formatPrenom(d2.firstname||'')).toLowerCase().replace(/\s/g,'');
+      if(name&&name.length>=3&&name2===name)reasons.push('name');
+      if(reasons.length){
+        if(!dupMap.has(d.id))dupMap.set(d.id,{entry:d,matches:[]});
+        if(!dupMap.has(d2.id))dupMap.set(d2.id,{entry:d2,matches:[]});
+        dupMap.get(d.id).matches.push({entry:d2,reasons});
+        dupMap.get(d2.id).matches.push({entry:d,reasons});
+      }
+    });
+  });
+  return dupMap;
+}
+
+let currentDupMap=new Map();
+
+function updateDupIndicators(){
+  const bar=document.getElementById('dup-count-bar');
+  const count=currentDupMap.size;
+  if(count>0){bar.style.display='flex';document.getElementById('dup-total-count').textContent=count}
+  else{bar.style.display='none'}
+}
+
+function showAllDuplicates(){
+  if(!currentDupMap.size){showToast('Aucun doublon',true);return}
+  const seen=new Set();
+  let html='';
+  currentDupMap.forEach((val,id)=>{
+    if(seen.has(id))return;
+    const d=val.entry;
+    seen.add(id);
+    val.matches.forEach(m=>seen.add(m.entry.id));
+    const names=[fullName(d),...val.matches.map(m=>fullName(m.entry))].join(', ');
+    const reasons=[...new Set(val.matches.flatMap(m=>m.reasons))];
+    const reasonBadges=reasons.map(r=>r==='phone'?'<span class="dm-reason phone">📱 Tél</span>':'<span class="dm-reason name">👤 Nom</span>').join(' ');
+    html+=`<div class="dup-match"><div class="dm-info"><div class="dm-name">${esc(names)}</div><div class="dm-detail">${val.matches.length+1} entrées similaires</div></div>${reasonBadges}</div>`;
+  });
+  document.getElementById('dup-new-entry').innerHTML=`<div class="dup-label">Résumé des doublons</div><div class="dup-name">${currentDupMap.size} clients avec doublons</div>`;
+  document.getElementById('dup-matches').innerHTML=html;
+  document.getElementById('dup-overlay').querySelector('.dup-footer').innerHTML=`<button class="btn btn-secondary" onclick="closeDupModal()">Fermer</button>`;
+  document.getElementById('dup-overlay').classList.add('active');
+}
+
+function showDupForEntry(id){
+  const val=currentDupMap.get(id);if(!val)return;
+  const d=val.entry;
+  document.getElementById('dup-new-entry').innerHTML=`<div class="dup-label">Client sélectionné</div><div class="dup-name">${esc(fullName(d))}</div><div class="dup-detail">📱 ${esc(d.phone||'—')} • ${esc(d.article)} ×${d.qty} • ${fmt(d.price)}</div>`;
+  document.getElementById('dup-matches').innerHTML=val.matches.map(m=>{
+    const d2=m.entry;
+    const reasonBadges=m.reasons.map(r=>r==='phone'?'<span class="dm-reason phone">📱 Même tél</span>':'<span class="dm-reason name">👤 Même nom</span>').join(' ');
+    const dt=new Date(d2.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    return`<div class="dup-match"><div class="dm-info"><div class="dm-name">${esc(fullName(d2))}</div><div class="dm-detail">📱 ${esc(d2.phone||'—')} • ${esc(d2.article)} ×${d2.qty} • ${fmt(d2.price)} • ${dt}</div></div>${reasonBadges}</div>`;
+  }).join('');
+  document.getElementById('dup-overlay').querySelector('.dup-footer').innerHTML=`<button class="btn btn-secondary" onclick="closeDupModal()">Fermer</button><button class="btn btn-danger" onclick="mergeOrDeleteDup(${id})">🗑️ Supprimer ce doublon</button>`;
+  document.getElementById('dup-overlay').classList.add('active');
+}
+
+function mergeOrDeleteDup(id){
+  closeDupModal();
+  deleteEntry(id);
+}
 function editEntry(id){
   if(lockEdit&&secPinEnabled&&secPin){pendingAuthAction=()=>{const e=data.find(d=>d.id===id);if(e)openModal(e)};showPinModal('Modifier la livraison');return}
   const e=data.find(d=>d.id===id);if(e)openModal(e);
@@ -1698,23 +1949,31 @@ function setSaveLocation(loc){
   saveLocation=loc;localStorage.setItem('livrapro_saveloc',loc);
   renderSaveLocationUI();showToast(`Sauvegarde: ${loc==='local'?'Local':loc==='drive'?'Google Drive':loc==='both'?'Local + Drive':'Manuel'}`);
 }
+function toggleGDriveConfig(){
+  const panel=document.getElementById('gdrive-config-panel');
+  const isHidden=panel.style.display==='none';
+  panel.style.display=isHidden?'block':'none';
+  if(isHidden){
+    const uriEl=document.getElementById('gdrive-redirect-uri');
+    if(uriEl)uriEl.textContent=getRedirectUri();
+    document.getElementById('gdrive-client-id').value=gdriveClientId;
+    showToast('🔧 Configuration Google Drive affichée');
+  }
+}
+
 function renderSaveLocationUI(){
   ['local','drive','both','manual'].forEach(l=>{const el=document.getElementById('sl-'+l);if(el)el.classList.toggle('active',saveLocation===l)});
   setToggle('tog-autosave',autoSaveEnabled);
   const indic=document.getElementById('autosave-indicator');
   if(indic){indic.className='autosave-badge '+(autoSaveEnabled?'on':'off');indic.textContent=autoSaveEnabled?'🔄 Auto':'⏸ Manuel'}
   if(lastSyncTime){document.getElementById('last-sync-text').textContent='Dernière synchro: '+new Date(lastSyncTime).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
-  // Show redirect URI
-  const uriEl=document.getElementById('gdrive-redirect-uri');
-  if(uriEl)uriEl.textContent=getRedirectUri();
   // Drive UI
   const isConnected=!!gdriveToken;
   document.getElementById('gd-dot').className='gd-dot '+(isConnected?'online':'offline');
   document.getElementById('gd-user').textContent=isConnected?'Connecté':'Non connecté';
-  document.getElementById('gd-email').textContent=isConnected?'Token actif':'Connectez-vous pour synchroniser';
+  document.getElementById('gd-email').textContent=isConnected?'Token actif':'Double-cliquez sur "Google Drive" pour configurer';
   document.getElementById('gdrive-folder-display').style.display=isConnected?'flex':'none';
   document.getElementById('gd-folder-name').textContent=gdriveFolderName||'LivraPro';
-  document.getElementById('gdrive-client-id').value=gdriveClientId;
 }
 
 // ═══════════════ AUTO-SAVE ═══════════════
@@ -1753,7 +2012,16 @@ function copyRedirectUri(){
 }
 
 function connectGDrive(){
-  if(!gdriveClientId){showToast('Entrez votre Client ID d\'abord',true);return}
+  if(!gdriveClientId){
+    // Auto-open config panel
+    const panel=document.getElementById('gdrive-config-panel');
+    panel.style.display='block';
+    const uriEl=document.getElementById('gdrive-redirect-uri');
+    if(uriEl)uriEl.textContent=getRedirectUri();
+    showToast('Entrez votre Client ID Google',true);
+    document.getElementById('gdrive-client-id').focus();
+    return;
+  }
   const redirectUri=getRedirectUri();
   const scope='https://www.googleapis.com/auth/drive.file';
   // Log the redirect URI for debugging
@@ -1884,7 +2152,7 @@ async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();await def
 async function registerSW(){if(!('serviceWorker' in navigator)){document.getElementById('sw-status').textContent='Non supporté';return}try{document.getElementById('sw-status').textContent='Cache IndexedDB actif ✅'}catch(e){document.getElementById('sw-status').textContent='Cache local ✅'}}
 
 function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' error':'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('bulk-action-overlay').classList.contains('active'))closeBulkAction();else if(document.getElementById('preview-overlay').classList.contains('active'))closePreview();else if(document.getElementById('deliver-overlay').classList.contains('active'))cancelDeliver();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('pin-overlay').classList.contains('active'))cancelPin();else if(document.getElementById('dup-overlay').classList.contains('active'))closeDupModal();else if(document.getElementById('bulk-action-overlay').classList.contains('active'))closeBulkAction();else if(document.getElementById('preview-overlay').classList.contains('active'))closePreview();else if(document.getElementById('deliver-overlay').classList.contains('active'))cancelDeliver();else if(document.getElementById('delete-overlay').classList.contains('active'))cancelDelete();else if(document.getElementById('confirm-overlay').classList.contains('active'))confirmPosition(false);else if(document.getElementById('bulk-modal').classList.contains('active'))closeBulkModal();else closeModal()}});
 
 // Load voices
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
@@ -1896,10 +2164,7 @@ if(autoGeo)setTimeout(detectMyLocation,1000);
 handleGDriveCallback();
 if(gdriveToken)fetchGDriveUserInfo();
 // Restore map style buttons
-document.querySelectorAll('.map-style-btn').forEach(b=>{
-  b.classList.remove('active','night','auto-style');
-  if(b.dataset.style===mapStyle){b.classList.add('active');if(mapStyle==='dark')b.classList.add('night');if(mapStyle==='auto')b.classList.add('auto-style')}
-});
+updateMapStyleButtons();
 // Migrate old data
 data.forEach(d=>migrateEntry(d));save();
 document.getElementById('f-lastname').addEventListener('input',()=>{if(templates.length)document.getElementById('msg-sender-section').style.display='block'});
