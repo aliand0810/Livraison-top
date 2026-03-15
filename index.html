@@ -410,6 +410,27 @@ tr.has-dup{border-left:3px solid var(--orange)!important}
 .qc-textarea:focus{border-color:var(--blue)}
 .qc-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
 .qc-hint{font-size:10px;color:var(--text3);margin-top:6px}
+
+/* DELIVERY DATE BADGE */
+.date-due-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:8px;font-size:9px;font-weight:700;font-family:'Space Mono',monospace;white-space:nowrap}
+.date-due-badge.overdue{background:var(--danger-glow);color:var(--danger);border:1px solid rgba(240,98,114,.3)}
+.date-due-badge.today{background:rgba(240,178,74,.12);color:var(--warn);border:1px solid rgba(240,178,74,.3);animation:gpsPulse 2s infinite}
+.date-due-badge.soon{background:rgba(90,138,242,.1);color:var(--blue);border:1px solid rgba(90,138,242,.3)}
+.date-due-badge.future{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+
+/* NOTIFICATION BAR */
+.notif-bar{position:fixed;top:0;left:0;right:0;z-index:5000;display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;font-weight:600;transform:translateY(-100%);transition:transform .3s;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.notif-bar.show{transform:translateY(0)}
+.notif-bar.warn{background:linear-gradient(135deg,rgba(240,178,74,.95),rgba(240,144,82,.95));color:#fff}
+.notif-bar.danger{background:linear-gradient(135deg,rgba(240,98,114,.95),rgba(217,68,82,.95));color:#fff}
+.notif-bar .nb-text{flex:1}
+.notif-bar .nb-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+
+/* HIDDEN CHECKBOXES BY DEFAULT */
+body:not(.show-checkboxes) .sticky-name-table th:nth-child(1),
+body:not(.show-checkboxes) .sticky-name-table td:nth-child(1){width:0!important;min-width:0!important;max-width:0!important;padding:0!important;overflow:hidden!important;border-right:none!important;opacity:0}
+body.show-checkboxes .sticky-name-table th:nth-child(1),
+body.show-checkboxes .sticky-name-table td:nth-child(1){width:auto;min-width:30px;padding:8px;opacity:1;transition:opacity .2s}
 .bulk-send-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
 
 /* SETTINGS */
@@ -683,6 +704,9 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 </style>
 </head>
 <body>
+<!-- NOTIFICATION BAR -->
+<div class="notif-bar" id="notif-bar"><span class="nb-text" id="nb-text">—</span><button class="nb-close" onclick="closeNotif()">✕</button></div>
+
 <div class="status-strip" id="status-strip">
   <div class="ss-left"><div class="ss-dot online" id="ss-conn-dot"></div><span class="ss-label" id="ss-conn-label">En ligne</span></div>
   <div class="ss-right"><span id="ss-save-time">—</span></div>
@@ -707,7 +731,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 
   <!-- SECTION: EN COURS -->
   <div class="section-wrap pending">
-    <div class="section-header open" onclick="toggleListSection(this)">
+    <div class="section-header open" onclick="toggleListSection(this)" ondblclick="event.stopPropagation();toggleCheckboxes()">
       <h3>📦 En cours <span class="sec-count" id="pending-count">0</span></h3>
       <div class="sec-stats" id="pending-stats"></div>
       <span class="sec-arrow">▶</span>
@@ -722,7 +746,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 
   <!-- SECTION: LIVRÉ -->
   <div class="section-wrap delivered">
-    <div class="section-header open" onclick="toggleListSection(this)">
+    <div class="section-header open" onclick="toggleListSection(this)" ondblclick="event.stopPropagation();toggleCheckboxes()">
       <h3>✅ Livré <span class="sec-count" id="delivered-count">0</span></h3>
       <div class="sec-stats" id="delivered-stats"></div>
       <span class="sec-arrow">▶</span>
@@ -737,7 +761,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
 
   <!-- SECTION: ABSENT -->
   <div class="section-wrap absent">
-    <div class="section-header" onclick="toggleListSection(this)">
+    <div class="section-header" onclick="toggleListSection(this)" ondblclick="event.stopPropagation();toggleCheckboxes()">
       <h3>🚫 Absent / Indisponible <span class="sec-count" id="absent-count">0</span></h3>
       <div class="sec-stats" id="absent-stats"></div>
       <span class="sec-arrow">▶</span>
@@ -867,7 +891,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
       </div>
     </div></div>
 
-    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>💬 Modèles de messages</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-messages"><p style="font-size:11px;color:var(--text3);margin-bottom:10px">Variables: <code style="color:var(--accent)">{client} {nom} {prenom} {article} {qty} {prix} {phone} {position} {comment}</code></p><div id="msg-templates-list"></div><div style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><div class="form-group"><label>Nom</label><input type="text" id="tpl-name" placeholder="Confirmation livraison"></div><div class="form-group" style="margin-top:6px"><label>Contenu</label><textarea id="tpl-body" placeholder="Bonjour {client}, votre commande de {qty}x {article} ({prix}) est en route !" rows="3"></textarea></div><button class="btn btn-primary" style="margin-top:8px;width:100%" onclick="addTemplate()">＋ Ajouter</button></div></div></div>
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>💬 Modèles de messages</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-messages"><p style="font-size:11px;color:var(--text3);margin-bottom:10px">Variables: <code style="color:var(--accent)">{client} {nom} {prenom} {article} {qty} {prix} {phone} {position} {comment} {date}</code></p><div id="msg-templates-list"></div><div style="border-top:1px solid var(--border);padding-top:10px;margin-top:6px"><div class="form-group"><label>Nom</label><input type="text" id="tpl-name" placeholder="Confirmation livraison"></div><div class="form-group" style="margin-top:6px"><label>Contenu</label><textarea id="tpl-body" placeholder="Bonjour {client}, votre commande de {qty}x {article} ({prix}) est en route !" rows="3"></textarea></div><button class="btn btn-primary" style="margin-top:8px;width:100%" onclick="addTemplate()">＋ Ajouter</button></div></div></div>
     <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>📦 Types de livraison & Prix</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-dtypes"><p style="font-size:11px;color:var(--text3);margin-bottom:10px">Définissez les articles avec prix de vente, d'achat et image. Le bénéfice est calculé automatiquement.</p><div id="dtypes-list"></div><div class="dtype-add-form" style="grid-template-columns:2fr 1fr 1fr"><div class="form-group"><label style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:600">Nom article</label><input type="text" id="dtype-input" placeholder="Brioche..." onkeydown="if(event.key==='Enter')addDtype()"></div><div class="form-group"><label style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:600">Prix vente €</label><input type="number" id="dtype-sell" placeholder="0" step="0.01" min="0"></div><div class="form-group"><label style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:600">Prix achat €</label><input type="number" id="dtype-buy" placeholder="0" step="0.01" min="0"></div></div><div class="form-group" style="margin-top:6px"><label style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:600">🖼️ Image (lien URL)</label><input type="url" id="dtype-img" placeholder="https://example.com/image.jpg" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:12px;outline:none;width:100%"></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addDtype()">＋ Ajouter le type</button></div></div>
     <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>🗺️ Carte hors ligne</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-offline"><div class="offline-info"><span class="oi-icon">📡</span><div class="oi-text"><strong>Cache tuiles</strong>Les tuiles sont mises en cache automatiquement.</div></div><div class="data-stats"><div class="data-stat"><div class="ds-val" id="tile-count">0</div><div class="ds-label">Tuiles</div></div><div class="data-stat"><div class="ds-val" id="tile-size">0</div><div class="ds-label">Taille</div></div></div><button class="btn btn-route" style="width:100%;margin-bottom:6px" onclick="downloadAreaTiles()">📥 Télécharger zone visible</button><div class="progress-bar" id="tile-progress" style="display:none"><div class="fill" id="tile-progress-fill"></div></div><p id="tile-progress-text" style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px;display:none"></p><button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="clearTileCache()">🗑️ Vider le cache</button></div></div>
     <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>💾 Données & Sauvegarde <span class="autosave-badge" id="autosave-indicator">—</span></h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-data">
@@ -967,7 +991,24 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
       <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="setAsDefaultStart()">📍 Utiliser ma position comme point de départ</button>
     </div></div>
 
-    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>📱 PWA</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-pwa"><div class="pwa-card"><div class="pwa-icon">🚚</div><h4>Installer LivraPro</h4><p style="font-size:12px;color:var(--text2);margin-bottom:12px">Ajoutez à l'écran d'accueil pour un accès hors ligne.</p><button class="btn btn-primary" id="pwa-install-btn" style="width:100%" onclick="installPWA()">📲 Installer</button><p style="font-size:10px;color:var(--text3);margin-top:8px" id="pwa-status"></p></div><div class="offline-info" style="margin-top:10px"><span class="oi-icon">⚡</span><div class="oi-text"><strong>Service Worker</strong><span id="sw-status">Vérification...</span></div></div></div></div>
+    <div class="settings-section"><div class="settings-section-header" onclick="toggleSection(this)"><h3>📱 PWA & Appareil</h3><span class="arrow">▶</span></div><div class="settings-section-body" id="sec-pwa">
+      <div class="pwa-card"><div class="pwa-icon">🚚</div><h4>Installer LivraPro</h4><p style="font-size:12px;color:var(--text2);margin-bottom:12px">Ajoutez à l'écran d'accueil pour un accès hors ligne.</p><button class="btn btn-primary" id="pwa-install-btn" style="width:100%" onclick="installPWA()">📲 Installer</button><p style="font-size:10px;color:var(--text3);margin-top:8px" id="pwa-status"></p></div>
+      <div class="offline-info" style="margin-top:10px"><span class="oi-icon">⚡</span><div class="oi-text"><strong>Service Worker</strong><span id="sw-status">Vérification...</span></div></div>
+      <!-- DEVICE INFO -->
+      <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px">
+        <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">📱 Appareil détecté</label>
+        <div class="gdrive-status" id="device-info-card"><div class="gd-dot online" id="dev-dot"></div><div class="gd-info"><strong id="dev-name">—</strong><span id="dev-detail">—</span></div></div>
+      </div>
+      <!-- DEFAULT MAPS -->
+      <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px">
+        <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">🗺️ Application de navigation par défaut</label>
+        <div class="save-loc-grid" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="save-loc-card" id="maps-auto" onclick="setDefaultMaps('auto')"><div class="sl-icon">🔄</div><div class="sl-name">Auto</div><div class="sl-desc">Selon l'appareil</div></div>
+          <div class="save-loc-card" id="maps-apple" onclick="setDefaultMaps('apple')"><div class="sl-icon">🍎</div><div class="sl-name">Apple Plans</div><div class="sl-desc">iOS natif</div></div>
+          <div class="save-loc-card" id="maps-google" onclick="setDefaultMaps('google')"><div class="sl-icon">📍</div><div class="sl-name">Google Maps</div><div class="sl-desc">Android/Web</div></div>
+        </div>
+      </div>
+    </div></div>
   </div>
 </div>
 
@@ -1018,7 +1059,13 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
           </div>
         </div>
 
-        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
+        <!-- DELIVERY DATE -->
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:8px">
+          <label style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;display:block">📅 Date de livraison souhaitée</label>
+          <input type="date" id="f-duedate" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none">
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:8px">
           <label style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;display:block">📍 Position de livraison</label>
           <div class="form-group"><input type="text" id="f-position" placeholder="12 rue de la Paix, Lyon"></div>
           <button class="btn btn-secondary" style="width:100%;margin-top:6px" id="btn-toggle-map" onclick="toggleMapPicker()">🗺️ Choisir sur la carte</button>
@@ -1074,6 +1121,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
       <div class="pv-row"><span class="pv-label">📍 Position</span><span id="pv-position">—</span></div>
       <div class="pv-row" id="pv-nav-row" style="display:none"><span class="pv-label"></span><button class="btn btn-route" style="padding:6px 12px;font-size:11px" id="pv-nav-btn" onclick="">🗺️ Y aller</button></div>
       <div class="pv-row"><span class="pv-label">📅 Date</span><span id="pv-date">—</span></div>
+      <div class="pv-row" id="pv-duedate-row" style="display:none"><span class="pv-label">🗓️ Livr. prévue</span><span id="pv-duedate">—</span></div>
       <div class="pv-row" id="pv-deliver-row" style="display:none"><span class="pv-label">✅ Livré</span><span id="pv-deliver-date">—</span></div>
       <div class="pv-row" id="pv-absent-row" style="display:none"><span class="pv-label">🚫 Absent</span><span id="pv-absent-date" style="color:var(--danger)">—</span></div>
       <div class="pv-row" id="pv-comment-row" style="display:none"><span class="pv-label">💬 Note</span><span id="pv-comment" style="font-size:12px;color:var(--text2);white-space:pre-wrap;max-width:260px">—</span></div>
@@ -1308,14 +1356,22 @@ function updateConnStatus(){
   const dot=document.getElementById('ss-conn-dot');
   const label=document.getElementById('ss-conn-label');
   if(!dot||!label)return;
-  if(navigator.onLine){
-    dot.className='ss-dot online';
-    label.textContent='En ligne';
-    label.style.color='';
-  }else{
+  const online=navigator.onLine;
+  const driveOk=!!gdriveToken;
+  const needsDrive=saveLocation==='drive'||saveLocation==='both';
+  
+  if(!online){
     dot.className='ss-dot offline';
-    label.textContent='Hors ligne';
-    label.style.color='var(--danger)';
+    label.textContent='Hors ligne';label.style.color='var(--danger)';
+  }else if(needsDrive&&!driveOk){
+    dot.className='ss-dot offline';
+    label.textContent='Drive déconnecté';label.style.color='var(--danger)';
+  }else if(needsDrive&&driveOk){
+    dot.className='ss-dot online';
+    label.textContent='Drive connecté';label.style.color='';
+  }else{
+    dot.className='ss-dot online';
+    label.textContent='En ligne';label.style.color='';
   }
 }
 window.addEventListener('online',()=>{updateConnStatus();showToast('🟢 Connexion rétablie')});
@@ -1511,7 +1567,8 @@ function buildRow(d,i,sel){
   const isDup=currentDupMap.has(d.id);
   const dupBadge=isDup?`<span class="dup-badge" title="Doublon détecté" onclick="event.stopPropagation();showDupForEntry(${d.id})">⚠️ Dup</span>`:'';
   const commentIcon=d.comment?`<span title="${esc(d.comment).replace(/"/g,'&quot;')}" style="font-size:10px;cursor:pointer;color:var(--blue)" onclick="event.stopPropagation();openQuickComment(${d.id})">💬</span>`:`<span style="font-size:9px;cursor:pointer;color:var(--text3);opacity:.4" onclick="event.stopPropagation();openQuickComment(${d.id})" title="Ajouter un commentaire">💬</span>`;
-  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="clientNameClick(event,${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${commentIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}${absentTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
+  const dueBadge=getDueDateBadge(d);
+  return`<tr class="${sel?'selected':''} ${isDup?'has-dup':''}" data-id="${d.id}"><td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleSelect(${d.id},this.checked)"></td><td style="color:var(--text3);font-family:'Space Mono',monospace;font-size:10px">${i+1}</td><td><span class="client-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px" onclick="clientNameClick(event,${d.id})"><strong>${esc(formatNom(d.lastname))}</strong> ${esc(formatPrenom(d.firstname))}</span> ${msgIcon} ${commentIcon} ${dupBadge}</td><td><a class="phone-link" href="tel:${esc(d.phone)}">${esc(d.phone)}</a></td><td style="font-size:11px">${esc(d.article)}</td><td><span class="qty-badge">${d.qty}</span></td><td class="col-money"><span class="money">${fmt(d.price)}</span></td><td class="col-money"><span class="money ${pc}">${d.profit>=0?'+':''}${fmt(d.profit)}</span></td><td><span class="badge badge-${sc} payment-toggle" onclick="cycleStatus(${d.id})">${sl}</span></td><td>${delivCol}${delivTime}${absentTime}</td><td>${d.position?`<span class="pos-badge" onclick="focusClient(${d.id})">📍${esc(d.position)}</span>`:'—'}</td><td style="font-size:10px;color:var(--text3)">${dt}${dueBadge}</td><td><div class="actions-cell">${hg?`<button class="loc" onclick="focusClient(${d.id})">📍</button>`:''}<button onclick="editEntry(${d.id})">✏️</button><button class="del" onclick="deleteEntry(${d.id})">🗑️</button></div></td></tr>`;
 }
 
 function renderTable(){
@@ -1563,8 +1620,58 @@ function toggleSelectAll(section){
   });updateFab();
 }
 
-function clearSelection(){selectedIds.clear();document.querySelectorAll('.cb').forEach(cb=>{if(cb.id!=='selectAllPending'&&cb.id!=='selectAllDelivered'){cb.checked=false}});document.querySelectorAll('#table-body-pending tr,#table-body-delivered tr').forEach(tr=>tr.classList.remove('selected'));document.getElementById('selectAllPending').checked=false;document.getElementById('selectAllDelivered').checked=false;updateFab()}
+function clearSelection(){selectedIds.clear();document.querySelectorAll('.cb').forEach(cb=>{if(!cb.id.startsWith('selectAll')){cb.checked=false}});document.querySelectorAll('#table-body-pending tr,#table-body-delivered tr,#table-body-absent tr').forEach(tr=>tr.classList.remove('selected'));['selectAllPending','selectAllDelivered','selectAllAbsent'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false});updateFab();document.body.classList.remove('show-checkboxes')}
 function updateFab(){const n=selectedIds.size;const fab=document.getElementById('fab');fab.classList.toggle('show',n>0);document.getElementById('fab-count').textContent=`${n} sélectionné${n>1?'s':''}`}
+
+// ═══════════════ CHECKBOX TOGGLE ═══════════════
+function toggleCheckboxes(){
+  document.body.classList.toggle('show-checkboxes');
+  const on=document.body.classList.contains('show-checkboxes');
+  showToast(on?'☑️ Multi-sélection activée':'☑️ Multi-sélection masquée');
+  if(!on)clearSelection();
+}
+
+// ═══════════════ DUE DATE ═══════════════
+function getDueDateBadge(d){
+  if(!d.dueDate||d.delivered)return'';
+  const today=new Date();today.setHours(0,0,0,0);
+  const due=new Date(d.dueDate+'T00:00:00');
+  const diff=Math.floor((due-today)/(1000*60*60*24));
+  const label=due.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+  if(diff<0)return`<div class="date-due-badge overdue">⚠️ ${label} (J${diff})</div>`;
+  if(diff===0)return`<div class="date-due-badge today">📅 Aujourd'hui</div>`;
+  if(diff<=2)return`<div class="date-due-badge soon">📅 ${label} (J-${diff})</div>`;
+  return`<div class="date-due-badge future">📅 ${label}</div>`;
+}
+
+function checkDueDateNotifications(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const upcoming=data.filter(d=>{
+    if(!d.dueDate||d.delivered||d.absent)return false;
+    const due=new Date(d.dueDate+'T00:00:00');
+    const diff=Math.floor((due-today)/(1000*60*60*24));
+    return diff<=1;
+  });
+  if(!upcoming.length)return;
+  const overdue=upcoming.filter(d=>{const due=new Date(d.dueDate+'T00:00:00');return due<today});
+  const todayISO=today.toISOString().slice(0,10);
+  const todayList=upcoming.filter(d=>d.dueDate===todayISO);
+  const tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);
+  const tomorrowISO=tomorrow.toISOString().slice(0,10);
+  const tomorrowList=upcoming.filter(d=>d.dueDate===tomorrowISO);
+  let msg='';let cls='warn';
+  if(overdue.length){msg+=`⚠️ ${overdue.length} livraison${overdue.length>1?'s':''} en retard ! `;cls='danger'}
+  if(todayList.length)msg+=`📅 ${todayList.length} à livrer aujourd'hui. `;
+  if(tomorrowList.length)msg+=`🕐 ${tomorrowList.length} pour demain.`;
+  if(msg)showNotif(msg.trim(),cls);
+}
+function showNotif(text,cls){
+  const bar=document.getElementById('notif-bar');
+  bar.className='notif-bar '+(cls||'warn')+' show';
+  document.getElementById('nb-text').textContent=text;
+  setTimeout(()=>bar.classList.remove('show'),10000);
+}
+function closeNotif(){document.getElementById('notif-bar').classList.remove('show')}
 
 function renderSectionStats(containerId,items){
   const el=document.getElementById(containerId);if(!el)return;
@@ -1649,8 +1756,10 @@ function showPreview(id){
   document.getElementById('pv-status').innerHTML=`<span class="badge badge-${sc}">${sl}</span>`;
   document.getElementById('pv-position').textContent=d.position||'—';
   const navRow=document.getElementById('pv-nav-row'),navBtn=document.getElementById('pv-nav-btn');
-  if(d.lat&&d.lng){navRow.style.display='flex';const app=getDeviceType()==='ios'?'Plans':'Maps';navBtn.textContent=`🗺️ Naviguer (${app})`;navBtn.onclick=()=>{closePreview();openNativeMaps(d.lat,d.lng,fullName(d))}}else{navRow.style.display='none'}
+  if(d.lat&&d.lng){navRow.style.display='flex';navBtn.textContent=`🗺️ Naviguer (${getMapsApp().name})`;navBtn.onclick=()=>{closePreview();openNativeMaps(d.lat,d.lng,fullName(d))}}else{navRow.style.display='none'}
   document.getElementById('pv-date').textContent=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const ddRow=document.getElementById('pv-duedate-row');
+  if(d.dueDate){ddRow.style.display='flex';const due=new Date(d.dueDate+'T00:00:00');const today=new Date();today.setHours(0,0,0,0);const diff=Math.floor((due-today)/(1000*60*60*24));const dueLabel=due.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});const status=d.delivered?'':diff<0?' ⚠️ EN RETARD':diff===0?' 📅 AUJOURD\'HUI':diff<=2?` (dans ${diff}j)`:'';document.getElementById('pv-duedate').innerHTML=`${dueLabel}<span style="font-weight:700;color:${diff<0?'var(--danger)':diff===0?'var(--warn)':'var(--blue)'}"> ${status}</span>`}else{ddRow.style.display='none'}
   // Message history
   const msgRow=document.getElementById('pv-msg-row');
   if(d.lastMsgAt){msgRow.style.display='flex';const mtype=d.lastMsgType==='whatsapp'?'💬 WhatsApp':d.lastMsgType==='telegram'?'✈️ Telegram':d.lastMsgType==='sms'?'📱 SMS':'📋 Copié';document.getElementById('pv-msg-status').innerHTML=`${mtype} — ${timeAgo(d.lastMsgAt)}`}else{msgRow.style.display='none'}
@@ -1758,8 +1867,11 @@ function showBulkResult(count,text){
 
 // ═══════════════ DEVICE DETECTION ═══════════════
 function getDeviceType(){
-  const ua=navigator.userAgent||'';
-  if(/iPad|iPhone|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1))return 'ios';
+  const ua=navigator.userAgent||navigator.vendor||'';
+  // iOS: iPhone, iPad, iPod, or iPad masquerading as Mac with touch
+  if(/iPhone|iPod/i.test(ua))return 'ios';
+  if(/iPad/i.test(ua))return 'ios';
+  if(/Macintosh/i.test(ua)&&'ontouchend' in document)return 'ios';// iPad with desktop UA
   if(/Android/i.test(ua))return 'android';
   return 'other';
 }
@@ -1770,69 +1882,80 @@ function getDeviceInfo(){
   return{type,icon:'💻',label:'Ordinateur',smsSep:'?body='};
 }
 
+let defaultMapsApp=localStorage.getItem('livrapro_default_maps')||'auto';
+function setDefaultMaps(val){
+  defaultMapsApp=val;localStorage.setItem('livrapro_default_maps',val);
+  renderMapsChoice();
+  const labels={auto:'Automatique',apple:'Apple Plans',google:'Google Maps'};
+  showToast(`🗺️ Navigation: ${labels[val]}`);
+}
+function renderMapsChoice(){
+  ['auto','apple','google'].forEach(k=>{const el=document.getElementById('maps-'+k);if(el)el.classList.toggle('active',defaultMapsApp===k)});
+}
+function getEffectiveMapsApp(){
+  if(defaultMapsApp==='apple')return 'apple';
+  if(defaultMapsApp==='google')return 'google';
+  // auto: iOS → Apple, else → Google
+  return getDeviceType()==='ios'?'apple':'google';
+}
+function renderDeviceInfo(){
+  const dev=getDeviceInfo();
+  const dn=document.getElementById('dev-name'),dd=document.getElementById('dev-detail'),dot=document.getElementById('dev-dot');
+  if(dn)dn.textContent=dev.icon+' '+dev.label;
+  if(dd){
+    const standalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone;
+    dd.textContent=standalone?'Mode: Application installée':'Mode: Navigateur web';
+  }
+  if(dot)dot.className='gd-dot '+(dev.type==='other'?'offline':'online');
+}
+
 // ═══════════════ NATIVE MAPS ═══════════════
 function getMapsApp(){
-  const dev=getDeviceType();
-  if(dev==='ios')return{name:'Apple Plans',icon:'🗺️',prefix:'maps'};
-  return{name:'Google Maps',icon:'🗺️',prefix:'gmaps'};
+  const app=getEffectiveMapsApp();
+  return app==='apple'?{name:'Apple Plans',icon:'🗺️'}:{name:'Google Maps',icon:'🗺️'};
 }
 
 function openNativeMaps(lat,lng,label){
-  const dev=getDeviceType();
-  const name=encodeURIComponent(label||'');
-  if(dev==='ios'){
-    // Apple Maps
+  const app=getEffectiveMapsApp();
+  if(app==='apple'){
     window.open(`maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d&t=m`,'_self');
   }else{
-    // Google Maps (Android + Desktop)
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`,'_blank');
   }
 }
 
 function openNativeRoute(stops,startLat,startLng){
-  const dev=getDeviceType();
+  const app=getEffectiveMapsApp();
   if(!stops||!stops.length){showToast('Aucun arrêt',true);return}
-  if(dev==='ios'){
-    // Apple Maps: only supports 1 destination, use first stop
-    // For multi-stop, open each sequentially or use first
-    if(stops.length===1){
-      window.open(`maps://maps.apple.com/?daddr=${stops[0].lat},${stops[0].lng}&dirflg=d`,'_self');
-    }else{
-      // Multi-stop: use Google Maps even on iOS (in Safari) for waypoints
-      const origin=startLat?`${startLat},${startLng}`:'current+location';
-      const dest=stops[stops.length-1];
-      const waypoints=stops.slice(0,-1).map(s=>`${s.lat},${s.lng}`).join('|');
-      window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest.lat},${dest.lng}&waypoints=${encodeURIComponent(waypoints)}&travelmode=driving`,'_blank');
-    }
+  if(app==='apple'&&stops.length===1){
+    window.open(`maps://maps.apple.com/?daddr=${stops[0].lat},${stops[0].lng}&dirflg=d`,'_self');
   }else{
-    // Google Maps with waypoints
-    const origin=startLat?`${startLat},${startLng}`:'';
+    // Google Maps for multi-stop (works on all platforms)
+    const origin=startLat?`${startLat},${startLng}`:'current+location';
     const dest=stops[stops.length-1];
-    const waypoints=stops.slice(0,-1).map(s=>`${s.lat},${s.lng}`).join('|');
-    let url=`https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lng}&travelmode=driving`;
-    if(origin)url+=`&origin=${origin}`;
+    const waypoints=stops.length>1?stops.slice(0,-1).map(s=>`${s.lat},${s.lng}`).join('|'):'';
+    let url=`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest.lat},${dest.lng}&travelmode=driving`;
     if(waypoints)url+=`&waypoints=${encodeURIComponent(waypoints)}`;
-    window.open(url,'_blank');
+    window.open(url,app==='apple'?'_self':'_blank');
   }
 }
 
 function getNativeMapsLabel(){
-  return getDeviceType()==='ios'?'🗺️ Plans':'🗺️ Maps';
+  const app=getEffectiveMapsApp();
+  return app==='apple'?'🍎 Plans':'📍 Google Maps';
 }
 
 function openNativeRouteFromCurrent(){
   if(!navStops.length){showToast('Calculez la route d\'abord',true);return}
   openNativeRoute(navStops,myLat,myLng);
-  const app=getDeviceType()==='ios'?'Apple Plans':'Google Maps';
-  showToast(`🗺️ Ouverture dans ${app}...`);
+  showToast(`🗺️ Ouverture dans ${getMapsApp().name}...`);
 }
 
 function openCurrentStopInMaps(){
   if(!navStops.length||navCurrentStop>=navStops.length)return;
   const s=navStops[navCurrentStop];
   openNativeMaps(s.lat,s.lng,fullName(s));
-  const app=getDeviceType()==='ios'?'Apple Plans':'Google Maps';
-  showToast(`🗺️ ${fullName(s)} dans ${app}`);
+  showToast(`🗺️ ${fullName(s)} dans ${getMapsApp().name}`);
 }
 function timeAgo(ts){
   const diff=Date.now()-ts;
@@ -1874,14 +1997,14 @@ function openBulkMsg(){
 }
 function closeBulkModal(){document.getElementById('bulk-modal').classList.remove('active')}
 function previewBulkMsg(){const sel=document.getElementById('bulk-tpl-select').value,prev=document.getElementById('bulk-preview');if(sel===''){prev.style.display='none';return}const tpl=templates[parseInt(sel)];prev.textContent='Exemple: '+applyTpl(tpl.body,data.find(d=>selectedIds.has(d.id)));prev.style.display='block'}
-function applyTpl(body,d){return body.replace(/\{client\}/g,fullName(d)).replace(/\{nom\}/g,formatNom(d.lastname||'')).replace(/\{prenom\}/g,formatPrenom(d.firstname||'')).replace(/\{article\}/g,d.article||'').replace(/\{qty\}/g,d.qty||'').replace(/\{prix\}/g,fmt(d.price||0)).replace(/\{phone\}/g,d.phone||'').replace(/\{position\}/g,d.position||'').replace(/\{comment\}/g,d.comment||'')}
+function applyTpl(body,d){return body.replace(/\{client\}/g,fullName(d)).replace(/\{nom\}/g,formatNom(d.lastname||'')).replace(/\{prenom\}/g,formatPrenom(d.firstname||'')).replace(/\{article\}/g,d.article||'').replace(/\{qty\}/g,d.qty||'').replace(/\{prix\}/g,fmt(d.price||0)).replace(/\{phone\}/g,d.phone||'').replace(/\{position\}/g,d.position||'').replace(/\{comment\}/g,d.comment||'').replace(/\{date\}/g,d.dueDate?new Date(d.dueDate+'T00:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'long'}):'')}
 function bulkWhatsApp(){const tplIdx=document.getElementById('bulk-tpl-select').value;if(tplIdx===''){showToast('Choisissez un modèle',true);return}const tpl=templates[parseInt(tplIdx)];const recs=data.filter(d=>selectedIds.has(d.id)&&d.phone);if(!recs.length){showToast('Aucun numéro',true);return}const sentIds=new Set();let i=0;function next(){if(i>=recs.length){markMessageSent(sentIds,'whatsapp');showToast(`${i} WhatsApp ✅`);closeBulkModal();renderTable();return}const d=recs[i],msg=encodeURIComponent(applyTpl(tpl.body,d)),ph=d.phone.replace(/\s/g,'');window.open(`https://wa.me/${ph}?text=${msg}`,'_blank');sentIds.add(d.id);i++;setTimeout(next,1000)}next()}
 function bulkSMS(){const tplIdx=document.getElementById('bulk-tpl-select').value;if(tplIdx===''){showToast('Choisissez un modèle',true);return}const tpl=templates[parseInt(tplIdx)];const recs=data.filter(d=>selectedIds.has(d.id)&&d.phone);if(!recs.length){showToast('Aucun numéro',true);return}const dev=getDeviceInfo();const sentIds=new Set();let i=0;function next(){if(i>=recs.length){markMessageSent(sentIds,'sms');showToast(`${i} SMS ✅`);closeBulkModal();renderTable();return}const d=recs[i],msg=encodeURIComponent(applyTpl(tpl.body,d));window.open(`sms:${d.phone}${dev.smsSep}${msg}`);sentIds.add(d.id);i++;setTimeout(next,1000)}next()}
 function bulkTelegram(){const tplIdx=document.getElementById('bulk-tpl-select').value;if(tplIdx===''){showToast('Choisissez un modèle',true);return}const tpl=templates[parseInt(tplIdx)];const recs=data.filter(d=>selectedIds.has(d.id)&&d.phone);if(!recs.length){showToast('Aucun numéro',true);return}const sentIds=new Set();let i=0;function next(){if(i>=recs.length){markMessageSent(sentIds,'telegram');showToast(`${i} Telegram ✅`);closeBulkModal();renderTable();return}const d=recs[i],msg=encodeURIComponent(applyTpl(tpl.body,d));window.open(`https://t.me/+${d.phone.replace(/\s/g,'')}?text=${msg}`,'_blank');sentIds.add(d.id);i++;setTimeout(next,1000)}next()}
 function bulkCopy(){const tplIdx=document.getElementById('bulk-tpl-select').value;if(tplIdx===''){showToast('Choisissez un modèle',true);return}const tpl=templates[parseInt(tplIdx)];const recs=data.filter(d=>selectedIds.has(d.id));const all=recs.map(d=>`[${fullName(d)}] ${applyTpl(tpl.body,d)}`).join('\n\n');navigator.clipboard.writeText(all).then(()=>{markMessageSent(new Set(recs.map(d=>d.id)),'copie');showToast(`${recs.length} copiés 📋`);renderTable()}).catch(()=>showToast('Erreur',true))}
 
 // ═══════════════ MODAL ═══════════════
-function openModal(entry){editingId=entry?entry.id:null;document.getElementById('modal-title').textContent=entry?'Modifier':'Nouvelle Livraison';document.getElementById('f-lastname').value=entry?entry.lastname||'':'';document.getElementById('f-firstname').value=entry?entry.firstname||'':'';document.getElementById('f-phone').value=entry?entry.phone:'';document.getElementById('f-article').value=entry?entry.article:'';document.getElementById('f-qty').value=entry?entry.qty:1;document.getElementById('f-price').value=entry?entry.price:'';document.getElementById('f-profit').value=entry?entry.profit:'';document.getElementById('f-comment').value=entry?entry.comment||'':'';document.getElementById('f-position').value=entry?entry.position||'':'';pickedLat=entry?.lat||null;pickedLng=entry?.lng||null;updateCoordsDisplay();const sec=document.getElementById('map-picker-section');sec.style.display='none';sec.dataset.open='false';document.getElementById('btn-toggle-map').textContent='🗺️ Choisir sur la carte';updateDtypesDatalist();const ms=document.getElementById('msg-sender-section');if(templates.length){ms.style.display='block';updateTplSelect()}else ms.style.display='none';document.getElementById('msg-preview').style.display='none';
+function openModal(entry){editingId=entry?entry.id:null;document.getElementById('modal-title').textContent=entry?'Modifier':'Nouvelle Livraison';document.getElementById('f-lastname').value=entry?entry.lastname||'':'';document.getElementById('f-firstname').value=entry?entry.firstname||'':'';document.getElementById('f-phone').value=entry?entry.phone:'';document.getElementById('f-article').value=entry?entry.article:'';document.getElementById('f-qty').value=entry?entry.qty:1;document.getElementById('f-price').value=entry?entry.price:'';document.getElementById('f-profit').value=entry?entry.profit:'';document.getElementById('f-comment').value=entry?entry.comment||'':'';document.getElementById('f-duedate').value=entry?entry.dueDate||'':'';document.getElementById('f-position').value=entry?entry.position||'':'';pickedLat=entry?.lat||null;pickedLng=entry?.lng||null;updateCoordsDisplay();const sec=document.getElementById('map-picker-section');sec.style.display='none';sec.dataset.open='false';document.getElementById('btn-toggle-map').textContent='🗺️ Choisir sur la carte';updateDtypesDatalist();const ms=document.getElementById('msg-sender-section');if(templates.length){ms.style.display='block';updateTplSelect()}else ms.style.display='none';document.getElementById('msg-preview').style.display='none';
   // Set status picker
   const st=entry?entry.status:'en attente';
   document.querySelectorAll('.status-option').forEach(o=>{o.classList.remove('selected','warn','danger');if(o.dataset.status===st){o.classList.add('selected');if(st==='en attente')o.classList.add('warn');else if(st==='impayé')o.classList.add('danger')}});
@@ -1933,7 +2056,7 @@ function updateCoordsDisplay(){const el=document.getElementById('picker-coords')
 function geolocateMe(){if(!navigator.geolocation){showToast('GPS non supporté',true);return}showToast('GPS...');navigator.geolocation.getCurrentPosition(p=>{pickedLat=p.coords.latitude;pickedLng=p.coords.longitude;if(modalMap){modalMap.setView([pickedLat,pickedLng],16);placeModalMarker(pickedLat,pickedLng);modalMap.invalidateSize()}updateCoordsDisplay();reverseGeocode(pickedLat,pickedLng);showToast('GPS ✅')},()=>showToast('Erreur GPS',true),{enableHighAccuracy:true,timeout:10000})}
 async function geocodeAddress(){const q=document.getElementById('geocode-input').value.trim();if(!q)return;try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&accept-language=fr`),d=await r.json();if(d.length){pickedLat=parseFloat(d[0].lat);pickedLng=parseFloat(d[0].lon);if(modalMap){modalMap.setView([pickedLat,pickedLng],16);placeModalMarker(pickedLat,pickedLng)}document.getElementById('f-position').value=d[0].display_name.split(',').slice(0,3).join(',').trim();updateCoordsDisplay();showToast('✅')}else showToast('Introuvable',true)}catch(e){showToast('Erreur',true)}}
 async function reverseGeocode(a,b){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${a}&lon=${b}&accept-language=fr`),d=await r.json();if(d.display_name)document.getElementById('f-position').value=d.display_name.split(',').slice(0,3).join(',').trim()}catch(e){}}
-function preSave(){const lastname=formatNom(document.getElementById('f-lastname').value.trim()),firstname=formatPrenom(document.getElementById('f-firstname').value.trim()),article=document.getElementById('f-article').value.trim();if(!lastname){showToast('Nom requis',true);return}if(!article){showToast('Article requis',true);return}const entry={lastname,firstname,name:lastname+' '+firstname,phone:document.getElementById('f-phone').value.trim(),article,qty:parseInt(document.getElementById('f-qty').value)||1,price:parseFloat(document.getElementById('f-price').value)||0,profit:parseFloat(document.getElementById('f-profit').value)||0,comment:document.getElementById('f-comment').value.trim(),status:getSelectedStatus(),position:document.getElementById('f-position').value.trim(),lat:pickedLat||null,lng:pickedLng||null};if(entry.lat&&entry.lng)showConfirm(entry);else if(entry.position)geocodeAndConfirm(entry);else doSave(entry)}
+function preSave(){const lastname=formatNom(document.getElementById('f-lastname').value.trim()),firstname=formatPrenom(document.getElementById('f-firstname').value.trim()),article=document.getElementById('f-article').value.trim();if(!lastname){showToast('Nom requis',true);return}if(!article){showToast('Article requis',true);return}const entry={lastname,firstname,name:lastname+' '+firstname,phone:document.getElementById('f-phone').value.trim(),article,qty:parseInt(document.getElementById('f-qty').value)||1,price:parseFloat(document.getElementById('f-price').value)||0,profit:parseFloat(document.getElementById('f-profit').value)||0,comment:document.getElementById('f-comment').value.trim(),dueDate:document.getElementById('f-duedate').value||'',status:getSelectedStatus(),position:document.getElementById('f-position').value.trim(),lat:pickedLat||null,lng:pickedLng||null};if(entry.lat&&entry.lng)showConfirm(entry);else if(entry.position)geocodeAndConfirm(entry);else doSave(entry)}
 function showConfirm(e){pendingEntry=e;document.getElementById('confirm-addr').textContent=e.position||'Carte';document.getElementById('confirm-coords-text').textContent=`GPS: ${e.lat.toFixed(5)}, ${e.lng.toFixed(5)}`;document.getElementById('confirm-overlay').classList.add('active')}
 async function geocodeAndConfirm(e){try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(e.position)}&limit=1&accept-language=fr`),d=await r.json();if(d.length){e.lat=parseFloat(d[0].lat);e.lng=parseFloat(d[0].lon);showConfirm(e)}else doSave(e)}catch(x){doSave(e)}}
 function confirmPosition(w){document.getElementById('confirm-overlay').classList.remove('active');if(!pendingEntry)return;if(!w){pendingEntry.lat=null;pendingEntry.lng=null}doSave(pendingEntry);pendingEntry=null}
@@ -2701,7 +2824,7 @@ async function clearTileCache(){if(!confirm('Vider le cache ?'))return;try{await
 // Data
 function renderDataStats(){const g=data.filter(d=>d.lat&&d.lng).length,dlv=data.filter(d=>d.delivered).length;document.getElementById('data-stats-section').innerHTML=`<div class="data-stat"><div class="ds-val">${data.length}</div><div class="ds-label">Livraisons</div></div><div class="data-stat"><div class="ds-val">${dlv}</div><div class="ds-label">Livrées</div></div><div class="data-stat"><div class="ds-val">${g}</div><div class="ds-label">GPS</div></div><div class="data-stat"><div class="ds-val">${templates.length}</div><div class="ds-label">Modèles</div></div>`}
 function exportJSON(){const all={data,templates,dtypes,version:'LivraPro v5',exportDate:new Date().toISOString()};const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('JSON exporté 📤')}
-function exportCSV(){if(!data.length){showToast('Vide',true);return}const h=['NOM','Prénom','Tél','Article','Qté','Prix','Bénéfice','Statut','Livré','Date livraison','Absent','Date absent','Commentaire','Dernier msg','Via','Position','Lat','Lng','Date'],rows=data.map(d=>[formatNom(d.lastname||''),formatPrenom(d.firstname||''),d.phone,d.article,d.qty,d.price,d.profit,d.status,d.delivered?'Oui':'Non',d.deliveredAt?new Date(d.deliveredAt).toLocaleString('fr-FR'):'',d.absent?'Oui':'Non',d.absentAt?new Date(d.absentAt).toLocaleString('fr-FR'):'',d.comment||'',d.lastMsgAt?new Date(d.lastMsgAt).toLocaleString('fr-FR'):'',d.lastMsgType||'',d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊')}
+function exportCSV(){if(!data.length){showToast('Vide',true);return}const h=['NOM','Prénom','Tél','Article','Qté','Prix','Bénéfice','Statut','Date prévue','Livré','Date livraison','Absent','Date absent','Commentaire','Dernier msg','Via','Position','Lat','Lng','Date'],rows=data.map(d=>[formatNom(d.lastname||''),formatPrenom(d.firstname||''),d.phone,d.article,d.qty,d.price,d.profit,d.status,d.dueDate||'',d.delivered?'Oui':'Non',d.deliveredAt?new Date(d.deliveredAt).toLocaleString('fr-FR'):'',d.absent?'Oui':'Non',d.absentAt?new Date(d.absentAt).toLocaleString('fr-FR'):'',d.comment||'',d.lastMsgAt?new Date(d.lastMsgAt).toLocaleString('fr-FR'):'',d.lastMsgType||'',d.position||'',d.lat||'',d.lng||'',new Date(d.id).toLocaleDateString('fr-FR')]);const csv=[h,...rows].map(r=>r.map(c=>`"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`livrapro_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('CSV exporté 📊')}
 function importJSON(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader;reader.onload=ev=>{try{const obj=JSON.parse(ev.target.result);if(obj.data&&Array.isArray(obj.data)){if(!confirm(`Importer ${obj.data.length} livraisons ?`))return;const ids=new Set(data.map(d=>d.id));let n=0;obj.data.forEach(d=>{if(!ids.has(d.id)){data.push(d);n++}});if(obj.templates)templates=[...templates,...obj.templates.filter(t=>!templates.find(x=>x.name===t.name))];if(obj.dtypes){const incoming=obj.dtypes.map(d=>typeof d==='string'?{name:d,sellPrice:0,buyPrice:0,image:''}:({...d,image:d.image||''}));dtypes=[...dtypes,...incoming.filter(d=>!dtypes.find(x=>x.name===d.name))]};save();saveTpl();saveDtypes();renderTable();renderSettings();showToast(`${n} importés ✅`)}else showToast('Format invalide',true)}catch(x){showToast('Fichier invalide',true)}};reader.readAsText(file);e.target.value=''}
 function clearAllData(){if(!confirm('⚠️ TOUT SUPPRIMER ?'))return;if(!confirm('Dernière chance !'))return;data=[];templates=[];dtypes=[{name:'Brioche',sellPrice:2,buyPrice:1,image:''},{name:'Carte mémoire',sellPrice:15,buyPrice:8,image:''},{name:'Ciment',sellPrice:12,buyPrice:7,image:''},{name:'Fer',sellPrice:25,buyPrice:15,image:''}];accentColor='';localStorage.removeItem('livrapro_accent');document.body.style.removeProperty('--accent');document.body.style.removeProperty('--accent2');document.body.style.removeProperty('--accent-glow');save();saveTpl();saveDtypes();renderTable();renderSettings();showToast('Données supprimées')}
 
@@ -2717,7 +2840,7 @@ function importCSV(e){
       const header=parseCSVLine(lines[0]).map(h=>h.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
       // Map columns
       const colMap={};
-      const aliases={nom:['nom','name','client','lastname'],prenom:['prenom','firstname','prénom'],phone:['tel','telephone','téléphone','phone','tél'],article:['article','type','produit','item'],qty:['qte','qty','quantite','quantité'],price:['prix','price','montant','total'],profit:['benefice','bénéfice','profit','benef','bénéf.','benef.'],status:['statut','status','paiement'],position:['position','adresse','address','lieu'],lat:['lat','latitude'],lng:['lng','lon','longitude'],comment:['commentaire','comment','note','remarque']};
+      const aliases={nom:['nom','name','client','lastname'],prenom:['prenom','firstname','prénom'],phone:['tel','telephone','téléphone','phone','tél'],article:['article','type','produit','item'],qty:['qte','qty','quantite','quantité'],price:['prix','price','montant','total'],profit:['benefice','bénéfice','profit','benef','bénéf.','benef.'],status:['statut','status','paiement'],position:['position','adresse','address','lieu'],lat:['lat','latitude'],lng:['lng','lon','longitude'],comment:['commentaire','comment','note','remarque'],dueDate:['date prevue','date prévue','date_prevue','livraison prevue','echeance','échéance','duedate','due_date']};
       for(const[key,names]of Object.entries(aliases)){const idx=header.findIndex(h=>names.some(n=>h.includes(n)));if(idx>=0)colMap[key]=idx}
       if(!colMap.nom&&!colMap.article){showToast('Colonnes NOM et Article introuvables',true);return}
       // Parse rows
@@ -2740,6 +2863,7 @@ function importCSV(e){
           status:['payé','impayé','en attente'].find(s=>g('status').toLowerCase().includes(s))||'en attente',
           position:g('position'),
           comment:g('comment'),
+          dueDate:g('dueDate'),
           lat:parseFloat(g('lat'))||null,
           lng:parseFloat(g('lng'))||null,
           delivered:false,deliveredAt:null
@@ -2765,7 +2889,7 @@ function parseCSVLine(line){
 // ═══════════════ SAVE LOCATION ═══════════════
 function setSaveLocation(loc){
   saveLocation=loc;localStorage.setItem('livrapro_saveloc',loc);
-  renderSaveLocationUI();showToast(`Sauvegarde: ${loc==='local'?'Local':loc==='drive'?'Google Drive':loc==='both'?'Local + Drive':'Manuel'}`);
+  renderSaveLocationUI();updateConnStatus();showToast(`Sauvegarde: ${loc==='local'?'Local':loc==='drive'?'Google Drive':loc==='both'?'Local + Drive':'Manuel'}`);
 }
 function toggleGDriveConfig(){
   const panel=document.getElementById('gdrive-config-panel');
@@ -2860,7 +2984,7 @@ function connectGDrive(){
 function disconnectGDrive(){
   gdriveToken='';gdriveFileId='';
   localStorage.removeItem('livrapro_gdrive_token');localStorage.removeItem('livrapro_gdrive_fileid');
-  renderSaveLocationUI();showToast('Déconnecté de Google Drive');
+  renderSaveLocationUI();updateConnStatus();showToast('Déconnecté de Google Drive');
 }
 
 function handleGDriveCallback(){
@@ -2873,6 +2997,7 @@ function handleGDriveCallback(){
       window.location.hash='';
       showToast('Connecté à Google Drive ☁️');
       fetchGDriveUserInfo();
+      updateConnStatus();
     }
   }
 }
@@ -2914,7 +3039,7 @@ async function saveToGDrive(silent){
       // Update existing file
       const r=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gdriveFileId}?uploadType=media`,{method:'PATCH',headers:{Authorization:'Bearer '+gdriveToken,'Content-Type':'application/json'},body:payload});
       if(r.ok){lastSyncTime=Date.now();localStorage.setItem('livrapro_lastsync',lastSyncTime);if(!silent)showToast('☁️ Sauvegardé sur Drive ✅');renderSaveLocationUI()}
-      else if(r.status===401||r.status===403){gdriveToken='';localStorage.removeItem('livrapro_gdrive_token');showToast('Session expirée, reconnectez-vous',true);renderSaveLocationUI()}
+      else if(r.status===401||r.status===403){gdriveToken='';localStorage.removeItem('livrapro_gdrive_token');showToast('Session expirée, reconnectez-vous',true);renderSaveLocationUI();updateConnStatus()}
       else{if(!silent)showToast('Erreur Drive',true)}
     }else{
       // Create new file with multipart upload
@@ -2967,8 +3092,8 @@ const manifest={name:'LivraPro',short_name:'LivraPro',description:'Gestion livra
 const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'}),mURL=URL.createObjectURL(mBlob),mLink=document.createElement('link');mLink.rel='manifest';mLink.href=mURL;document.head.appendChild(mLink);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;updatePWAStatus()});
 window.addEventListener('appinstalled',()=>{deferredPrompt=null;updatePWAStatus()});
-function updatePWAStatus(){const btn=document.getElementById('pwa-install-btn'),st=document.getElementById('pwa-status');if(window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone){btn.textContent='✅ Installée';btn.disabled=true;st.textContent='Mode application'}else if(deferredPrompt){btn.textContent='📲 Installer';st.textContent='Prêt'}else{btn.textContent='📲 Installer';st.textContent='iOS: Safari → Partager → Écran d\'accueil'}}
-async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;updatePWAStatus()}else showToast('Utilisez "Ajouter à l\'écran d\'accueil"')}
+function updatePWAStatus(){const btn=document.getElementById('pwa-install-btn'),st=document.getElementById('pwa-status');const isStandalone=window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone===true;const dev=getDeviceType();if(isStandalone){btn.textContent='✅ Installée';btn.disabled=true;st.textContent='Mode application — '+getDeviceInfo().label}else if(deferredPrompt){btn.textContent='📲 Installer';st.textContent='Prêt à installer'}else if(dev==='ios'){btn.textContent='📲 Ajouter à l\'écran';st.innerHTML='<strong>iPhone/iPad:</strong> Safari → <img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%235a8af2\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M8 1l4 4H9v6H7V5H4l4-4z\'/%3E%3Cpath d=\'M2 12h12v2H2z\'/%3E%3C/svg%3E" style="vertical-align:middle;width:14px"> Partager → Écran d\'accueil'}else{btn.textContent='📲 Installer';st.textContent='Navigateur → Installer l\'application'}renderDeviceInfo();renderMapsChoice()}
+async function installPWA(){if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;updatePWAStatus()}else{const dev=getDeviceType();if(dev==='ios')showToast('Safari → Partager → Sur l\'écran d\'accueil');else showToast('Utilisez le menu du navigateur → Installer')}}
 async function registerSW(){if(!('serviceWorker' in navigator)){document.getElementById('sw-status').textContent='Non supporté';return}try{document.getElementById('sw-status').textContent='Cache IndexedDB actif ✅'}catch(e){document.getElementById('sw-status').textContent='Cache local ✅'}}
 
 function showToast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' error':'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500)}
@@ -2979,13 +3104,15 @@ if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthes
 
 renderTable();renderStats();registerSW();applyTheme();applyColumnVisibility();
 displaySaveTime();updateConnStatus();
+// Check due date notifications on load
+setTimeout(checkDueDateNotifications,2000);
 if(hidePrices)document.body.classList.add('hide-prices');
 if(defaultStart)document.getElementById('route-start').value=defaultStart;
 if(autoGeo)setTimeout(detectMyLocation,1000);
 handleGDriveCallback();
 if(gdriveToken)fetchGDriveUserInfo();
 // Set native maps button label
-const nml=getDeviceType()==='ios'?'🗺️ Ouvrir dans Plans':'🗺️ Ouvrir dans Google Maps';
+const nml=getEffectiveMapsApp()==='apple'?'🍎 Ouvrir dans Plans':'📍 Ouvrir dans Google Maps';
 document.getElementById('btn-open-native-maps').textContent=nml;
 // Restore map style buttons
 updateMapStyleButtons();
