@@ -223,6 +223,8 @@ tbody td{padding:10px 12px;font-size:12px;color:var(--text2);vertical-align:midd
 .rs-value{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent)}
 .route-item{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:background .15s}
 .route-item:hover{background:var(--bg3)}
+.route-item .ri-nav-btn{padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:3px}
+.route-item .ri-nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
 .route-item.active-stop{background:rgba(74,227,181,.08);border-left:3px solid var(--accent)}
 .route-number{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;font-family:'Space Mono',monospace;color:#0a0c10}
 
@@ -744,7 +746,10 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
       <div id="route-list"></div>
       <div id="route-empty" class="empty-state" style="padding:20px"><div class="eico">📍</div><p>Aucun client géolocalisé</p></div>
       <!-- NAV START BUTTON -->
-      <div id="nav-start-wrap" style="padding:10px 14px;display:none"><button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px" onclick="startNavigation()">▶️ Démarrer la navigation</button></div>
+      <div id="nav-start-wrap" style="padding:10px 14px;display:none">
+        <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px;margin-bottom:6px" onclick="startNavigation()">▶️ Démarrer la navigation</button>
+        <button class="btn btn-route" style="width:100%;padding:10px;font-size:13px" id="btn-open-native-maps" onclick="openNativeRouteFromCurrent()">🗺️ Ouvrir dans Maps</button>
+      </div>
     </div>
     <!-- NAV HUD -->
     <div class="nav-hud-top" id="nav-hud-top">
@@ -770,7 +775,8 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
       <div class="nav-controls">
         <button class="nav-btn nav-btn-voice" id="nav-voice-btn" onclick="toggleVoice()">🔊 Voix ON</button>
         <button class="nav-btn nav-btn-recenter" onclick="recenterNav()">🎯 Recentrer</button>
-        <button class="nav-btn nav-btn-stop" onclick="stopNavigation()">⏹ Arrêter</button>
+        <button class="nav-btn" style="background:var(--bg3);color:var(--blue);border:1px solid var(--border)" onclick="openCurrentStopInMaps()">🗺️</button>
+        <button class="nav-btn nav-btn-stop" onclick="stopNavigation()">⏹ Stop</button>
       </div>
     </div>
   </div>
@@ -992,6 +998,7 @@ body.hide-col-date .sticky-name-table th:nth-child(12),body.hide-col-date .stick
       <div class="pv-row col-money"><span class="pv-label">📈 Bénéf.</span><span id="pv-profit" class="money">—</span></div>
       <div class="pv-row"><span class="pv-label">📋 Statut</span><span id="pv-status">—</span></div>
       <div class="pv-row"><span class="pv-label">📍 Position</span><span id="pv-position">—</span></div>
+      <div class="pv-row" id="pv-nav-row" style="display:none"><span class="pv-label"></span><button class="btn btn-route" style="padding:6px 12px;font-size:11px" id="pv-nav-btn" onclick="">🗺️ Y aller</button></div>
       <div class="pv-row"><span class="pv-label">📅 Date</span><span id="pv-date">—</span></div>
       <div class="pv-row" id="pv-deliver-row" style="display:none"><span class="pv-label">✅ Livré</span><span id="pv-deliver-date">—</span></div>
       <div class="pv-row" id="pv-absent-row" style="display:none"><span class="pv-label">🚫 Absent</span><span id="pv-absent-date" style="color:var(--danger)">—</span></div>
@@ -1485,6 +1492,8 @@ function showPreview(id){
   const sl=d.status==='payé'?'✅ Payé':d.status==='impayé'?'❌ Impayé':'⏳ En attente';
   document.getElementById('pv-status').innerHTML=`<span class="badge badge-${sc}">${sl}</span>`;
   document.getElementById('pv-position').textContent=d.position||'—';
+  const navRow=document.getElementById('pv-nav-row'),navBtn=document.getElementById('pv-nav-btn');
+  if(d.lat&&d.lng){navRow.style.display='flex';const app=getDeviceType()==='ios'?'Plans':'Maps';navBtn.textContent=`🗺️ Naviguer (${app})`;navBtn.onclick=()=>{closePreview();openNativeMaps(d.lat,d.lng,fullName(d))}}else{navRow.style.display='none'}
   document.getElementById('pv-date').textContent=new Date(d.id).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   // Message history
   const msgRow=document.getElementById('pv-msg-row');
@@ -1603,6 +1612,71 @@ function getDeviceInfo(){
   if(type==='ios')return{type,icon:'🍎',label:'iOS (iPhone/iPad)',smsSep:'&body='};
   if(type==='android')return{type,icon:'🤖',label:'Android',smsSep:'?body='};
   return{type,icon:'💻',label:'Ordinateur',smsSep:'?body='};
+}
+
+// ═══════════════ NATIVE MAPS ═══════════════
+function getMapsApp(){
+  const dev=getDeviceType();
+  if(dev==='ios')return{name:'Apple Plans',icon:'🗺️',prefix:'maps'};
+  return{name:'Google Maps',icon:'🗺️',prefix:'gmaps'};
+}
+
+function openNativeMaps(lat,lng,label){
+  const dev=getDeviceType();
+  const name=encodeURIComponent(label||'');
+  if(dev==='ios'){
+    // Apple Maps
+    window.open(`maps://maps.apple.com/?daddr=${lat},${lng}&dirflg=d&t=m`,'_self');
+  }else{
+    // Google Maps (Android + Desktop)
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`,'_blank');
+  }
+}
+
+function openNativeRoute(stops,startLat,startLng){
+  const dev=getDeviceType();
+  if(!stops||!stops.length){showToast('Aucun arrêt',true);return}
+  if(dev==='ios'){
+    // Apple Maps: only supports 1 destination, use first stop
+    // For multi-stop, open each sequentially or use first
+    if(stops.length===1){
+      window.open(`maps://maps.apple.com/?daddr=${stops[0].lat},${stops[0].lng}&dirflg=d`,'_self');
+    }else{
+      // Multi-stop: use Google Maps even on iOS (in Safari) for waypoints
+      const origin=startLat?`${startLat},${startLng}`:'current+location';
+      const dest=stops[stops.length-1];
+      const waypoints=stops.slice(0,-1).map(s=>`${s.lat},${s.lng}`).join('|');
+      window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest.lat},${dest.lng}&waypoints=${encodeURIComponent(waypoints)}&travelmode=driving`,'_blank');
+    }
+  }else{
+    // Google Maps with waypoints
+    const origin=startLat?`${startLat},${startLng}`:'';
+    const dest=stops[stops.length-1];
+    const waypoints=stops.slice(0,-1).map(s=>`${s.lat},${s.lng}`).join('|');
+    let url=`https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lng}&travelmode=driving`;
+    if(origin)url+=`&origin=${origin}`;
+    if(waypoints)url+=`&waypoints=${encodeURIComponent(waypoints)}`;
+    window.open(url,'_blank');
+  }
+}
+
+function getNativeMapsLabel(){
+  return getDeviceType()==='ios'?'🗺️ Plans':'🗺️ Maps';
+}
+
+function openNativeRouteFromCurrent(){
+  if(!navStops.length){showToast('Calculez la route d\'abord',true);return}
+  openNativeRoute(navStops,myLat,myLng);
+  const app=getDeviceType()==='ios'?'Apple Plans':'Google Maps';
+  showToast(`🗺️ Ouverture dans ${app}...`);
+}
+
+function openCurrentStopInMaps(){
+  if(!navStops.length||navCurrentStop>=navStops.length)return;
+  const s=navStops[navCurrentStop];
+  openNativeMaps(s.lat,s.lng,fullName(s));
+  const app=getDeviceType()==='ios'?'Apple Plans':'Google Maps';
+  showToast(`🗺️ ${fullName(s)} dans ${app}`);
 }
 function timeAgo(ts){
   const diff=Date.now()-ts;
@@ -1999,7 +2073,7 @@ function sendWhatsApp(){const ph=(document.getElementById('f-phone').value||'').
 function sendSMS(){const dev=getDeviceInfo();const ph=document.getElementById('f-phone').value||'';window.open(`sms:${ph}${dev.smsSep}${encodeURIComponent(getGeneratedMsg())}`);if(editingId){const d=data.find(x=>x.id===editingId);if(d){d.lastMsgAt=Date.now();d.lastMsgType='sms';save()}}}
 
 // ═══════════════ MAIN MAP ═══════════════
-function renderMainMarkers(){if(!mainMap)return;mainMarkers.forEach(m=>mainMap.removeLayer(m));mainMarkers=[];const geo=data.filter(d=>d.lat&&d.lng);if(!geo.length){if(myLat&&myLocTracking)mainMap.setView([myLat,myLng],14);return}const bounds=[];geo.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(mainMap);m.bindPopup(`<div class="popup-name">${esc(fullName(d))}</div><div class="popup-detail">${esc(d.article)} ×${d.qty} — ${fmt(d.price)}</div>${d.comment?'<div style="font-size:11px;color:#9aa2b8;margin-top:4px">💬 '+esc(d.comment)+'</div>':''}`);mainMarkers.push(m);bounds.push([d.lat,d.lng])});if(myLat&&myLocTracking)bounds.push([myLat,myLng]);if(bounds.length>1)mainMap.fitBounds(bounds,{padding:[50,50]});else mainMap.setView(bounds[0],15)}
+function renderMainMarkers(){if(!mainMap)return;mainMarkers.forEach(m=>mainMap.removeLayer(m));mainMarkers=[];const geo=data.filter(d=>d.lat&&d.lng);if(!geo.length){if(myLat&&myLocTracking)mainMap.setView([myLat,myLng],14);return}const bounds=[];geo.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(mainMap);m.bindPopup(`<div class="popup-name">${esc(fullName(d))}</div><div class="popup-detail">${esc(d.article)} ×${d.qty} — ${fmt(d.price)}</div>${d.comment?'<div style="font-size:11px;color:#9aa2b8;margin-top:4px">💬 '+esc(d.comment)+'</div>':''}<div style="margin-top:6px"><a href="#" onclick="event.preventDefault();openNativeMaps(${d.lat},${d.lng},'${esc(fullName(d)).replace(/'/g,"\\'")}')" style="color:#5a8af2;font-size:11px;font-weight:600;text-decoration:none">🗺️ Naviguer vers ce client</a></div>`);mainMarkers.push(m);bounds.push([d.lat,d.lng])});if(myLat&&myLocTracking)bounds.push([myLat,myLng]);if(bounds.length>1)mainMap.fitBounds(bounds,{padding:[50,50]});else mainMap.setView(bounds[0],15)}
 function focusClient(id){const d=data.find(x=>x.id===id);if(!d||!d.lat||!d.lng){showToast('Pas de GPS',true);return}switchTab('map');setTimeout(()=>{if(mainMap){mainMap.setView([d.lat,d.lng],16);mainMarkers.forEach(m=>{const l=m.getLatLng();if(Math.abs(l.lat-d.lat)<.0001&&Math.abs(l.lng-d.lng)<.0001)m.openPopup()})}},200)}
 
 // ═══════════════ MY LOCATION ON MAP ═══════════════
@@ -2069,7 +2143,7 @@ function getRouteClients(){const f=document.getElementById('route-filter').value
 function renderRouteList(){const cl=getRouteClients(),list=document.getElementById('route-list'),em=document.getElementById('route-empty');routeMarkers.forEach(m=>routeMap&&routeMap.removeLayer(m));routeMarkers=[];if(routeLine){routeMap.removeLayer(routeLine);routeLine=null}document.getElementById('route-summary').style.display='none';document.getElementById('nav-start-wrap').style.display='none';if(!cl.length){list.innerHTML='';em.style.display='block';return}em.style.display='none';
   // Sort by distance from my position if available
   if(myLat&&myLng){cl.forEach(c=>c._distFromMe=haversine(myLat,myLng,c.lat,c.lng));cl.sort((a,b)=>a._distFromMe-b._distFromMe)}
-  list.innerHTML=cl.map((d,i)=>{const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';const distLabel=(myLat&&d._distFromMe)?`<div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);text-align:right;flex-shrink:0">${d._distFromMe<1?`${(d._distFromMe*1000).toFixed(0)}m`:`${d._distFromMe.toFixed(1)}km`}</div>`:'';return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div>${distLabel}</div>`}).join('');const bounds=[];cl.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)routeMap.fitBounds(bounds,{padding:[80,80]});else if(bounds.length)routeMap.setView(bounds[0],15)}
+  list.innerHTML=cl.map((d,i)=>{const c=d.status==='payé'?'#4ae3b5':d.status==='impayé'?'#f06272':'#f0b24a';const distLabel=(myLat&&d._distFromMe)?`<div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);text-align:right">${d._distFromMe<1?`${(d._distFromMe*1000).toFixed(0)}m`:`${d._distFromMe.toFixed(1)}km`}</div>`:'';return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">${distLabel}<button class="ri-nav-btn" onclick="event.stopPropagation();openNativeMaps(${d.lat},${d.lng},'${esc(fullName(d)).replace(/'/g,"\\'")}')">🗺️ Y aller</button></div></div>`}).join('');const bounds=[];cl.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m);bounds.push([d.lat,d.lng])});if(bounds.length>1)routeMap.fitBounds(bounds,{padding:[80,80]});else if(bounds.length)routeMap.setView(bounds[0],15)}
 function useMyLocation(){if(!navigator.geolocation){showToast('GPS indisponible',true);return}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('route-start').value=`${p.coords.latitude.toFixed(6)}, ${p.coords.longitude.toFixed(6)}`;showToast('GPS ✅')},()=>showToast('Erreur GPS',true),{enableHighAccuracy:true,timeout:10000})}
 async function parseStart(){const v=document.getElementById('route-start').value.trim();if(!v)return null;const p=v.split(',').map(s=>parseFloat(s.trim()));if(p.length===2&&!isNaN(p[0])&&!isNaN(p[1])&&Math.abs(p[0])<=90)return{lat:p[0],lng:p[1]};try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(v)}&limit=1&accept-language=fr`),d=await r.json();if(d.length)return{lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)}}catch(e){}return null}
 
@@ -2161,7 +2235,7 @@ function renderRouteListSorted(clients,start){
     const distKm=d._distFromMe;
     const distLabel=distKm<1?`${(distKm*1000).toFixed(0)}m`:`${distKm.toFixed(1)}km`;
     const legLabel=d._legDist<1?`${(d._legDist*1000).toFixed(0)}m`:`${d._legDist.toFixed(1)}km`;
-    return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div><div style="text-align:right;flex-shrink:0"><div style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent)">${distLabel}</div><div style="font-size:9px;color:var(--text3)">+${legLabel} du précéd.</div></div></div>`;
+    return`<div class="route-item" onclick="routeMap&&routeMap.setView([${d.lat},${d.lng}],16)"><div class="route-number" style="background:${c}">${i+1}</div><div class="route-info"><div class="name" style="font-size:12px;font-weight:600">${esc(fullName(d))}</div><div style="font-size:10px;color:var(--text3)">${esc(d.article)} ×${d.qty}</div><div style="font-size:10px;color:var(--blue)">📍 ${esc(d.position||d.lat.toFixed(4)+','+d.lng.toFixed(4))}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0"><div style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent)">${distLabel}</div><div style="font-size:9px;color:var(--text3)">+${legLabel} du précéd.</div><button class="ri-nav-btn" onclick="event.stopPropagation();openNativeMaps(${d.lat},${d.lng},'${esc(fullName(d)).replace(/'/g,"\\'")}')">🗺️ Y aller</button></div></div>`;
   }).join('');
   clients.forEach((d,i)=>{const m=L.marker([d.lat,d.lng],{icon:mkIcon(i+1,stCol(d.status))}).addTo(routeMap);routeMarkers.push(m)});
   if(clients.length>1){const bounds=clients.map(d=>[d.lat,d.lng]);bounds.push([start.lat,start.lng]);routeMap.fitBounds(bounds,{padding:[80,80]})}
@@ -2663,6 +2737,9 @@ if(defaultStart)document.getElementById('route-start').value=defaultStart;
 if(autoGeo)setTimeout(detectMyLocation,1000);
 handleGDriveCallback();
 if(gdriveToken)fetchGDriveUserInfo();
+// Set native maps button label
+const nml=getDeviceType()==='ios'?'🗺️ Ouvrir dans Plans':'🗺️ Ouvrir dans Google Maps';
+document.getElementById('btn-open-native-maps').textContent=nml;
 // Restore map style buttons
 updateMapStyleButtons();
 // Migrate old data
