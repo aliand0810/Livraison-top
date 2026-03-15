@@ -629,15 +629,38 @@ body.hide-prices .col-money *{color:transparent!important}
       <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:8px">
         <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">☁️ Google Drive</label>
         <div class="gdrive-status" id="gdrive-status"><div class="gd-dot offline" id="gd-dot"></div><div class="gd-info"><strong id="gd-user">Non connecté</strong><span id="gd-email">Connectez-vous pour synchroniser</span></div></div>
-        <div class="form-group" style="margin-bottom:8px"><label style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Client ID Google</label><input type="text" id="gdrive-client-id" placeholder="Votre Client ID OAuth2" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:10px;outline:none;width:100%" onchange="saveGDriveConfig()"></div>
+
+        <!-- REDIRECT URI HELPER -->
+        <div style="background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:10px;margin-bottom:10px">
+          <div style="font-size:10px;font-weight:700;color:var(--warn);margin-bottom:4px">⚠️ URI de redirection à copier dans Google Cloud Console :</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <code id="gdrive-redirect-uri" style="flex:1;font-size:9px;color:var(--accent);background:var(--bg2);padding:6px 8px;border-radius:4px;border:1px solid var(--border);word-break:break-all;font-family:'Space Mono',monospace">—</code>
+            <button class="btn btn-secondary" style="padding:5px 8px;font-size:10px;flex-shrink:0" onclick="copyRedirectUri()">📋</button>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="font-size:10px;color:var(--blue);cursor:pointer;font-weight:600">📖 Comment configurer Google Cloud ?</summary>
+            <ol style="font-size:10px;color:var(--text2);padding-left:16px;margin-top:6px;line-height:1.6">
+              <li>Allez sur <strong>console.cloud.google.com</strong></li>
+              <li>Créez un projet ou sélectionnez-en un</li>
+              <li>Activez l'API <strong>Google Drive API</strong></li>
+              <li>Allez dans <strong>Identifiants → Créer des identifiants → ID client OAuth</strong></li>
+              <li>Type : <strong>Application Web</strong></li>
+              <li>Dans <strong>« URI de redirection autorisées »</strong>, collez l'URI ci-dessus</li>
+              <li>Copiez le <strong>Client ID</strong> et collez-le ci-dessous</li>
+              <li>Dans <strong>Écran de consentement OAuth</strong>, ajoutez votre email en tant qu'utilisateur test</li>
+            </ol>
+          </details>
+        </div>
+
+        <div class="form-group" style="margin-bottom:8px"><label style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase">Client ID Google</label><input type="text" id="gdrive-client-id" placeholder="123456789.apps.googleusercontent.com" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Space Mono',monospace;font-size:10px;outline:none;width:100%" onchange="saveGDriveConfig()"></div>
         <div style="display:flex;gap:6px;margin-bottom:8px">
           <button class="btn btn-route" style="flex:1" id="gdrive-connect-btn" onclick="connectGDrive()">☁️ Connecter</button>
-          <button class="btn btn-secondary" style="flex:1" id="gdrive-disconnect-btn" onclick="disconnectGDrive()" style="display:none">🔌 Déconnecter</button>
+          <button class="btn btn-secondary" style="flex:1" id="gdrive-disconnect-btn" onclick="disconnectGDrive()">🔌 Déconnecter</button>
         </div>
         <div class="gdrive-folder" id="gdrive-folder-display" style="display:none"><span class="gf-icon">📁</span><span id="gd-folder-name">LivraPro</span><button class="btn btn-secondary" style="padding:4px 8px;font-size:10px;margin-left:auto" onclick="pickGDriveFolder()">Changer</button></div>
         <div style="display:flex;gap:6px">
-          <button class="btn btn-primary" style="flex:1" onclick="saveToGDrive()">☁️ Sauvegarder sur Drive</button>
-          <button class="btn btn-secondary" style="flex:1" onclick="loadFromGDrive()">📥 Restaurer depuis Drive</button>
+          <button class="btn btn-primary" style="flex:1" onclick="saveToGDrive()">☁️ Sauvegarder</button>
+          <button class="btn btn-secondary" style="flex:1" onclick="loadFromGDrive()">📥 Restaurer</button>
         </div>
       </div>
 
@@ -1681,6 +1704,9 @@ function renderSaveLocationUI(){
   const indic=document.getElementById('autosave-indicator');
   if(indic){indic.className='autosave-badge '+(autoSaveEnabled?'on':'off');indic.textContent=autoSaveEnabled?'🔄 Auto':'⏸ Manuel'}
   if(lastSyncTime){document.getElementById('last-sync-text').textContent='Dernière synchro: '+new Date(lastSyncTime).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
+  // Show redirect URI
+  const uriEl=document.getElementById('gdrive-redirect-uri');
+  if(uriEl)uriEl.textContent=getRedirectUri();
   // Drive UI
   const isConnected=!!gdriveToken;
   document.getElementById('gd-dot').className='gd-dot '+(isConnected?'online':'offline');
@@ -1706,12 +1732,41 @@ function triggerAutoSave(){
 // ═══════════════ GOOGLE DRIVE ═══════════════
 function saveGDriveConfig(){gdriveClientId=document.getElementById('gdrive-client-id').value.trim();localStorage.setItem('livrapro_gdrive_cid',gdriveClientId)}
 
+function getRedirectUri(){
+  // Clean redirect URI: origin + pathname, no hash, no query, no trailing slash issues
+  let uri=location.origin+location.pathname;
+  // Remove trailing hash or query
+  uri=uri.split('#')[0].split('?')[0];
+  return uri;
+}
+
+function copyRedirectUri(){
+  const uri=getRedirectUri();
+  navigator.clipboard.writeText(uri).then(()=>showToast('URI copiée 📋')).catch(()=>{
+    // Fallback: select and copy
+    const el=document.getElementById('gdrive-redirect-uri');
+    const range=document.createRange();range.selectNodeContents(el);
+    const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+    document.execCommand('copy');sel.removeAllRanges();
+    showToast('URI copiée 📋');
+  });
+}
+
 function connectGDrive(){
   if(!gdriveClientId){showToast('Entrez votre Client ID d\'abord',true);return}
-  const redirectUri=location.origin+location.pathname;
+  const redirectUri=getRedirectUri();
   const scope='https://www.googleapis.com/auth/drive.file';
-  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(gdriveClientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
-  window.location.href=url;
+  // Log the redirect URI for debugging
+  console.log('OAuth redirect_uri:',redirectUri);
+  const params=new URLSearchParams({
+    client_id:gdriveClientId,
+    redirect_uri:redirectUri,
+    response_type:'token',
+    scope:scope,
+    prompt:'consent',
+    include_granted_scopes:'true'
+  });
+  window.location.href=`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }
 
 function disconnectGDrive(){
