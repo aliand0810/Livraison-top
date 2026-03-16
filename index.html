@@ -1320,6 +1320,10 @@ let saveLocation=localStorage.getItem('livrapro_saveloc')||'local';
 let autoSaveEnabled=localStorage.getItem('livrapro_autosave')==='true';
 let gdriveClientId=localStorage.getItem('livrapro_gdrive_cid')||'';
 let gdriveToken=localStorage.getItem('livrapro_gdrive_token')||'';
+let gdriveTokenExpiry=parseInt(localStorage.getItem('livrapro_gdrive_expiry'))||0;
+let gdriveUserName=localStorage.getItem('livrapro_gdrive_user')||'';
+let gdriveUserEmail=localStorage.getItem('livrapro_gdrive_email')||'';
+let gdriveRefreshing=false;
 let gdriveFolderId=localStorage.getItem('livrapro_gdrive_folder')||'';
 let gdriveFolderName=localStorage.getItem('livrapro_gdrive_fname')||'LivraPro';
 let gdriveFileId=localStorage.getItem('livrapro_gdrive_fileid')||'';
@@ -1363,16 +1367,20 @@ function updateConnStatus(){
   const label=document.getElementById('ss-conn-label');
   if(!dot||!label)return;
   const online=navigator.onLine;
-  const driveOk=!!gdriveToken;
   const needsDrive=saveLocation==='drive'||saveLocation==='both';
+  const hasToken=!!gdriveToken;
+  const tokenValid=isGDriveTokenValid();
   
   if(!online){
     dot.className='ss-dot offline';
     label.textContent='Hors ligne';label.style.color='var(--danger)';
-  }else if(needsDrive&&!driveOk){
+  }else if(needsDrive&&!hasToken){
     dot.className='ss-dot offline';
     label.textContent='Drive déconnecté';label.style.color='var(--danger)';
-  }else if(needsDrive&&driveOk){
+  }else if(needsDrive&&hasToken&&!tokenValid){
+    dot.className='ss-dot offline';
+    label.textContent='Drive — session expirée';label.style.color='var(--warn)';
+  }else if(needsDrive&&hasToken&&tokenValid){
     dot.className='ss-dot online';
     label.textContent='Drive connecté';label.style.color='';
   }else{
@@ -2955,9 +2963,10 @@ function renderSaveLocationUI(){
   if(lastSyncTime){document.getElementById('last-sync-text').textContent='Dernière synchro: '+new Date(lastSyncTime).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
   // Drive UI
   const isConnected=!!gdriveToken;
-  document.getElementById('gd-dot').className='gd-dot '+(isConnected?'online':'offline');
-  document.getElementById('gd-user').textContent=isConnected?'Connecté':'Non connecté';
-  document.getElementById('gd-email').textContent=isConnected?'Token actif':'Double-cliquez sur "Google Drive" pour configurer';
+  const tokenValid=isGDriveTokenValid();
+  document.getElementById('gd-dot').className='gd-dot '+(isConnected&&tokenValid?'online':'offline');
+  document.getElementById('gd-user').textContent=isConnected?(gdriveUserName||'Connecté'):'Non connecté';
+  document.getElementById('gd-email').textContent=isConnected?(gdriveUserEmail||'Token actif'):'Double-cliquez sur "Google Drive" pour configurer';
   document.getElementById('gdrive-folder-display').style.display=isConnected?'flex':'none';
   document.getElementById('gd-folder-name').textContent=gdriveFolderName||'LivraPro';
 }
@@ -3001,7 +3010,6 @@ function copyRedirectUri(){
 
 function connectGDrive(){
   if(!gdriveClientId){
-    // Auto-open config panel
     const panel=document.getElementById('gdrive-config-panel');
     panel.style.display='block';
     const uriEl=document.getElementById('gdrive-redirect-uri');
@@ -3012,8 +3020,6 @@ function connectGDrive(){
   }
   const redirectUri=getRedirectUri();
   const scope='https://www.googleapis.com/auth/drive.file';
-  // Log the redirect URI for debugging
-  console.log('OAuth redirect_uri:',redirectUri);
   const params=new URLSearchParams({
     client_id:gdriveClientId,
     redirect_uri:redirectUri,
@@ -3026,8 +3032,14 @@ function connectGDrive(){
 }
 
 function disconnectGDrive(){
-  gdriveToken='';gdriveFileId='';
-  localStorage.removeItem('livrapro_gdrive_token');localStorage.removeItem('livrapro_gdrive_fileid');
+  gdriveToken='';gdriveFileId='';gdriveTokenExpiry=0;
+  gdriveUserName='';gdriveUserEmail='';
+  localStorage.removeItem('livrapro_gdrive_token');
+  localStorage.removeItem('livrapro_gdrive_fileid');
+  localStorage.removeItem('livrapro_gdrive_expiry');
+  localStorage.removeItem('livrapro_gdrive_user');
+  localStorage.removeItem('livrapro_gdrive_email');
+  if(gdriveRefreshTimer){clearTimeout(gdriveRefreshTimer);gdriveRefreshTimer=null}
   renderSaveLocationUI();updateConnStatus();showToast('Déconnecté de Google Drive');
 }
 
@@ -3036,21 +3048,116 @@ function handleGDriveCallback(){
   if(hash.includes('access_token')){
     const params=new URLSearchParams(hash.substring(1));
     gdriveToken=params.get('access_token')||'';
+    const expiresIn=parseInt(params.get('expires_in'))||3600;
     if(gdriveToken){
+      gdriveTokenExpiry=Date.now()+(expiresIn*1000);
       localStorage.setItem('livrapro_gdrive_token',gdriveToken);
+      localStorage.setItem('livrapro_gdrive_expiry',gdriveTokenExpiry);
       window.location.hash='';
       showToast('Connecté à Google Drive ☁️');
       fetchGDriveUserInfo();
       updateConnStatus();
+      scheduleTokenRefresh();
     }
   }
 }
+
+let gdriveRefreshTimer=null;
+function scheduleTokenRefresh(){
+  if(gdriveRefreshTimer)clearTimeout(gdriveRefreshTimer);
+  if(!gdriveToken||!gdriveTokenExpiry)return;
+  const msUntilRefresh=Math.max(10000,(gdriveTokenExpiry-Date.now()-300000));
+  gdriveRefreshTimer=setTimeout(async()=>{
+    const ok=await refreshGDriveToken();
+    if(ok){updateConnStatus();scheduleTokenRefresh()}
+    else{gdriveRefreshTimer=setTimeout(()=>scheduleTokenRefresh(),120000)}
+  },msUntilRefresh);
+}
+
+// Silent token refresh via hidden iframe
+function refreshGDriveToken(){
+  return new Promise(resolve=>{
+    if(!gdriveClientId){resolve(false);return}
+    if(gdriveRefreshing){resolve(false);return}
+    gdriveRefreshing=true;
+    const redirectUri=getRedirectUri();
+    const scope='https://www.googleapis.com/auth/drive.file';
+    const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(gdriveClientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=none`;
+    // Use hidden iframe for silent refresh
+    const iframe=document.createElement('iframe');
+    iframe.style.display='none';
+    iframe.src=url;
+    let resolved=false;
+    const timeout=setTimeout(()=>{if(!resolved){resolved=true;gdriveRefreshing=false;cleanup();resolve(false)}},8000);
+    function cleanup(){try{document.body.removeChild(iframe)}catch(e){}}
+    iframe.onload=()=>{
+      try{
+        const iHash=iframe.contentWindow.location.hash;
+        if(iHash&&iHash.includes('access_token')){
+          const p=new URLSearchParams(iHash.substring(1));
+          const newToken=p.get('access_token');
+          const expiresIn=parseInt(p.get('expires_in'))||3600;
+          if(newToken){
+            gdriveToken=newToken;
+            gdriveTokenExpiry=Date.now()+(expiresIn*1000);
+            localStorage.setItem('livrapro_gdrive_token',gdriveToken);
+            localStorage.setItem('livrapro_gdrive_expiry',gdriveTokenExpiry);
+            if(!resolved){resolved=true;clearTimeout(timeout);gdriveRefreshing=false;cleanup();resolve(true)}
+            return;
+          }
+        }
+      }catch(e){/* cross-origin, expected if auth fails */}
+      if(!resolved){resolved=true;clearTimeout(timeout);gdriveRefreshing=false;cleanup();resolve(false)}
+    };
+    document.body.appendChild(iframe);
+  });
+}
+
+function isGDriveTokenValid(){
+  if(!gdriveToken)return false;
+  if(!gdriveTokenExpiry)return true;// old token without expiry, assume valid
+  return Date.now()<(gdriveTokenExpiry-60000);// 1 min buffer
+}
+
+async function ensureGDriveToken(){
+  if(isGDriveTokenValid())return true;
+  // Token expired or about to expire, try silent refresh
+  console.log('Drive token expired, attempting silent refresh...');
+  const ok=await refreshGDriveToken();
+  if(ok){
+    console.log('Drive token refreshed silently');
+    updateConnStatus();renderSaveLocationUI();
+    return true;
+  }
+  // Silent refresh failed, token is dead
+  console.log('Silent refresh failed');
+  return false;
+}
+
+// Periodic token check every 5 minutes
+setInterval(async()=>{
+  if(!gdriveToken||!gdriveClientId)return;
+  if(!isGDriveTokenValid()){
+    const ok=await refreshGDriveToken();
+    updateConnStatus();
+    if(!ok&&(saveLocation==='drive'||saveLocation==='both')){
+      showToast('⚠️ Session Drive expirée — cliquez Reconnecter',true);
+    }
+  }
+},300000);
 
 async function fetchGDriveUserInfo(){
   if(!gdriveToken)return;
   try{
     const r=await fetch('https://www.googleapis.com/oauth2/v2/userinfo',{headers:{Authorization:'Bearer '+gdriveToken}});
-    if(r.ok){const u=await r.json();document.getElementById('gd-user').textContent=u.name||'Connecté';document.getElementById('gd-email').textContent=u.email||''}
+    if(r.ok){
+      const u=await r.json();
+      gdriveUserName=u.name||'Connecté';gdriveUserEmail=u.email||'';
+      localStorage.setItem('livrapro_gdrive_user',gdriveUserName);
+      localStorage.setItem('livrapro_gdrive_email',gdriveUserEmail);
+      document.getElementById('gd-user').textContent=gdriveUserName;
+      document.getElementById('gd-email').textContent=gdriveUserEmail;
+    }
   }catch(e){}
 }
 
@@ -3072,6 +3179,11 @@ async function ensureGDriveFolder(){
 
 async function saveToGDrive(silent){
   if(!gdriveToken){if(!silent)showToast('Connectez-vous à Google Drive',true);return}
+  // Ensure token is valid before saving
+  if(!await ensureGDriveToken()){
+    if(!silent)showToast('⚠️ Session Drive expirée — reconnectez-vous',true);
+    updateConnStatus();return;
+  }
   try{
     if(!silent)showToast('☁️ Sauvegarde...');
     const folderId=await ensureGDriveFolder();
@@ -3080,13 +3192,16 @@ async function saveToGDrive(silent){
     if(folderId)metadata.parents=[folderId];
     
     if(gdriveFileId){
-      // Update existing file
-      const r=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gdriveFileId}?uploadType=media`,{method:'PATCH',headers:{Authorization:'Bearer '+gdriveToken,'Content-Type':'application/json'},body:payload});
+      let r=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gdriveFileId}?uploadType=media`,{method:'PATCH',headers:{Authorization:'Bearer '+gdriveToken,'Content-Type':'application/json'},body:payload});
+      if(r.status===401||r.status===403){
+        // Try refresh once
+        const refreshed=await refreshGDriveToken();
+        if(refreshed){r=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${gdriveFileId}?uploadType=media`,{method:'PATCH',headers:{Authorization:'Bearer '+gdriveToken,'Content-Type':'application/json'},body:payload})}
+        else{if(!silent)showToast('⚠️ Session expirée — reconnectez-vous',true);updateConnStatus();return}
+      }
       if(r.ok){lastSyncTime=Date.now();localStorage.setItem('livrapro_lastsync',lastSyncTime);if(!silent)showToast('☁️ Sauvegardé sur Drive ✅');renderSaveLocationUI()}
-      else if(r.status===401||r.status===403){gdriveToken='';localStorage.removeItem('livrapro_gdrive_token');showToast('Session expirée, reconnectez-vous',true);renderSaveLocationUI();updateConnStatus()}
       else{if(!silent)showToast('Erreur Drive',true)}
     }else{
-      // Create new file with multipart upload
       const boundary='livrapro_boundary';
       const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${payload}\r\n--${boundary}--`;
       const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{Authorization:'Bearer '+gdriveToken,'Content-Type':'multipart/related; boundary='+boundary},body});
@@ -3098,12 +3213,14 @@ async function saveToGDrive(silent){
 
 async function loadFromGDrive(){
   if(!gdriveToken){showToast('Connectez-vous à Google Drive',true);return}
+  if(!await ensureGDriveToken()){showToast('⚠️ Session Drive expirée — reconnectez-vous',true);updateConnStatus();return}
   try{
     showToast('📥 Chargement depuis Drive...');
     let fileId=gdriveFileId;
     if(!fileId){
       const q=encodeURIComponent("name='livrapro_backup.json' and trashed=false");
       const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`,{headers:{Authorization:'Bearer '+gdriveToken}});
+      if(r.status===401||r.status===403){const ok=await refreshGDriveToken();if(!ok){showToast('Session expirée',true);updateConnStatus();return}}
       const d=await r.json();
       if(!d.files||!d.files.length){showToast('Aucun backup trouvé sur Drive',true);return}
       fileId=d.files[0].id;gdriveFileId=fileId;localStorage.setItem('livrapro_gdrive_fileid',fileId);
@@ -3154,7 +3271,17 @@ if(hidePrices)document.body.classList.add('hide-prices');
 if(defaultStart)document.getElementById('route-start').value=defaultStart;
 if(autoGeo)setTimeout(detectMyLocation,1000);
 handleGDriveCallback();
-if(gdriveToken)fetchGDriveUserInfo();
+if(gdriveToken){
+  fetchGDriveUserInfo();
+  scheduleTokenRefresh();
+  // Try silent refresh if token is expired
+  if(!isGDriveTokenValid()){
+    refreshGDriveToken().then(ok=>{
+      updateConnStatus();renderSaveLocationUI();
+      if(ok){console.log('Drive token refreshed on load');scheduleTokenRefresh()}
+    });
+  }
+}
 // Set native maps button label
 const nml=getEffectiveMapsApp()==='apple'?'🍎 Ouvrir dans Plans':'📍 Ouvrir dans Google Maps';
 document.getElementById('btn-open-native-maps').textContent=nml;
